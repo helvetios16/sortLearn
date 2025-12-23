@@ -8,7 +8,6 @@
       class="liquid w-full"
       :style="{ height: `${weight}%`, backgroundColor: liquidColor }"
     ></div>
-
   </div>
 </template>
 
