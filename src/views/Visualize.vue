@@ -170,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import Bottle from '../components/Bottle.vue';
 import draggable from 'vuedraggable';
 
@@ -222,6 +222,22 @@ const stats = reactive({
   movimientos: 0,
 });
 
+// Watch for changes in pans to auto-reset scale
+watch(
+  [leftPanBottle, rightPanBottle],
+  ([newLeft, newRight], [oldLeft, oldRight]) => {
+    // If the scale was in a 'weighed' state and a bottle is removed from either pan
+    if (
+      scaleWeighed.value &&
+      (newLeft.length < oldLeft.length || newRight.length < oldRight.length)
+    ) {
+      // Partially reset the scale to allow a new comparison
+      scaleWeighed.value = false;
+      scaleResult.value = { left: null, right: null };
+    }
+  }
+);
+
 // Drag-and-drop group configurations
 const mainGroup = {
   name: 'bottles',
@@ -247,7 +263,9 @@ const panGroup = computed(() => ({
 // Computed property to enable/disable the PESAR button
 const canWeigh = computed(
   () =>
-    leftPanBottle.value.length === 1 && rightPanBottle.value.length === 1 && !scaleWeighed.value,
+    leftPanBottle.value.length === 1 &&
+    rightPanBottle.value.length === 1 &&
+    !scaleWeighed.value
 );
 
 // Function to handle the @change event from draggable
@@ -303,10 +321,6 @@ const returnBottleFromPan = (bottleId: number) => {
     if (bottle) {
       workbenchBottles.value.push(bottle);
       stats.movimientos++;
-      // If we return a bottle, the scale is no longer in a valid 'weighed' state for that pair
-      if (scaleWeighed.value) {
-        resetScale(); // Resetting fully is a clean way to handle this
-      }
     }
     return;
   }
@@ -317,9 +331,6 @@ const returnBottleFromPan = (bottleId: number) => {
     if (bottle) {
       workbenchBottles.value.push(bottle);
       stats.movimientos++;
-      if (scaleWeighed.value) {
-        resetScale();
-      }
     }
   }
 };
