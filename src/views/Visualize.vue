@@ -47,6 +47,7 @@
               item-key="id"
               class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
               :move="checkPanCapacity"
+              :pull="true"
               :data-pan-id="'left'"
               :max-items="1"
               @change="stats.movimientos++"
@@ -56,6 +57,7 @@
                   :id="bottle.id"
                   :weight="bottle.weight"
                   :color="bottle.color"
+                  @return-bottle="returnBottleFromPan"
                 />
               </template>
               <template
@@ -71,6 +73,7 @@
               item-key="id"
               class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
               :move="checkPanCapacity"
+              :pull="true"
               :data-pan-id="'right'"
               :max-items="1"
               @change="stats.movimientos++"
@@ -80,6 +83,7 @@
                   :id="bottle.id"
                   :weight="bottle.weight"
                   :color="bottle.color"
+                  @return-bottle="returnBottleFromPan"
                 />
               </template>
               <template
@@ -210,8 +214,14 @@ const canWeigh = computed(
 // Function to check if a pan already has a bottle or if scale has been weighed
 const checkPanCapacity = (evt: any) => {
   if (scaleWeighed.value) return false; // Prevent adding bottles after weighing
-  const targetList = evt.to.__draggable_component__.list;
-  return targetList.length === 0;
+
+  // Use the more robust relatedContext to get the target list
+  if (evt.relatedContext && evt.relatedContext.list) {
+    return evt.relatedContext.list.length === 0;
+  }
+
+  // Fallback to prevent errors, denies the move if context is not available
+  return false;
 };
 
 // Function to weigh bottles
@@ -249,6 +259,28 @@ const resetScale = () => {
   rightPanBottle.value = [];
   scaleWeighed.value = false;
   comparisonResult.value = null;
+};
+
+// Function to return a bottle from a pan to the workbench on double-click
+const returnBottleFromPan = (bottleId: number) => {
+  const leftIndex = leftPanBottle.value.findIndex(b => b.id === bottleId);
+  if (leftIndex !== -1) {
+    const bottle = leftPanBottle.value.splice(leftIndex, 1)[0];
+    workbenchBottles.value.push(bottle);
+    stats.movimientos++;
+    scaleWeighed.value = false;
+    comparisonResult.value = null;
+    return;
+  }
+
+  const rightIndex = rightPanBottle.value.findIndex(b => b.id === bottleId);
+  if (rightIndex !== -1) {
+    const bottle = rightPanBottle.value.splice(rightIndex, 1)[0];
+    workbenchBottles.value.push(bottle);
+    stats.movimientos++;
+    scaleWeighed.value = false;
+    comparisonResult.value = null;
+  }
 };
 </script>
 

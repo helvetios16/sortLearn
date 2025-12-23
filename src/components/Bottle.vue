@@ -3,6 +3,7 @@
     class="bottle w-12 h-20 bg-gray-200 border-2 border-gray-400 rounded-b-xl relative overflow-hidden flex flex-col justify-end items-center"
     :class="bottleColor"
     :title="`ID: ${id}, Peso: ${weight}`"
+    @dblclick="emit('return-bottle', id)"
   >
     <div
       class="liquid w-full"
@@ -19,6 +20,8 @@ const props = defineProps<{
   weight: number;
   color: string; // Tailwind class like 'bg-red-300'
 }>();
+
+const emit = defineEmits(['return-bottle']);
 
 const bottleColor = computed(() => props.color);
 
