@@ -53,7 +53,11 @@
                 v-model="leftPanBottle"
                 :group="panGroup"
                 item-key="id"
-                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-colors duration-300"
+                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-all duration-500"
+                :class="{
+                  'scale-pan-down': scaleResult.left === 'heavier',
+                  'scale-pan-up': scaleResult.left === 'lighter',
+                }"
                 @change="logMovement"
               >
                 <template #item="{ element: bottle }">
@@ -73,7 +77,11 @@
                 v-model="rightPanBottle"
                 :group="panGroup"
                 item-key="id"
-                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-colors duration-300"
+                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-all duration-500"
+                :class="{
+                  'scale-pan-down': scaleResult.right === 'heavier',
+                  'scale-pan-up': scaleResult.right === 'lighter',
+                }"
                 @change="logMovement"
               >
                 <template #item="{ element: bottle }">
@@ -106,12 +114,6 @@
               >
                 RESETEAR
               </button>
-            </div>
-            <div
-              v-if="comparisonMessage"
-              class="mt-4 p-3 text-center text-sm bg-blue-100 text-blue-800 rounded-lg w-full"
-            >
-              {{ comparisonMessage }}
             </div>
           </div>
 
@@ -207,8 +209,10 @@ const workbenchBottles = ref<Bottle[]>(generateRandomBottles(7));
 const leftPanBottle = ref<Bottle[]>([]);
 const rightPanBottle = ref<Bottle[]>([]);
 const sortedShelfBottles = ref<Bottle[]>([]);
-const comparisonMessage = ref<string | null>(null);
-const scaleResult = ref<{ left: ComparisonState, right: ComparisonState }>({ left: null, right: null });
+const scaleResult = ref<{ left: ComparisonState; right: ComparisonState }>({
+  left: null,
+  right: null,
+});
 const scaleWeighed = ref(false); // New state to track if scale has been weighed
 
 const stats = reactive({
@@ -238,11 +242,12 @@ const panGroup = computed(() => ({
   },
 }));
 
-
 // Computed property to enable/disable the PESAR button
 const canWeigh = computed(
   () =>
-    leftPanBottle.value.length === 1 && rightPanBottle.value.length === 1 && !scaleWeighed.value,
+    leftPanBottle.value.length === 1 &&
+    rightPanBottle.value.length === 1 &&
+    !scaleWeighed.value
 );
 
 // Function to handle the @change event from draggable
@@ -264,19 +269,13 @@ const weighBottles = () => {
 
   if (!leftBottle || !rightBottle) return;
 
-  let resultMessage = '';
   if (leftBottle.weight > rightBottle.weight) {
     scaleResult.value = { left: 'heavier', right: 'lighter' };
-    resultMessage = 'El platillo izquierdo es más pesado.';
   } else if (rightBottle.weight > leftBottle.weight) {
     scaleResult.value = { left: 'lighter', right: 'heavier' };
-    resultMessage = 'El platillo derecho es más pesado.';
   } else {
     scaleResult.value = { left: 'equal', right: 'equal' };
-    resultMessage = 'Ambos platillos pesan lo mismo.';
   }
-
-  comparisonMessage.value = resultMessage;
 };
 
 // Function to reset the scale
@@ -293,33 +292,32 @@ const resetScale = () => {
   leftPanBottle.value = [];
   rightPanBottle.value = [];
   scaleWeighed.value = false;
-  comparisonMessage.value = null;
   scaleResult.value = { left: null, right: null };
 };
 
 // Function to return a bottle from a pan to the workbench on double-click
 const returnBottleFromPan = (bottleId: number) => {
-  const leftIndex = leftPanBottle.value.findIndex(b => b.id === bottleId);
+  const leftIndex = leftPanBottle.value.findIndex((b) => b.id === bottleId);
   if (leftIndex !== -1) {
     const bottle = leftPanBottle.value.splice(leftIndex, 1)[0];
     if (bottle) {
       workbenchBottles.value.push(bottle);
       stats.movimientos++;
       // If we return a bottle, the scale is no longer in a valid 'weighed' state for that pair
-      if(scaleWeighed.value) {
+      if (scaleWeighed.value) {
         resetScale(); // Resetting fully is a clean way to handle this
       }
     }
     return;
   }
 
-  const rightIndex = rightPanBottle.value.findIndex(b => b.id === bottleId);
+  const rightIndex = rightPanBottle.value.findIndex((b) => b.id === bottleId);
   if (rightIndex !== -1) {
     const bottle = rightPanBottle.value.splice(rightIndex, 1)[0];
     if (bottle) {
       workbenchBottles.value.push(bottle);
       stats.movimientos++;
-      if(scaleWeighed.value) {
+      if (scaleWeighed.value) {
         resetScale();
       }
     }
@@ -327,4 +325,11 @@ const returnBottleFromPan = (bottleId: number) => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.scale-pan-up {
+  transform: translateY(-12px);
+}
+.scale-pan-down {
+  transform: translateY(12px);
+}
+</style>
