@@ -22,7 +22,7 @@
       <!-- Liquid -->
       <div
         class="liquid w-full rounded-b-lg transition-all duration-300"
-        :style="{ height: `${weight}%`, backgroundColor: liquidColor }"
+        :style="{ height: '80%', backgroundColor: liquidColor }"
       ></div>
 
       <!-- Reflection -->
@@ -59,27 +59,37 @@ const liquidColor = computed(() => {
 
 <style scoped>
 .bottle-container {
-  min-height: 80px; /* Ensure a minimum height for all bottles */
-  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+  min-height: 80px;
+  /* Ensure a minimum height for all bottles */
+  transition:
+    transform 0.2s ease-in-out,
+    filter 0.2s ease-in-out;
 }
+
 .bottle-container:hover {
   transform: translateY(-8px) scale(1.05);
-  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.08))
-    drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+  filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.08)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
 }
+
 .bottle {
   /* Use a transparent background to simulate glass */
-  background-color: rgba(229, 231, 235, 0.3); /* bg-gray-200 with alpha */
+  background-color: rgba(229, 231, 235, 0.3);
+  /* bg-gray-200 with alpha */
 }
 
 /* Glow effects for comparison */
 .heavy-glow {
-  filter: drop-shadow(0 0 12px rgb(34 197 94 / 0.9)); /* green glow */
+  filter: drop-shadow(0 0 12px rgb(34 197 94 / 0.9));
+  /* green glow */
 }
+
 .light-glow {
-  filter: drop-shadow(0 0 12px rgb(239 68 68 / 0.9)); /* red glow */
+  filter: drop-shadow(0 0 12px rgb(239 68 68 / 0.9));
+  /* red glow */
 }
+
 .equal-glow {
-  filter: drop-shadow(0 0 12px rgb(59 130 246 / 0.9)); /* blue glow */
+  filter: drop-shadow(0 0 12px rgb(59 130 246 / 0.9));
+  /* blue glow */
 }
 </style>

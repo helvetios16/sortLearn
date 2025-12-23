@@ -9,9 +9,7 @@
 
       <div class="flex flex-col gap-8">
         <!-- Fila Superior: Zona de Botellas Desordenadas -->
-        <div
-          class="bg-amber-100 border-2 border-amber-200 rounded-xl p-6 shadow-inner"
-        >
+        <div class="bg-amber-100 border-2 border-amber-200 rounded-xl p-6 shadow-inner">
           <h2 class="text-xl font-bold text-amber-800 mb-4">Mesa de Trabajo</h2>
           <div class="min-h-48 flex flex-wrap gap-4 items-end justify-center">
             <draggable
@@ -69,7 +67,10 @@
                     @return-bottle="returnBottleFromPan"
                   />
                 </template>
-                <template #header v-if="leftPanBottle.length === 0">
+                <template
+                  #header
+                  v-if="leftPanBottle.length === 0"
+                >
                   <span class="text-sm">Platillo Izq.</span>
                 </template>
               </draggable>
@@ -93,7 +94,10 @@
                     @return-bottle="returnBottleFromPan"
                   />
                 </template>
-                <template #header v-if="rightPanBottle.length === 0">
+                <template
+                  #header
+                  v-if="rightPanBottle.length === 0"
+                >
                   <span class="text-sm">Platillo Der.</span>
                 </template>
               </draggable>
@@ -134,9 +138,7 @@
         </div>
 
         <!-- Fila Inferior: Estantería Ordenada -->
-        <div
-          class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 shadow-inner"
-        >
+        <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 shadow-inner">
           <h2 class="text-xl font-bold text-emerald-800 mb-4">Estantería Ordenada</h2>
           <div class="min-h-32 flex flex-wrap gap-4 items-end justify-center">
             <draggable
@@ -245,9 +247,7 @@ const panGroup = computed(() => ({
 // Computed property to enable/disable the PESAR button
 const canWeigh = computed(
   () =>
-    leftPanBottle.value.length === 1 &&
-    rightPanBottle.value.length === 1 &&
-    !scaleWeighed.value
+    leftPanBottle.value.length === 1 && rightPanBottle.value.length === 1 && !scaleWeighed.value,
 );
 
 // Function to handle the @change event from draggable
