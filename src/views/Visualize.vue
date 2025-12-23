@@ -1,51 +1,24 @@
 <template>
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-center">Visualizar Algoritmos</h1>
-
-    <div class="flex flex-col gap-6">
-      <!-- Fila Superior: Zona de Botellas Desordenadas -->
-      <div
-        class="bg-gray-100 border border-gray-300 rounded-lg p-4 min-h-64 flex flex-wrap gap-4 items-start justify-center"
+  <div class="min-h-screen bg-gray-50 text-gray-800">
+    <div class="container mx-auto p-4 md:p-8">
+      <h1
+        class="text-4xl md:text-5xl font-extrabold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-500"
       >
-        <draggable
-          v-model="workbenchBottles"
-          :group="mainGroup"
-          item-key="id"
-          class="flex flex-wrap gap-4 justify-center items-start w-full min-h-[calc(100%-2rem)]"
-          @change="logMovement"
-        >
-          <template #item="{ element: bottle }">
-            <Bottle
-              :id="bottle.id"
-              :weight="bottle.weight"
-              :color="bottle.color"
-            />
-          </template>
-        </draggable>
-        <p
-          v-if="workbenchBottles.length === 0"
-          class="text-gray-500 w-full text-center"
-        >
-          Zona de Botellas Desordenadas (vacía)
-        </p>
-      </div>
+        Laboratorio de Ordenamiento
+      </h1>
 
-      <!-- Fila Intermedia: Vacío, Balanza, Estadísticas -->
-      <div class="grid grid-cols-3 gap-6">
-        <!-- Columna Vacía -->
-        <div></div>
-
-        <!-- Balanza de Comparación -->
+      <div class="flex flex-col gap-8">
+        <!-- Fila Superior: Zona de Botellas Desordenadas -->
         <div
-          class="bg-yellow-50 border border-yellow-300 rounded-lg p-4 flex flex-col items-center justify-center"
+          class="bg-amber-100 border-2 border-amber-200 rounded-xl p-6 shadow-inner"
         >
-          <h2 class="text-xl font-semibold mb-4">Balanza de Comparación</h2>
-          <div class="flex space-x-4 mb-4">
+          <h2 class="text-xl font-bold text-amber-800 mb-4">Mesa de Trabajo</h2>
+          <div class="min-h-48 flex flex-wrap gap-4 items-end justify-center">
             <draggable
-              v-model="leftPanBottle"
-              :group="panGroup"
+              v-model="workbenchBottles"
+              :group="mainGroup"
               item-key="id"
-              class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
+              class="flex flex-wrap gap-4 justify-center items-end w-full min-h-[calc(100%-2rem)]"
               @change="logMovement"
             >
               <template #item="{ element: bottle }">
@@ -53,97 +26,138 @@
                   :id="bottle.id"
                   :weight="bottle.weight"
                   :color="bottle.color"
-                  @return-bottle="returnBottleFromPan"
                 />
               </template>
-              <template
-                #header
-                v-if="leftPanBottle.length === 0"
-              >
-                <span>Platillo Izq.</span>
-              </template>
             </draggable>
-            <draggable
-              v-model="rightPanBottle"
-              :group="panGroup"
-              item-key="id"
-              class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
-              @change="logMovement"
+            <p
+              v-if="workbenchBottles.length === 0"
+              class="text-amber-700/50 w-full text-center text-lg italic"
             >
-              <template #item="{ element: bottle }">
-                <Bottle
-                  :id="bottle.id"
-                  :weight="bottle.weight"
-                  :color="bottle.color"
-                  @return-bottle="returnBottleFromPan"
-                />
-              </template>
-              <template
-                #header
-                v-if="rightPanBottle.length === 0"
-              >
-                <span>Platillo Der.</span>
-              </template>
-            </draggable>
+              Mesa de trabajo vacía
+            </p>
           </div>
-          <div v-if="!scaleWeighed">
-            <button
-              class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-              :disabled="!canWeigh"
-              @click="weighBottles"
-            >
-              PESAR
-            </button>
-          </div>
-          <div v-else>
-            <button
-              class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-              @click="resetScale"
-            >
-              RESETEAR BALANZA
-            </button>
-          </div>
+        </div>
+
+        <!-- Fila Intermedia: Vacío, Balanza, Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Columna Vacía -->
+          <div class="hidden md:block"></div>
+
+          <!-- Balanza de Comparación -->
           <div
-            v-if="comparisonResult"
-            class="mt-4 p-2 bg-blue-100 text-blue-800 rounded"
+            class="bg-white border border-gray-200 rounded-xl p-6 shadow-lg flex flex-col items-center justify-center"
           >
-            {{ comparisonResult }}
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Balanza</h2>
+            <div class="flex space-x-6 mb-6">
+              <draggable
+                v-model="leftPanBottle"
+                :group="panGroup"
+                item-key="id"
+                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-colors duration-300"
+                @change="logMovement"
+              >
+                <template #item="{ element: bottle }">
+                  <Bottle
+                    :id="bottle.id"
+                    :weight="bottle.weight"
+                    :color="bottle.color"
+                    @return-bottle="returnBottleFromPan"
+                  />
+                </template>
+                <template #header v-if="leftPanBottle.length === 0">
+                  <span class="text-sm">Platillo Izq.</span>
+                </template>
+              </draggable>
+              <draggable
+                v-model="rightPanBottle"
+                :group="panGroup"
+                item-key="id"
+                class="w-24 h-24 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-400 transition-colors duration-300"
+                @change="logMovement"
+              >
+                <template #item="{ element: bottle }">
+                  <Bottle
+                    :id="bottle.id"
+                    :weight="bottle.weight"
+                    :color="bottle.color"
+                    @return-bottle="returnBottleFromPan"
+                  />
+                </template>
+                <template #header v-if="rightPanBottle.length === 0">
+                  <span class="text-sm">Platillo Der.</span>
+                </template>
+              </draggable>
+            </div>
+            <div v-if="!scaleWeighed">
+              <button
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform transition-transform duration-150 hover:scale-105 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+                :disabled="!canWeigh"
+                @click="weighBottles"
+              >
+                PESAR
+              </button>
+            </div>
+            <div v-else>
+              <button
+                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform transition-transform duration-150 hover:scale-105"
+                @click="resetScale"
+              >
+                RESETEAR
+              </button>
+            </div>
+            <div
+              v-if="comparisonResult"
+              class="mt-4 p-3 text-center text-sm bg-blue-100 text-blue-800 rounded-lg w-full"
+            >
+              {{ comparisonResult }}
+            </div>
+          </div>
+
+          <!-- Panel de Estadísticas -->
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Estadísticas</h2>
+            <ul class="space-y-3">
+              <li class="flex items-center justify-between text-lg">
+                <span class="text-gray-600">⚖️ Pesajes:</span>
+                <span class="font-bold text-blue-600">{{ stats.pesajes }}</span>
+              </li>
+              <li class="flex items-center justify-between text-lg">
+                <span class="text-gray-600">📦 Movimientos:</span>
+                <span class="font-bold text-blue-600">{{ stats.movimientos }}</span>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <!-- Panel de Estadísticas -->
-        <div class="bg-blue-50 border border-blue-300 rounded-lg p-4">
-          <h2 class="text-xl font-semibold mb-4">📊 Estadísticas</h2>
-          <p>⚖️ Pesajes: {{ stats.pesajes }}</p>
-          <p>📦 Movimientos: {{ stats.movimientos }}</p>
+        <!-- Fila Inferior: Estantería Ordenada -->
+        <div
+          class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-6 shadow-inner"
+        >
+          <h2 class="text-xl font-bold text-emerald-800 mb-4">Estantería Ordenada</h2>
+          <div class="min-h-32 flex flex-wrap gap-4 items-end justify-center">
+            <draggable
+              v-model="sortedShelfBottles"
+              :group="mainGroup"
+              item-key="id"
+              class="flex flex-wrap gap-4 justify-center items-end w-full min-h-[calc(100%-2rem)]"
+              @change="logMovement"
+            >
+              <template #item="{ element: bottle }">
+                <Bottle
+                  :id="bottle.id"
+                  :weight="bottle.weight"
+                  :color="bottle.color"
+                />
+              </template>
+            </draggable>
+            <p
+              v-if="sortedShelfBottles.length === 0"
+              class="text-emerald-700/50 w-full text-center text-lg italic"
+            >
+              Estantería vacía
+            </p>
+          </div>
         </div>
-      </div>
-
-      <!-- Fila Inferior: Estantería Ordenada -->
-      <div
-        class="bg-green-50 border border-green-300 rounded-lg p-4 min-h-32 flex flex-wrap gap-4 items-start justify-center"
-      >
-        <draggable
-          v-model="sortedShelfBottles"
-          :group="mainGroup"
-          item-key="id"
-          class="flex flex-wrap gap-4 justify-center items-start w-full min-h-[calc(100%-2rem)]"
-          @change="logMovement"
-        >
-          <template #item="{ element: bottle }">
-            <Bottle
-              :id="bottle.id"
-              :weight="bottle.weight"
-              :color="bottle.color"
-            />
-          </template>
-        </draggable>
-        <p
-          v-if="sortedShelfBottles.length === 0"
-          class="text-gray-500 w-full text-center"
-        >
-          Estantería Ordenada ✓
-        </p>
       </div>
     </div>
   </div>
