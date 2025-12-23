@@ -1,6 +1,11 @@
 <template>
   <div
     class="bottle-container"
+    :class="{
+      'heavy-glow': comparison === 'heavier',
+      'light-glow': comparison === 'lighter',
+      'equal-glow': comparison === 'equal',
+    }"
     :title="`ID: ${id}, Peso: ${weight}`"
     @dblclick="emit('return-bottle', id)"
   >
@@ -33,6 +38,7 @@ const props = defineProps<{
   id: number;
   weight: number;
   color: string; // Tailwind class like 'bg-red-300'
+  comparison?: 'heavier' | 'lighter' | 'equal' | null;
 }>();
 
 const emit = defineEmits(['return-bottle']);
@@ -64,5 +70,16 @@ const liquidColor = computed(() => {
 .bottle {
   /* Use a transparent background to simulate glass */
   background-color: rgba(229, 231, 235, 0.3); /* bg-gray-200 with alpha */
+}
+
+/* Glow effects for comparison */
+.heavy-glow {
+  filter: drop-shadow(0 0 12px rgb(34 197 94 / 0.9)); /* green glow */
+}
+.light-glow {
+  filter: drop-shadow(0 0 12px rgb(239 68 68 / 0.9)); /* red glow */
+}
+.equal-glow {
+  filter: drop-shadow(0 0 12px rgb(59 130 246 / 0.9)); /* blue glow */
 }
 </style>

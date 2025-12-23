@@ -61,6 +61,7 @@
                     :id="bottle.id"
                     :weight="bottle.weight"
                     :color="bottle.color"
+                    :comparison="scaleResult.left"
                     @return-bottle="returnBottleFromPan"
                   />
                 </template>
@@ -80,6 +81,7 @@
                     :id="bottle.id"
                     :weight="bottle.weight"
                     :color="bottle.color"
+                    :comparison="scaleResult.right"
                     @return-bottle="returnBottleFromPan"
                   />
                 </template>
@@ -106,10 +108,10 @@
               </button>
             </div>
             <div
-              v-if="comparisonResult"
+              v-if="comparisonMessage"
               class="mt-4 p-3 text-center text-sm bg-blue-100 text-blue-800 rounded-lg w-full"
             >
-              {{ comparisonResult }}
+              {{ comparisonMessage }}
             </div>
           </div>
 
@@ -175,6 +177,8 @@ interface Bottle {
   color: string; // Placeholder color
 }
 
+type ComparisonState = 'heavier' | 'lighter' | 'equal' | null;
+
 // Function to generate random bottles
 const generateRandomBottles = (count: number): Bottle[] => {
   const colors = [
@@ -203,7 +207,8 @@ const workbenchBottles = ref<Bottle[]>(generateRandomBottles(7));
 const leftPanBottle = ref<Bottle[]>([]);
 const rightPanBottle = ref<Bottle[]>([]);
 const sortedShelfBottles = ref<Bottle[]>([]);
-const comparisonResult = ref<string | null>(null);
+const comparisonMessage = ref<string | null>(null);
+const scaleResult = ref<{ left: ComparisonState, right: ComparisonState }>({ left: null, right: null });
 const scaleWeighed = ref(false); // New state to track if scale has been weighed
 
 const stats = reactive({
@@ -261,14 +266,17 @@ const weighBottles = () => {
 
   let resultMessage = '';
   if (leftBottle.weight > rightBottle.weight) {
-    resultMessage = `Botella ${leftBottle.id} es más pesada.`;
+    scaleResult.value = { left: 'heavier', right: 'lighter' };
+    resultMessage = 'El platillo izquierdo es más pesado.';
   } else if (rightBottle.weight > leftBottle.weight) {
-    resultMessage = `Botella ${rightBottle.id} es más pesada.`;
+    scaleResult.value = { left: 'lighter', right: 'heavier' };
+    resultMessage = 'El platillo derecho es más pesado.';
   } else {
-    resultMessage = `Ambas botellas tienen el mismo peso.`;
+    scaleResult.value = { left: 'equal', right: 'equal' };
+    resultMessage = 'Ambos platillos pesan lo mismo.';
   }
 
-  comparisonResult.value = resultMessage;
+  comparisonMessage.value = resultMessage;
 };
 
 // Function to reset the scale
@@ -285,7 +293,8 @@ const resetScale = () => {
   leftPanBottle.value = [];
   rightPanBottle.value = [];
   scaleWeighed.value = false;
-  comparisonResult.value = null;
+  comparisonMessage.value = null;
+  scaleResult.value = { left: null, right: null };
 };
 
 // Function to return a bottle from a pan to the workbench on double-click
