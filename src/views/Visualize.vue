@@ -192,7 +192,7 @@ const generateRandomBottles = (count: number): Bottle[] => {
     bottles.push({
       id: i + 1,
       weight: Math.floor(Math.random() * 100) + 1, // Weight from 1 to 100
-      color: colors[i % colors.length], // Assign colors cyclically
+      color: colors[i % colors.length]!, // Assign colors cyclically
     });
   }
   return bottles;
@@ -257,6 +257,8 @@ const weighBottles = () => {
   const leftBottle = leftPanBottle.value[0];
   const rightBottle = rightPanBottle.value[0];
 
+  if (!leftBottle || !rightBottle) return;
+
   let resultMessage = '';
   if (leftBottle.weight > rightBottle.weight) {
     resultMessage = `Botella ${leftBottle.id} es más pesada.`;
@@ -271,11 +273,13 @@ const weighBottles = () => {
 
 // Function to reset the scale
 const resetScale = () => {
-  if (leftPanBottle.value.length > 0) {
-    workbenchBottles.value.push(leftPanBottle.value[0]);
+  const leftBottle = leftPanBottle.value[0];
+  if (leftBottle) {
+    workbenchBottles.value.push(leftBottle);
   }
-  if (rightPanBottle.value.length > 0) {
-    workbenchBottles.value.push(rightPanBottle.value[0]);
+  const rightBottle = rightPanBottle.value[0];
+  if (rightBottle) {
+    workbenchBottles.value.push(rightBottle);
   }
 
   leftPanBottle.value = [];
@@ -289,11 +293,13 @@ const returnBottleFromPan = (bottleId: number) => {
   const leftIndex = leftPanBottle.value.findIndex(b => b.id === bottleId);
   if (leftIndex !== -1) {
     const bottle = leftPanBottle.value.splice(leftIndex, 1)[0];
-    workbenchBottles.value.push(bottle);
-    stats.movimientos++;
-    // If we return a bottle, the scale is no longer in a valid 'weighed' state for that pair
-    if(scaleWeighed.value) {
-      resetScale(); // Resetting fully is a clean way to handle this
+    if (bottle) {
+      workbenchBottles.value.push(bottle);
+      stats.movimientos++;
+      // If we return a bottle, the scale is no longer in a valid 'weighed' state for that pair
+      if(scaleWeighed.value) {
+        resetScale(); // Resetting fully is a clean way to handle this
+      }
     }
     return;
   }
@@ -301,10 +307,12 @@ const returnBottleFromPan = (bottleId: number) => {
   const rightIndex = rightPanBottle.value.findIndex(b => b.id === bottleId);
   if (rightIndex !== -1) {
     const bottle = rightPanBottle.value.splice(rightIndex, 1)[0];
-    workbenchBottles.value.push(bottle);
-    stats.movimientos++;
-    if(scaleWeighed.value) {
-      resetScale();
+    if (bottle) {
+      workbenchBottles.value.push(bottle);
+      stats.movimientos++;
+      if(scaleWeighed.value) {
+        resetScale();
+      }
     }
   }
 };
