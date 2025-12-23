@@ -183,7 +183,7 @@ const generateRandomBottles = (count: number): Bottle[] => {
 };
 
 // Reactive state
-const workbenchBottles = ref<Bottle[]>(generateRandomBottles(5));
+const workbenchBottles = ref<Bottle[]>(generateRandomBottles(7));
 const leftPanBottle = ref<Bottle[]>([]);
 const rightPanBottle = ref<Bottle[]>([]);
 const sortedShelfBottles = ref<Bottle[]>([]);
