@@ -9,10 +9,10 @@
       >
         <draggable
           v-model="workbenchBottles"
-          group="bottles"
+          :group="mainGroup"
           item-key="id"
           class="flex flex-wrap gap-4 justify-center items-start w-full min-h-[calc(100%-2rem)]"
-          @change="stats.movimientos++"
+          @change="logMovement"
         >
           <template #item="{ element: bottle }">
             <Bottle
@@ -43,14 +43,10 @@
           <div class="flex space-x-4 mb-4">
             <draggable
               v-model="leftPanBottle"
-              group="bottles"
+              :group="panGroup"
               item-key="id"
               class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
-              :move="checkPanCapacity"
-              :pull="true"
-              :data-pan-id="'left'"
-              :max-items="1"
-              @change="stats.movimientos++"
+              @change="logMovement"
             >
               <template #item="{ element: bottle }">
                 <Bottle
@@ -69,14 +65,10 @@
             </draggable>
             <draggable
               v-model="rightPanBottle"
-              group="bottles"
+              :group="panGroup"
               item-key="id"
               class="w-20 h-20 bg-white border border-gray-200 rounded flex items-center justify-center text-gray-400"
-              :move="checkPanCapacity"
-              :pull="true"
-              :data-pan-id="'right'"
-              :max-items="1"
-              @change="stats.movimientos++"
+              @change="logMovement"
             >
               <template #item="{ element: bottle }">
                 <Bottle
@@ -133,10 +125,10 @@
       >
         <draggable
           v-model="sortedShelfBottles"
-          group="bottles"
+          :group="mainGroup"
           item-key="id"
           class="flex flex-wrap gap-4 justify-center items-start w-full min-h-[calc(100%-2rem)]"
-          @change="stats.movimientos++"
+          @change="logMovement"
         >
           <template #item="{ element: bottle }">
             <Bottle
@@ -205,23 +197,40 @@ const stats = reactive({
   movimientos: 0,
 });
 
+// Drag-and-drop group configurations
+const mainGroup = {
+  name: 'bottles',
+  pull: true,
+  put: true,
+};
+
+const panGroup = computed(() => ({
+  name: 'bottles',
+  pull: true,
+  put: (to: any) => {
+    // Check if the scale has been weighed. If so, no more puts.
+    if (scaleWeighed.value) return false;
+    // Check if the pan is empty. vuedraggable's list has the items.
+    // The target model (e.g., leftPanBottle) isn't updated yet when 'put' is evaluated.
+    // We check the target Sortable instance's element to see how many bottles are visually in it.
+    // It's 1 if empty (the #header template) and 2 if it has a bottle.
+    const childrenCount = to.el.children.length;
+    return childrenCount < 2;
+  },
+}));
+
+
 // Computed property to enable/disable the PESAR button
 const canWeigh = computed(
   () =>
     leftPanBottle.value.length === 1 && rightPanBottle.value.length === 1 && !scaleWeighed.value,
 );
 
-// Function to check if a pan already has a bottle or if scale has been weighed
-const checkPanCapacity = (evt: any) => {
-  if (scaleWeighed.value) return false; // Prevent adding bottles after weighing
-
-  // Use the more robust relatedContext to get the target list
-  if (evt.relatedContext && evt.relatedContext.list) {
-    return evt.relatedContext.list.length === 0;
+// Function to handle the @change event from draggable
+const logMovement = (evt: any) => {
+  if (evt.added) {
+    stats.movimientos++;
   }
-
-  // Fallback to prevent errors, denies the move if context is not available
-  return false;
 };
 
 // Function to weigh bottles
@@ -268,8 +277,10 @@ const returnBottleFromPan = (bottleId: number) => {
     const bottle = leftPanBottle.value.splice(leftIndex, 1)[0];
     workbenchBottles.value.push(bottle);
     stats.movimientos++;
-    scaleWeighed.value = false;
-    comparisonResult.value = null;
+    // If we return a bottle, the scale is no longer in a valid 'weighed' state for that pair
+    if(scaleWeighed.value) {
+      resetScale(); // Resetting fully is a clean way to handle this
+    }
     return;
   }
 
@@ -278,8 +289,9 @@ const returnBottleFromPan = (bottleId: number) => {
     const bottle = rightPanBottle.value.splice(rightIndex, 1)[0];
     workbenchBottles.value.push(bottle);
     stats.movimientos++;
-    scaleWeighed.value = false;
-    comparisonResult.value = null;
+    if(scaleWeighed.value) {
+      resetScale();
+    }
   }
 };
 </script>
