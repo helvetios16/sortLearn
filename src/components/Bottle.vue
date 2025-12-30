@@ -5,12 +5,19 @@
       'heavy-glow': comparison === 'heavier',
       'light-glow': comparison === 'lighter',
       'equal-glow': comparison === 'equal',
+      'consolidated': state === 'consolidated',
+      'comparing': state === 'comparing',
+      'in-temp-var': state === 'temp-variable',
     }"
     :title="`ID: ${id}, Peso: ${weight}`"
     @dblclick="emit('return-bottle', id)"
   >
     <div
       class="bottle relative w-12 h-20 border-2 border-gray-400/50 rounded-t-lg rounded-b-xl flex flex-col justify-end items-center cursor-grab active:cursor-grabbing"
+      :class="{
+        'bottle-consolidated': state === 'consolidated',
+        'bottle-comparing': state === 'comparing',
+      }"
     >
       <!-- Cap -->
       <div class="absolute -top-2 w-6 h-2 bg-gray-400/80 rounded-t-sm"></div>
@@ -22,11 +29,16 @@
       <!-- Liquid -->
       <div
         class="liquid w-full rounded-b-lg transition-all duration-300"
-        :style="{ height: '80%', backgroundColor: liquidColor }"
+        :style="{ height: liquidHeight, backgroundColor: liquidColor }"
       ></div>
 
       <!-- Reflection -->
       <div class="absolute top-2 left-1 w-1 h-1/2 bg-white/30 rounded-full"></div>
+    </div>
+
+    <!-- Index label (shown when showIndex is true) -->
+    <div v-if="showIndex !== undefined" class="index-label text-center mt-1 text-sm font-bold text-gray-600">
+      {{ showIndex }}
     </div>
   </div>
 </template>
@@ -39,6 +51,8 @@ const props = defineProps<{
   weight: number;
   color: string; // Tailwind class like 'bg-red-300'
   comparison?: 'heavier' | 'lighter' | 'equal' | null;
+  state?: 'normal' | 'consolidated' | 'comparing' | 'temp-variable';
+  showIndex?: number;
 }>();
 
 const emit = defineEmits(['return-bottle']);
@@ -54,6 +68,12 @@ const liquidColor = computed(() => {
   if (props.color.includes('yellow')) return 'rgb(234 179 8)';
   if (props.color.includes('teal')) return 'rgb(20 184 166)';
   return 'rgb(107 114 128)';
+});
+
+// Calculate liquid height based on weight (1-100)
+const liquidHeight = computed(() => {
+  const percentage = Math.max(10, Math.min(90, props.weight));
+  return `${percentage}%`;
 });
 </script>
 
@@ -91,5 +111,44 @@ const liquidColor = computed(() => {
 .equal-glow {
   filter: drop-shadow(0 0 12px rgb(59 130 246 / 0.9));
   /* blue glow */
+}
+
+/* State-based styles */
+.consolidated {
+  filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.6));
+}
+
+.bottle-consolidated {
+  background: linear-gradient(to bottom, rgba(212, 248, 212, 0.4), rgba(168, 230, 168, 0.4)) !important;
+  pointer-events: none;
+}
+
+.comparing {
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+.bottle-comparing {
+  border: 3px solid #fbbf24 !important;
+  border-width: 3px !important;
+}
+
+.in-temp-var {
+  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8));
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #fbbf24;
+    transform: scale(1);
+  }
+  50% {
+    border-color: #f59e0b;
+    transform: scale(1.05);
+  }
+}
+
+.index-label {
+  user-select: none;
+  pointer-events: none;
 }
 </style>
