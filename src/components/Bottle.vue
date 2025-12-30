@@ -9,7 +9,6 @@
       'comparing': state === 'comparing',
       'in-temp-var': state === 'temp-variable',
     }"
-    :title="`ID: ${id}, Peso: ${weight}`"
     @dblclick="emit('return-bottle', id)"
   >
     <div
@@ -70,10 +69,16 @@ const liquidColor = computed(() => {
   return 'rgb(107 114 128)';
 });
 
-// Calculate liquid height based on weight (1-100)
+// Calculate liquid height based on state
 const liquidHeight = computed(() => {
-  const percentage = Math.max(10, Math.min(90, props.weight));
-  return `${percentage}%`;
+  // If consolidated (in sorted array), show actual weight proportionally
+  if (props.state === 'consolidated') {
+    const percentage = Math.max(10, Math.min(90, props.weight));
+    return `${percentage}%`;
+  }
+
+  // Otherwise, show uniform height (50%) to hide the actual weight
+  return '50%';
 });
 </script>
 
