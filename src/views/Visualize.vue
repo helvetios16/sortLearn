@@ -8,14 +8,6 @@
       </h1>
 
       <div class="flex flex-col gap-6">
-        <!-- Error/Success Messages -->
-        <div v-if="errorMessage" class="bg-red-100 border-2 border-red-400 text-red-800 px-4 py-3 rounded-lg text-center font-semibold animate-shake">
-          {{ errorMessage }}
-        </div>
-        <div v-if="successMessage" class="bg-green-100 border-2 border-green-400 text-green-800 px-4 py-3 rounded-lg text-center font-semibold">
-          {{ successMessage }}
-        </div>
-
         <!-- Fila Superior: Zona de Botellas Desordenadas (Array Visual) -->
         <div class="bg-amber-100 border-2 border-amber-200 rounded-xl p-3 shadow-inner">
           <div class="flex items-center justify-center gap-3">
@@ -35,11 +27,11 @@
                 >
                   <template #item="{ element: bottle }">
                     <Bottle
-                      v-if="bottle"
                       :id="bottle.id"
                       :weight="bottle.weight"
                       :color="bottle.color"
                       :state="bottle.state"
+                      :message="bottle.message"
                     />
                   </template>
                   <template #header>
@@ -82,6 +74,7 @@
                       :weight="bottle.weight"
                       :color="bottle.color"
                       state="temp-variable"
+                      :message="bottle.message"
                       @return-bottle="returnBottleFromTemp"
                     />
                     <div class="mt-3 p-2 bg-yellow-100 border border-yellow-400 rounded-lg">
@@ -126,21 +119,17 @@
 
               <!-- Barra horizontal (se inclina según el peso) -->
               <div
-                class="absolute bottom-28 w-64 h-2 bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 rounded-full shadow-lg transition-transform duration-700 origin-center"
+                class="absolute bottom-28 w-64 h-2 bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 rounded-full shadow-lg transition-transform duration-700 origin-center ease-in-out"
                 :style="{
-                  transform: scaleResult.left === 'heavier' ? 'rotate(-8deg)' :
-                             scaleResult.right === 'heavier' ? 'rotate(8deg)' :
-                             'rotate(0deg)'
+                  transform: scalePhysicalState.barRotation
                 }"
               ></div>
 
               <!-- Platillos (sin cadenas visibles) -->
               <div class="absolute bottom-28 w-full flex justify-between px-4">
                 <!-- Platillo izquierdo -->
-                <div class="flex flex-col items-center transition-all duration-700" :style="{
-                  transform: scaleResult.left === 'heavier' ? 'translateY(20px)' :
-                             scaleResult.left === 'lighter' ? 'translateY(-20px)' :
-                             'translateY(0px)'
+                <div class="flex flex-col items-center transition-all duration-700 ease-in-out" :style="{
+                  transform: scalePhysicalState.leftPanTransform
                 }">
                   <!-- Plato visual (ovalado/triangular) -->
                   <div class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl" style="border-radius: 50%; transform: perspective(100px) rotateX(60deg);"></div>
@@ -158,7 +147,8 @@
                         :id="bottle.id"
                         :weight="bottle.weight"
                         :color="bottle.color"
-                        :comparison="scaleResult.left"
+                        :comparison="scalePhysicalState.leftState"
+                        :message="bottle.message"
                         @return-bottle="returnBottleFromPan"
                       />
                     </template>
@@ -166,10 +156,8 @@
                 </div>
 
                 <!-- Platillo derecho -->
-                <div class="flex flex-col items-center transition-all duration-700" :style="{
-                  transform: scaleResult.right === 'heavier' ? 'translateY(20px)' :
-                             scaleResult.right === 'lighter' ? 'translateY(-20px)' :
-                             'translateY(0px)'
+                <div class="flex flex-col items-center transition-all duration-700 ease-in-out" :style="{
+                  transform: scalePhysicalState.rightPanTransform
                 }">
                   <!-- Plato visual (ovalado/triangular) -->
                   <div class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl" style="border-radius: 50%; transform: perspective(100px) rotateX(60deg);"></div>
@@ -187,7 +175,8 @@
                         :id="bottle.id"
                         :weight="bottle.weight"
                         :color="bottle.color"
-                        :comparison="scaleResult.right"
+                        :comparison="scalePhysicalState.rightState"
+                        :message="bottle.message"
                         @return-bottle="returnBottleFromPan"
                       />
                     </template>
@@ -195,23 +184,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="!scaleWeighed">
-              <button
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform transition-transform duration-150 hover:scale-105 disabled:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
-                :disabled="!canWeigh"
-                @click="weighBottles"
-              >
-                PESAR
-              </button>
-            </div>
-            <div v-else>
-              <button
-                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform transition-transform duration-150 hover:scale-105"
-                @click="resetScale"
-              >
-                RESETEAR
-              </button>
-            </div>
+            <!-- Removed manual PESAR button - weighing now automatic when both pans have bottles -->
           </div>
 
           <!-- Panel de Progreso del Algoritmo Selection Sort -->
@@ -311,18 +284,18 @@
                 <!-- Cada slot de la zona ordenada -->
                 <draggable
                   :model-value="getSortedBottleAtPosition(index - 1) ? [getSortedBottleAtPosition(index - 1)] : []"
-                  @update:model-value="(bottles) => handleSortedShelfChange({ added: bottles.length > 0 ? { element: bottles[0], newIndex: index - 1 } : undefined })"
+                  @update:model-value="(bottles) => updateSortedBottleAtPosition(index - 1, bottles)"
                   :group="sortedGroup"
                   item-key="id"
                   class="flex items-end justify-center min-h-[80px]"
                 >
                   <template #item="{ element: bottle }">
                     <Bottle
-                      v-if="bottle"
                       :id="bottle.id"
                       :weight="bottle.weight"
                       :color="bottle.color"
                       state="consolidated"
+                      :message="bottle.message"
                     />
                   </template>
                   <template #header>
@@ -341,6 +314,14 @@
             </div>
           </div>
         </div>
+
+        <!-- Error/Success Messages (debajo de ORDENADOS[]) -->
+        <div v-if="errorMessage" class="bg-red-100 border-2 border-red-400 text-red-800 px-4 py-3 rounded-lg text-center font-semibold animate-shake">
+          {{ errorMessage }}
+        </div>
+        <div v-if="successMessage" class="bg-green-100 border-2 border-green-400 text-green-800 px-4 py-3 rounded-lg text-center font-semibold">
+          {{ successMessage }}
+        </div>
       </div>
     </div>
   </div>
@@ -357,6 +338,7 @@ interface Bottle {
   weight: number; // 1-100, representing fill level
   color: string; // Placeholder color
   state?: 'normal' | 'consolidated' | 'comparing' | 'temp-variable';
+  message?: string; // Mensaje de burbuja para mostrar sobre el frasco
 }
 
 type ComparisonState = 'heavier' | 'lighter' | 'equal' | null;
@@ -401,11 +383,120 @@ const getSortedBottleAtPosition = (index: number): Bottle | null => {
 const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
   if (bottles.length > 0) {
     // Se agregó una botella a esta posición
-    workbenchBottles.value[index] = bottles[0] ?? null;
+    const bottle = bottles[0];
+    if (bottle) {
+      // Limpiar mensaje del frasco al devolverlo a DESORDENADOS[]
+      bottle.message = undefined;
+      bottle.state = 'normal';
+    }
+    workbenchBottles.value[index] = bottle ?? null;
     stats.movimientos++;
   } else {
     // Se quitó una botella de esta posición
     workbenchBottles.value[index] = null;
+  }
+};
+
+// Helper function to update bottle at specific position in sorted shelf
+const updateSortedBottleAtPosition = (index: number, bottles: Bottle[]) => {
+  if (bottles.length > 0) {
+    // Se agregó una botella a esta posición
+    const addedBottle = bottles[0];
+
+    // Limpiar mensaje del frasco inmediatamente al moverlo
+    addedBottle.message = undefined;
+
+    // Verificar si es el último frasco (ya no quedan más en DESORDENADOS[])
+    const remainingBottles = workbenchBottles.value.filter(b => b !== null && b !== addedBottle);
+    const isLastBottle = remainingBottles.length === 0;
+
+    // Si es el último frasco, permitir moverlo directamente sin validaciones
+    if (isLastBottle) {
+      sortedShelfBottles.value[index] = addedBottle;
+      addedBottle.state = 'consolidated';
+      currentMinBottle.value = null;
+      stats.movimientos++;
+
+      // Completar la última iteración
+      currentIteration.value++;
+      iterationHistory.value.push({
+        number: currentIteration.value,
+        comparisons: comparisonsInCurrentIteration.value,
+        description: `Iteración ${currentIteration.value}`,
+      });
+      comparisonsInCurrentIteration.value = 0;
+      visitedBottlesInIteration.value.clear();
+
+      showSuccess('🎉 ¡Ordenamiento completado! Todos los elementos están ordenados de menor a mayor.');
+      return;
+    }
+
+    // Verificar que se cumplieron las comparaciones esperadas
+    const expectedComparisons = expectedComparisonsForIteration(currentIteration.value + 1);
+    if (comparisonsInCurrentIteration.value < expectedComparisons) {
+      setTimeout(() => {
+        // Devolver al platillo izquierdo si viene de ahí, sino a workbench
+        if (leftPanBottle.value.length === 0) {
+          leftPanBottle.value = [addedBottle];
+        } else {
+          const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+          if (emptyIndex !== -1) {
+            workbenchBottles.value[emptyIndex] = addedBottle;
+          }
+        }
+        addedBottle.state = 'normal';
+        showError(`⚠️ Aún faltan ${expectedComparisons - comparisonsInCurrentIteration.value} comparaciones. Sigue comparando.`);
+      }, 100);
+      return;
+    }
+
+    // Verificar que el frasco sea el mínimo (viene de Variable Temporal O del platillo izquierdo después de la última comparación)
+    const isFromTempVariable = addedBottle === currentMinBottle.value;
+    const isFromLeftPan = leftPanBottle.value.length > 0 && leftPanBottle.value[0] === addedBottle;
+
+    if (!isFromTempVariable && !isFromLeftPan) {
+      setTimeout(() => {
+        const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+        if (emptyIndex !== -1) {
+          workbenchBottles.value[emptyIndex] = addedBottle;
+        }
+        addedBottle.state = 'normal';
+        showError('⚠️ Solo puedes mover el mínimo encontrado (Variable Temporal o platillo izquierdo) a ORDENADOS[].');
+      }, 100);
+      return;
+    }
+
+    // Limpiar platillo izquierdo si el frasco viene de ahí
+    if (isFromLeftPan) {
+      leftPanBottle.value = [];
+    }
+
+    // Todo correcto: agregar a la posición y completar la iteración
+    sortedShelfBottles.value[index] = addedBottle;
+    addedBottle.state = 'consolidated';
+    currentMinBottle.value = null;
+    stats.movimientos++;
+
+    // Registrar la iteración y resetear visitados
+    currentIteration.value++;
+    iterationHistory.value.push({
+      number: currentIteration.value,
+      comparisons: comparisonsInCurrentIteration.value,
+      description: `Iteración ${currentIteration.value}`,
+    });
+    comparisonsInCurrentIteration.value = 0;
+    visitedBottlesInIteration.value.clear(); // Limpiar conjunto de visitados para la nueva iteración
+
+    // Verificar si completamos todas las iteraciones
+    if (currentIteration.value >= totalIterations.value) {
+      showSuccess('🎉 ¡Ordenamiento completado! Todos los elementos están ordenados de menor a mayor.');
+    } else {
+      const remaining = workbenchBottles.value.filter(b => b !== null);
+      showSuccess(`✅ ¡Iteración ${currentIteration.value} completa! Continúa con los ${remaining.length} elementos restantes.`);
+    }
+  } else {
+    // Se quitó una botella de esta posición (no debería pasar porque pull: false)
+    sortedShelfBottles.value[index] = null;
   }
 };
 const scaleResult = ref<{ left: ComparisonState; right: ComparisonState }>({
@@ -426,6 +517,7 @@ const comparisonsInCurrentIteration = ref(0);
 const errorMessage = ref<string>('');
 const successMessage = ref<string>('');
 const currentMinBottle = ref<Bottle | null>(null); // Tracks the minimum bottle found in current iteration
+const visitedBottlesInIteration = ref<Set<number>>(new Set()); // Conjunto de IDs de frascos ya comparados en esta iteración
 
 // Computed: Total iterations for Selection Sort (n-1 for n elements)
 const totalIterations = computed(() => {
@@ -445,18 +537,129 @@ const getIterationComparisons = (iterNum: number): number => {
   return iteration ? iteration.comparisons : 0;
 };
 
-// Watch for changes in pans to auto-reset scale
+// Computed: Estado físico de la balanza basado en los frascos presentes
+const scalePhysicalState = computed(() => {
+  const hasLeft = leftPanBottle.value.length > 0;
+  const hasRight = rightPanBottle.value.length > 0;
+
+  // Caso 1: Balanza vacía - posición horizontal
+  if (!hasLeft && !hasRight) {
+    return {
+      barRotation: 'rotate(0deg)',
+      leftPanTransform: 'translateY(0px)',
+      rightPanTransform: 'translateY(0px)',
+      leftState: null,
+      rightState: null
+    };
+  }
+
+  // Caso 2: Solo frasco en platillo izquierdo - se inclina hacia la izquierda
+  if (hasLeft && !hasRight) {
+    return {
+      barRotation: 'rotate(-8deg)',
+      leftPanTransform: 'translateY(20px)',
+      rightPanTransform: 'translateY(-20px)',
+      leftState: 'heavier',
+      rightState: null
+    };
+  }
+
+  // Caso 3: Solo frasco en platillo derecho - se inclina hacia la derecha
+  if (!hasLeft && hasRight) {
+    return {
+      barRotation: 'rotate(8deg)',
+      leftPanTransform: 'translateY(-20px)',
+      rightPanTransform: 'translateY(20px)',
+      leftState: null,
+      rightState: 'heavier'
+    };
+  }
+
+  // Caso 4: Dos frascos - usar resultado de comparación
+  if (hasLeft && hasRight) {
+    // Si el frasco izquierdo es más pesado (heavier), baja
+    if (scaleResult.value.left === 'heavier') {
+      return {
+        barRotation: 'rotate(-8deg)',
+        leftPanTransform: 'translateY(20px)',   // El pesado BAJA
+        rightPanTransform: 'translateY(-20px)', // El ligero SUBE
+        leftState: scaleResult.value.left,
+        rightState: scaleResult.value.right
+      };
+    }
+    // Si el frasco izquierdo es más ligero (lighter), sube
+    else if (scaleResult.value.left === 'lighter') {
+      return {
+        barRotation: 'rotate(8deg)',
+        leftPanTransform: 'translateY(-20px)',  // El ligero SUBE
+        rightPanTransform: 'translateY(20px)',  // El pesado BAJA
+        leftState: scaleResult.value.left,
+        rightState: scaleResult.value.right
+      };
+    }
+    // Si el frasco derecho es más pesado (heavier), baja
+    else if (scaleResult.value.right === 'heavier') {
+      return {
+        barRotation: 'rotate(8deg)',
+        leftPanTransform: 'translateY(-20px)', // El ligero SUBE
+        rightPanTransform: 'translateY(20px)', // El pesado BAJA
+        leftState: scaleResult.value.left,
+        rightState: scaleResult.value.right
+      };
+    }
+    else {
+      // Igual o sin pesar aún
+      return {
+        barRotation: 'rotate(0deg)',
+        leftPanTransform: 'translateY(0px)',
+        rightPanTransform: 'translateY(0px)',
+        leftState: scaleResult.value.left,
+        rightState: scaleResult.value.right
+      };
+    }
+  }
+
+  // Fallback
+  return {
+    barRotation: 'rotate(0deg)',
+    leftPanTransform: 'translateY(0px)',
+    rightPanTransform: 'translateY(0px)',
+    leftState: null,
+    rightState: null
+  };
+});
+
+// Watch for changes in pans to auto-weigh and auto-reset
 watch(
   [leftPanBottle, rightPanBottle],
   ([newLeft, newRight], [oldLeft, oldRight]) => {
-    // If the scale was in a 'weighed' state and a bottle is removed from either pan
+    const hasLeft = newLeft.length > 0;
+    const hasRight = newRight.length > 0;
+
+    // Caso 1: Si se retira algún frasco, resetear la balanza y limpiar mensajes
     if (
       scaleWeighed.value &&
       (newLeft.length < oldLeft.length || newRight.length < oldRight.length)
     ) {
-      // Partially reset the scale to allow a new comparison
       scaleWeighed.value = false;
       scaleResult.value = { left: null, right: null };
+
+      // Limpiar mensajes de los frascos
+      if (newLeft.length > 0) {
+        newLeft[0].message = undefined;
+        newLeft[0].state = 'normal';
+      }
+      if (newRight.length > 0) {
+        newRight[0].message = undefined;
+        newRight[0].state = 'normal';
+      }
+      return;
+    }
+
+    // Caso 2: Si ahora hay dos frascos y no se ha pesado aún, activar pesaje automático
+    if (hasLeft && hasRight && !scaleWeighed.value) {
+      // Trigger automatic weighing
+      weighBottlesAutomatic();
     }
   }
 );
@@ -490,18 +693,13 @@ const panGroup = computed(() => ({
   },
 }));
 
-// Computed property to enable/disable the PESAR button
-const canWeigh = computed(
-  () =>
-    leftPanBottle.value.length === 1 &&
-    rightPanBottle.value.length === 1 &&
-    !scaleWeighed.value
-);
-
 // Function to handle changes in temp variable zone
 const handleTempVariableChange = (evt: { added?: { element: Bottle } }) => {
   if (evt.added) {
     const addedBottle = evt.added.element as Bottle;
+
+    // Limpiar mensaje del frasco inmediatamente al moverlo
+    addedBottle.message = undefined;
 
     // Only allow one bottle in temp variable
     if (tempVariableArray.value.length > 1) {
@@ -518,7 +716,7 @@ const handleTempVariableChange = (evt: { added?: { element: Bottle } }) => {
     addedBottle.state = 'temp-variable';
     currentMinBottle.value = addedBottle;
     stats.movimientos++;
-    showSuccess(`📝 Elemento guardado en min_actual. Usa la balanza para comparar y encontrar el mínimo real`);
+    showSuccess(`📝 Nuevo mínimo guardado en Variable Temporal.`);
   }
 };
 
@@ -539,204 +737,78 @@ const returnBottleFromTemp = (bottleId: number) => {
   }
 };
 
-// Function to handle changes in sorted shelf with validation
-const handleSortedShelfChange = (evt: { added?: { element: Bottle; newIndex: number } }) => {
-  if (evt.added) {
-    const addedBottle = evt.added.element as Bottle;
-    const addedIndex = evt.added.newIndex;
+// Function to weigh bottles automatically (triggered when both pans have bottles)
+const weighBottlesAutomatic = () => {
+  const leftBottle = leftPanBottle.value[0];
+  const rightBottle = rightPanBottle.value[0];
 
-    // Prevenir colocación manual - el sistema debe hacerlo automáticamente
+  if (!leftBottle || !rightBottle) return;
+
+  // VALIDACIÓN: Verificar que el frasco derecho no haya sido comparado ya
+  if (visitedBottlesInIteration.value.has(rightBottle.id)) {
+    rightBottle.message = '❌ Este frasco ya fue comparado. Elige otro.';
+    showError('Este frasco ya fue comparado en esta iteración. Elige otro frasco.');
     setTimeout(() => {
-      sortedShelfBottles.value.splice(addedIndex, 1);
-      const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
-      if (emptyIndex !== -1) {
-        workbenchBottles.value[emptyIndex] = addedBottle;
-      }
-      addedBottle.state = 'normal';
-      showError(
-        `⚠️ No puedes mover elementos directamente a ORDENADOS[]. El sistema lo hace automáticamente al terminar cada iteración`
-      );
-    }, 100);
+      if (rightBottle.message) rightBottle.message = undefined;
+    }, 3000);
+    return;
   }
-};
 
-// Function to weigh bottles
-const weighBottles = () => {
-  if (!canWeigh.value) return;
+  // Agregar el frasco derecho al conjunto de visitados
+  visitedBottlesInIteration.value.add(rightBottle.id);
 
   stats.pesajes++;
   stats.comparaciones++;
   comparisonsInCurrentIteration.value++;
   scaleWeighed.value = true; // Set scale to weighed state
 
-  const leftBottle = leftPanBottle.value[0];
-  const rightBottle = rightPanBottle.value[0];
-
-  if (!leftBottle || !rightBottle) return;
-
   // Update bottle states to show they're being compared
   leftBottle.state = 'comparing';
   rightBottle.state = 'comparing';
 
-  let lighterBottle: Bottle;
-  let heavierBottle: Bottle;
-
+  // PASO 1: Calcular resultado y actualizar scaleResult para activar animación física
   if (leftBottle.weight > rightBottle.weight) {
     scaleResult.value = { left: 'heavier', right: 'lighter' };
-    lighterBottle = rightBottle;
-    heavierBottle = leftBottle;
   } else if (rightBottle.weight > leftBottle.weight) {
     scaleResult.value = { left: 'lighter', right: 'heavier' };
-    lighterBottle = leftBottle;
-    heavierBottle = rightBottle;
   } else {
     scaleResult.value = { left: 'equal', right: 'equal' };
-    // Si son iguales, no hacemos auto-retorno
-    showSuccess('⚖️ Ambas botellas tienen el mismo peso');
-    return;
   }
 
-  // Auto-retornar el elemento más pesado y guardar el más ligero como mínimo candidato
+  // PASO 2: Esperar a que la animación física termine (700ms) antes de mostrar mensajes
   setTimeout(() => {
-    // Retornar el más pesado a la primera posición vacía en la mesa de trabajo
-    if (heavierBottle === leftBottle) {
-      leftPanBottle.value = [];
-    } else {
-      rightPanBottle.value = [];
-    }
-    heavierBottle.state = 'normal';
+    // Verificar si se completaron todas las comparaciones de esta iteración
+    const expectedComparisons = expectedComparisonsForIteration(currentIteration.value + 1);
+    const isLastComparison = comparisonsInCurrentIteration.value >= expectedComparisons;
 
-    // Buscar primera posición vacía para retornar el elemento
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
-    if (emptyIndex !== -1) {
-      workbenchBottles.value[emptyIndex] = heavierBottle;
-    }
-
-    // Actualizar el mínimo encontrado
-    if (!currentMinBottle.value || lighterBottle.weight < currentMinBottle.value.weight) {
-      // Si hay un mínimo previo en temp var, devolverlo a la mesa
-      if (currentMinBottle.value && tempVariableArray.value.length > 0) {
-        const oldMin = tempVariableArray.value[0];
-        if (oldMin) {
-          oldMin.state = 'normal';
-          tempVariableArray.value = [];
-          const emptyIdx = workbenchBottles.value.findIndex(b => b === null);
-          if (emptyIdx !== -1) {
-            workbenchBottles.value[emptyIdx] = oldMin;
-          }
-        }
-      }
-
-      // Mover el nuevo mínimo a la variable temporal
-      if (lighterBottle === leftBottle) {
-        leftPanBottle.value = [];
+    if (leftBottle.weight > rightBottle.weight) {
+      // CASO A: El frasco derecho (nuevo) es MENOR - Nuevo mínimo
+      if (isLastComparison) {
+        // Última comparación: el frasco izquierdo es el mínimo final
+        leftBottle.message = `✅ Mínimo encontrado en Iteración ${currentIteration.value + 1}. Llévame a ORDENADOS[]`;
+        rightBottle.message = 'Soy más pesado. Devuélveme a mi lugar.';
       } else {
-        rightPanBottle.value = [];
+        rightBottle.message = '¡Soy más ligero! Arrástrame a la Zona Temporal.';
+        leftBottle.message = 'Soy más pesado. Devuélveme a mi lugar.';
       }
-      lighterBottle.state = 'temp-variable';
-      tempVariableArray.value = [lighterBottle];
-      currentMinBottle.value = lighterBottle;
-      showSuccess(`✓ Nuevo mínimo encontrado (peso: ${lighterBottle.weight}) → Guardado en min_actual`);
-    } else {
-      // El mínimo actual sigue siendo menor, retornar este también
-      if (lighterBottle === leftBottle) {
-        leftPanBottle.value = [];
+    } else if (rightBottle.weight > leftBottle.weight) {
+      // CASO B: El frasco derecho (nuevo) es MAYOR - Descartar
+      if (isLastComparison) {
+        // Última comparación: el frasco izquierdo es el mínimo final
+        leftBottle.message = `✅ Mínimo encontrado en Iteración ${currentIteration.value + 1}. Llévame a ORDENADOS[]`;
+        rightBottle.message = 'Soy más pesado. Devuélveme a mi lugar.';
       } else {
-        rightPanBottle.value = [];
+        rightBottle.message = 'Soy más pesado. Devuélveme a mi lugar.';
+        leftBottle.message = 'Sigo siendo el más ligero.';
       }
-      lighterBottle.state = 'normal';
-      const emptyIdx = workbenchBottles.value.findIndex(b => b === null);
-      if (emptyIdx !== -1) {
-        workbenchBottles.value[emptyIdx] = lighterBottle;
-      }
-      showSuccess(`ℹ️ El mínimo actual (peso: ${currentMinBottle.value.weight}) sigue siendo menor`);
+    } else {
+      // Empate
+      rightBottle.message = '⚖️ ¡Empate! Elige cualquiera.';
+      leftBottle.message = '⚖️ ¡Empate! Elige cualquiera.';
     }
 
     scaleWeighed.value = false;
-    scaleResult.value = { left: null, right: null };
-
-    // Verificar si terminamos las comparaciones de esta iteración
-    const expectedComparisons = expectedComparisonsForIteration(currentIteration.value + 1);
-
-    if (comparisonsInCurrentIteration.value >= expectedComparisons && tempVariableArray.value.length > 0) {
-      // Trasladar automáticamente el mínimo a ORDENADOS[]
-      setTimeout(() => {
-        const minBottle = tempVariableArray.value[0];
-        if (minBottle) {
-          minBottle.state = 'consolidated';
-          tempVariableArray.value = [];
-
-          // Encontrar la primera posición vacía en el array ordenado
-          const firstEmptyIndex = sortedShelfBottles.value.findIndex(b => b === null);
-          if (firstEmptyIndex !== -1) {
-            sortedShelfBottles.value[firstEmptyIndex] = minBottle;
-          }
-
-          currentMinBottle.value = null;
-
-          // Registrar la iteración
-          currentIteration.value++;
-          iterationHistory.value.push({
-            number: currentIteration.value,
-            comparisons: comparisonsInCurrentIteration.value,
-            description: `Iteración ${currentIteration.value}`,
-          });
-          comparisonsInCurrentIteration.value = 0;
-
-          // Verificar si ya completamos todas las iteraciones
-          if (currentIteration.value >= totalIterations.value) {
-            // Mover el último elemento restante a ordenados automáticamente
-            const remaining = workbenchBottles.value.filter(b => b !== null);
-            if (remaining.length === 1) {
-              const lastBottle = remaining[0];
-              if (lastBottle) {
-                lastBottle.state = 'consolidated';
-                const lastIndex = workbenchBottles.value.findIndex(b => b?.id === lastBottle.id);
-                if (lastIndex !== -1) {
-                  workbenchBottles.value[lastIndex] = null;
-                }
-
-                const emptyIndex = sortedShelfBottles.value.findIndex(b => b === null);
-                if (emptyIndex !== -1) {
-                  sortedShelfBottles.value[emptyIndex] = lastBottle;
-                }
-
-                showSuccess(`🎉 ¡Ordenamiento completado! Todos los elementos están en ORDENADOS[] de menor a mayor`);
-              }
-            }
-          } else {
-            const remaining = workbenchBottles.value.filter(b => b !== null);
-            showSuccess(`✅ Mínimo (peso: ${minBottle.weight}) → ORDENADOS[${firstEmptyIndex}]. Inicia Iteración ${currentIteration.value + 1} con ${remaining.length} elementos`);
-          }
-        }
-      }, 500);
-    }
-  }, 1500); // Delay para que el usuario vea la comparación visual
-};
-
-// Function to reset the scale
-const resetScale = () => {
-  const leftBottle = leftPanBottle.value[0];
-  if (leftBottle) {
-    leftBottle.state = 'normal';
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
-    if (emptyIndex !== -1) {
-      workbenchBottles.value[emptyIndex] = leftBottle;
-    }
-  }
-  const rightBottle = rightPanBottle.value[0];
-  if (rightBottle) {
-    rightBottle.state = 'normal';
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
-    if (emptyIndex !== -1) {
-      workbenchBottles.value[emptyIndex] = rightBottle;
-    }
-  }
-
-  leftPanBottle.value = [];
-  rightPanBottle.value = [];
-  scaleWeighed.value = false;
-  scaleResult.value = { left: null, right: null };
+  }, 700); // Esperar exactamente el tiempo de la animación física (700ms)
 };
 
 // Function to validate and add bottle to sorted shelf
@@ -822,6 +894,7 @@ const resetAlgorithm = () => {
   currentIteration.value = 0;
   comparisonsInCurrentIteration.value = 0;
   iterationHistory.value = [];
+  visitedBottlesInIteration.value.clear(); // Limpiar conjunto de visitados
 
   // Reset stats
   stats.pesajes = 0;
@@ -832,7 +905,7 @@ const resetAlgorithm = () => {
   errorMessage.value = '';
   successMessage.value = '';
 
-  showSuccess('🔄 Algoritmo reiniciado. ¡Comienza una nueva sesión de ordenamiento!');
+  showSuccess('🔄 ¡Todo listo! Arrastra un frasco a cada platillo de la balanza y presiona PESAR.');
 };
 </script>
 
