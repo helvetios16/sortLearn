@@ -25,11 +25,45 @@
         <div class="w-5 h-2 bg-gray-300/60"></div>
       </div>
 
-      <!-- Liquid -->
-      <div
-        class="liquid w-full rounded-b-lg transition-all duration-300"
-        :style="{ height: liquidHeight, backgroundColor: liquidColor }"
-      ></div>
+      <!-- Figuras geométricas en lugar de líquido -->
+      <div class="w-full rounded-b-lg overflow-hidden relative" :style="{ height: liquidHeight }">
+        <div class="absolute inset-0 flex flex-wrap items-end justify-center gap-0.5 p-1">
+          <template v-for="(shape, index) in shapes" :key="index">
+            <!-- Círculo -->
+            <div
+              v-if="shape.type === 'circle'"
+              class="rounded-full transition-all duration-300"
+              :style="{
+                width: shape.size + 'px',
+                height: shape.size + 'px',
+                backgroundColor: shape.color
+              }"
+            ></div>
+            <!-- Cuadrado -->
+            <div
+              v-else-if="shape.type === 'square'"
+              class="transition-all duration-300"
+              :style="{
+                width: shape.size + 'px',
+                height: shape.size + 'px',
+                backgroundColor: shape.color
+              }"
+            ></div>
+            <!-- Triángulo -->
+            <div
+              v-else-if="shape.type === 'triangle'"
+              class="transition-all duration-300"
+              :style="{
+                width: '0',
+                height: '0',
+                borderLeft: (shape.size / 2) + 'px solid transparent',
+                borderRight: (shape.size / 2) + 'px solid transparent',
+                borderBottom: shape.size + 'px solid ' + shape.color
+              }"
+            ></div>
+          </template>
+        </div>
+      </div>
 
       <!-- Reflection -->
       <div class="absolute top-2 left-1 w-1 h-1/2 bg-white/30 rounded-full"></div>
@@ -77,8 +111,42 @@ const liquidHeight = computed(() => {
     return `${percentage}%`;
   }
 
-  // Otherwise, show uniform height (50%) to hide the actual weight
-  return '50%';
+  // Otherwise, show full height (85%) - all bottles appear full
+  return '85%';
+});
+
+// Generate geometric shapes based on weight and id (for variety)
+const shapes = computed(() => {
+  const shapeTypes = ['circle', 'square', 'triangle'];
+  const colors = [
+    'rgb(239 68 68)',    // red
+    'rgb(59 130 246)',   // blue
+    'rgb(34 197 94)',    // green
+    'rgb(168 85 247)',   // purple
+    'rgb(236 72 153)',   // pink
+    'rgb(234 179 8)',    // yellow
+    'rgb(20 184 166)',   // teal
+  ];
+
+  // Number of shapes based on weight (more weight = more shapes)
+  const numShapes = Math.floor(props.weight / 10) + 3; // 3-13 shapes
+
+  const generatedShapes = [];
+  for (let i = 0; i < numShapes; i++) {
+    // Use weight and id for pseudo-random but consistent generation
+    const seed = props.id * 1000 + props.weight + i;
+    const typeIndex = (seed * 7) % shapeTypes.length;
+    const colorIndex = (seed * 13) % colors.length;
+    const size = 4 + ((seed * 3) % 4); // Size between 4-7px
+
+    generatedShapes.push({
+      type: shapeTypes[typeIndex],
+      color: colors[colorIndex],
+      size: size
+    });
+  }
+
+  return generatedShapes;
 });
 </script>
 
