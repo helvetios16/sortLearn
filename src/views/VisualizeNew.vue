@@ -696,7 +696,7 @@
     class="fixed inset-0 bg-black/80 z-[90] flex justify-end items-start backdrop-blur-sm p-4 pr-6 pt-24"
   >
     <div
-      class="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500"
+      class="bg-white rounded-xl shadow-2xl p-4 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500 max-h-[90vh] overflow-y-auto"
     >
       <div class="text-center mb-6">
         <div class="text-4xl mb-2">
@@ -867,12 +867,17 @@
         <!-- OPCIONES FASE 1 -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('n')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) n comparaciones</span>
           </button>
@@ -880,7 +885,12 @@
           <button
             @click="handleMidQuizAnswer('n-1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n-1'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) n - 1 comparaciones</span>
           </button>
@@ -888,7 +898,12 @@
           <button
             @click="handleMidQuizAnswer('n/2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n/2'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) n / 2 comparaciones</span>
           </button>
@@ -897,12 +912,17 @@
         <!-- OPCIONES FASE 2 -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('zero')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'zero'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Cero (Detecta que está ordenada)</span>
           </button>
@@ -910,7 +930,12 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'fewer'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Menos comparaciones</span>
           </button>
@@ -918,7 +943,12 @@
           <button
             @click="handleMidQuizAnswer('same')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'same'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Las mismas comparaciones</span>
           </button>
@@ -927,12 +957,17 @@
         <!-- OPCIONES FASE 3 -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('more')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'more'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Aumentan drásticamente</span>
           </button>
@@ -940,7 +975,12 @@
           <button
             @click="handleMidQuizAnswer('constant')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'constant'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Se mantienen igual</span>
           </button>
@@ -948,38 +988,57 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'fewer'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Se reducen (por ser el peor caso)</span>
           </button>
         </div>
       </template>
 
-      <!-- --- STRATEGY OPTIONS --- -->
       <template v-else-if="quizTopic === 'strategy'">
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('min_to_start')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'min_to_start'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Encuentro el MÍNIMO y lo pongo al INICIO.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('max_to_end')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'max_to_end'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Encuentro el MÁXIMO y lo pongo al FINAL.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('neighbors')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'neighbors'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Intercambio solo vecinos adyacentes.</span>
           </button>
@@ -988,26 +1047,41 @@
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('divide')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'divide'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Divide y Vencerás (Divide & Conquer)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('greedy')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'greedy'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Voraz (Greedy) - Tomar lo mejor localmente</span>
           </button>
           <button
             @click="handleMidQuizAnswer('dynamic')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'dynamic'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Programación Dinámica</span>
           </button>
@@ -1016,26 +1090,41 @@
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('only_left')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'only_left'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) La parte izquierda siempre está ordenada.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('random')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'random'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) La parte derecha es aleatoria y menor.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('invariant_ok')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'invariant_ok'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Izquierda ordenada + Derecha (Mayores) Desordenada.</span>
           </button>
@@ -1047,26 +1136,41 @@
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('sum_gauss')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_gauss'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Suma de Gauss: (n-1) * n / 2</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_random')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_random'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Es el factorial de n (n!)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_linear')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_linear'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Es simplemente n * 2</span>
           </button>
@@ -1075,26 +1179,41 @@
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('linear')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'linear'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Lineal O(n)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('log')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'log'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Logarítmica O(log n)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('quadratic')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'quadratic'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Cuadrática O(n²)</span>
           </button>
@@ -1103,26 +1222,41 @@
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('scale_3')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_3'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Aumentan 3 veces (Lineal)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('scale_6')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_6'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Aumentan 6 veces (Doble)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('scale_9')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_9'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Aumentan 9 veces (Cuadrado de 3)</span>
           </button>
@@ -1134,12 +1268,17 @@
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('1var')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === '1var'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>A) 1 variable (mínimo)</span>
           </button>
@@ -1147,7 +1286,12 @@
           <button
             @click="handleMidQuizAnswer('nvars')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'nvars'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>B) 1 variable por cada elemento (N)</span>
           </button>
@@ -1155,7 +1299,12 @@
           <button
             @click="handleMidQuizAnswer('2vars')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === '2vars'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>C) 2 variables por vuelta</span>
           </button>
@@ -1164,12 +1313,17 @@
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('on')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'on'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>A) Aumenta mucho (Lineal O(n))</span>
           </button>
@@ -1177,7 +1331,12 @@
           <button
             @click="handleMidQuizAnswer('on2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'on2'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>B) Aumenta muchísimo (Cuadrático O(n²))</span>
           </button>
@@ -1185,7 +1344,12 @@
           <button
             @click="handleMidQuizAnswer('o1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'o1'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>C) Se mantiene en 1 variable (Constante O(1))</span>
           </button>
@@ -1194,12 +1358,17 @@
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('yes_mem')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'yes_mem'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>A) SÍ, porque ahorra mucha memoria RAM.</span>
           </button>
@@ -1207,7 +1376,12 @@
           <button
             @click="handleMidQuizAnswer('no')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'no'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>B) NO, tardaría demasiado por las comparaciones.</span>
           </button>
@@ -1215,7 +1389,12 @@
           <button
             @click="handleMidQuizAnswer('yes_easy')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'yes_easy'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>C) SÍ, es simple y rápido de implementar.</span>
           </button>
@@ -1225,14 +1404,26 @@
       <!-- Feedback -->
       <div
         v-if="midQuizFeedback"
-        class="mt-4 p-3 rounded-lg text-center font-bold animate-pulse"
+        class="mt-4 p-4 rounded-lg text-center font-bold border-2 text-sm flex flex-col items-center gap-3 bg-white"
         :class="
           midQuizFeedback.type === 'success'
-            ? 'bg-green-100 text-green-700 border border-green-300'
-            : 'bg-red-100 text-red-700 border border-red-300'
+            ? 'border-green-500 text-green-800 shadow-green-100 shadow-lg'
+            : 'border-red-500 text-red-800 shadow-red-100 shadow-lg'
         "
       >
-        <span v-html="midQuizFeedback.text"></span>
+        <p
+          v-html="midQuizFeedback.text"
+          class="text-base leading-snug"
+        ></p>
+
+        <!-- MANUAL CONTINUE BUTTON -->
+        <button
+          v-if="midQuizFeedback.type === 'success'"
+          @click="advanceMidQuiz"
+          class="px-8 py-3 bg-indigo-600 text-white font-black rounded-full shadow-xl hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-widest flex items-center gap-2 animate-bounce mt-2"
+        >
+          <span>Continuar</span> <span>➜</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1291,14 +1482,30 @@ const midQuizSolved = ref(false);
 const currentQuizPhase = ref(1); // 1, 2, 3 phases
 const quizTopic = ref<'complexity' | 'space' | 'strategy' | 'math'>('complexity'); // New state with math
 const midQuizFeedback = ref<{ type: 'success' | 'error'; text: string } | null>(null);
+const selectedOption = ref<string | null>(null);
 
 const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
 const showResetConfirmation = ref(false); // Modal state for reset warnings
 
+const advanceMidQuiz = () => {
+  midQuizFeedback.value = null;
+  midQuizSolved.value = false;
+  selectedOption.value = null;
+
+  // Logic to advance phase or close based on topic/phase
+  // Currently all quizzes have 3 phases.
+  // Exception: Complexity Quiz can have different phase logic if needed, but looks like 3.
+  if (currentQuizPhase.value < 3) {
+    currentQuizPhase.value++;
+  } else {
+    showMidQuiz.value = false;
+    midQuizSolved.value = false; // Reset for next time
+    continueNextIteration();
+  }
+};
+
 const handleMidQuizAnswer = (option: string) => {
-  // ==========================================
-  // TOPIC: SPACE COMPLEXITY (Iteration 2)
-  // ==========================================
+  selectedOption.value = option;
   // ==========================================
   // TOPIC: SPACE COMPLEXITY (Iteration 2)
   // ==========================================
@@ -1311,11 +1518,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra (min_index) para rastrear al menor. No creamos nuevos arrays.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2; // Go to Space Phase 2
-        }, 3000);
       } else if (option === 'nvars') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1336,11 +1538,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡EXACTO! 🎓 <br> Si la cantidad de elementos (N) aumenta a 1 millón, ¡sigues necesitando solo <b>1 variable extra</b>!<br> Por eso la complejidad espacial es <b>Constante O(1)</b>.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3; // Go to Space Phase 3 (Verdict)
-        }, 5000);
       } else if (option === 'on') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1361,11 +1558,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡BRILLANTE! 🌟 <br> Aunque usa <u>poca memoria</u> (bueno), hace <b>DEMASIADAS comparaciones</b> (malo).<br> Para 1 millón de datos, haría ~500 mil millones de comparaciones. ¡Tardaría años! 🐢',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 7000); // 7s to read final verdict
       } else if (option === 'yes_mem') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1393,11 +1585,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡ASI ES! 👋 <br> Básicamente buscamos al "más pequeño" del grupo desordenado y lo "rescatamos" llevándolo a la zona segura (ordenada) al inicio.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2;
-        }, 4000);
       } else if (option === 'max_to_end') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1418,11 +1605,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡CORRECTO! 🦁 <b>VORAZ (Greedy)</b>.<br> En cada paso, toma la mejor decisión local (el mínimo actual) sin pensar en el futuro, y eso construye la solución global.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3;
-        }, 5000);
       } else if (option === 'divide') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1443,11 +1625,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡EXACTO! 🛡️ <b>La Invariante</b>.<br> La parte izquierda siempre crece ordenada. La derecha disminuye desordenada, y todos en la derecha son MAYORES que los de la izquierda.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 6000);
       } else if (option === 'only_left') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1470,22 +1647,20 @@ const handleMidQuizAnswer = (option: string) => {
     // --- PHASE 1: Summation ---
     if (currentQuizPhase.value === 1) {
       if (option === 'sum_gauss') {
+        selectedOption.value = 'sum_gauss';
         midQuizFeedback.value = {
           type: 'success',
           text: '¡EXCELENTE! 🔢 <br> Es la suma de Gauss de 1 a (n-1).<br> Matemáticamente: <b>n(n-1) / 2</b>.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2;
-        }, 4000);
       } else if (option === 'sum_random') {
+        selectedOption.value = 'sum_random';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> El factorial crece muchísimo más rápido.',
         };
       } else if (option === 'sum_linear') {
+        selectedOption.value = 'sum_linear';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> 5 * 2 = 10 coincide por casualidad aquí, pero no es la fórmula general.',
@@ -1495,22 +1670,20 @@ const handleMidQuizAnswer = (option: string) => {
     // --- PHASE 2: Big O ---
     else if (currentQuizPhase.value === 2) {
       if (option === 'quadratic') {
+        selectedOption.value = 'quadratic';
         midQuizFeedback.value = {
           type: 'success',
           text: '¡CORRECTO! 📈 <b>O(n²)</b>.<br> En Big O, el término al cuadrado (n²) domina al lineal (n), así que decimos que el algoritmo es "Cuadrático".',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3;
-        }, 5000);
       } else if (option === 'linear') {
+        selectedOption.value = 'linear';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Si fuera lineal, al doblar los datos, el tiempo se doblaría. Aquí crece mucho más.',
         };
       } else if (option === 'log') {
+        selectedOption.value = 'log';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Logarítmico sería muy rápido (como Binary Search).',
@@ -1520,22 +1693,20 @@ const handleMidQuizAnswer = (option: string) => {
     // --- PHASE 3: Scaling ---
     else if (currentQuizPhase.value === 3) {
       if (option === 'scale_9') {
+        selectedOption.value = 'scale_9';
         midQuizFeedback.value = {
           type: 'success',
           text: '¡IMPRESIONANTE! 🚀 <br> Si triplicas la entrada (3x), el esfuerzo se multiplica por 3² = <b>9 veces</b>.<br> ¡Por eso Selection Sort es peligroso para listas grandes!',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 7000);
       } else if (option === 'scale_3') {
+        selectedOption.value = 'scale_3';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Eso sería lineal O(n). Aquí pagamos el precio al cuadrado.',
         };
       } else if (option === 'scale_6') {
+        selectedOption.value = 'scale_6';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Recuerda elevar al cuadrado el factor de crecimiento (3²).',
@@ -1548,6 +1719,9 @@ const handleMidQuizAnswer = (option: string) => {
   // ==========================================
   // TOPIC: TIME COMPLEXITY (Iteration 1)
   // ==========================================
+  // ==========================================
+  // TOPIC: TIME COMPLEXITY (Iteration 1)
+  // ==========================================
   if (quizTopic.value === 'complexity') {
     // --- PHASE 1: Generaliza Fórmula ---
     if (currentQuizPhase.value === 1) {
@@ -1557,11 +1731,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2; // Go to Phase 2
-        }, 2500);
       } else if (option === 'n') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1582,11 +1751,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡EXACTO! 🧠 <br> <b>Selection Sort es "ciego" al orden.</b> <br> Siempre realiza todas las comparaciones para asegurarse de encontrar el mínimo, incluso si ya está ordenado.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3; // Go to Phase 3
-        }, 3500); // 3.5s to read explanation
       } else if (option === 'zero') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1607,11 +1771,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡MAESTRO DEL ORDENAMIENTO! 🎓 <br> Has entendido la clave: <b>Selection Sort siempre hace n-1 comparaciones por vuelta</b>.<br> No importa si está ordenada, invertida o aleatoria. ¡Su complejidad de comparaciones es constante!',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 6000); // 6s to read final completion message
       } else if (option === 'more') {
         midQuizFeedback.value = {
           type: 'error',
