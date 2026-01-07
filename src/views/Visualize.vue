@@ -9,25 +9,35 @@
 
       <div class="flex flex-col gap-6">
         <!-- Error/Success Messages -->
-        <div v-if="errorMessage" class="bg-red-100 border-2 border-red-400 text-red-800 px-4 py-3 rounded-lg text-center font-semibold animate-shake">
+        <div
+          v-if="errorMessage"
+          class="bg-red-100 border-2 border-red-400 text-red-800 px-4 py-3 rounded-lg text-center font-semibold animate-shake"
+        >
           {{ errorMessage }}
         </div>
-        <div v-if="successMessage" class="bg-green-100 border-2 border-green-400 text-green-800 px-4 py-3 rounded-lg text-center font-semibold">
+        <div
+          v-if="successMessage"
+          class="bg-green-100 border-2 border-green-400 text-green-800 px-4 py-3 rounded-lg text-center font-semibold"
+        >
           {{ successMessage }}
         </div>
 
         <!-- Fila Superior: Zona de Botellas Desordenadas (Array Visual) -->
         <div class="bg-amber-100 border-2 border-amber-200 rounded-xl p-3 shadow-inner">
           <div class="flex items-center justify-center gap-3">
-            <h2 class="text-xl font-bold text-blue-600 whitespace-nowrap">
-              DESORDENADOS[]
-            </h2>
+            <h2 class="text-xl font-bold text-blue-600 whitespace-nowrap">DESORDENADOS[]</h2>
             <!-- Array estático con 5 posiciones siempre visibles -->
             <div class="inline-flex border-4 border-blue-400 rounded-lg bg-white/50 p-1.5">
-                <div v-for="index in 5" :key="index" class="array-slot">
+              <div
+                v-for="index in 5"
+                :key="index"
+                class="array-slot"
+              >
                 <!-- Cada slot tiene su propio draggable -->
                 <draggable
-                  :model-value="getBottleAtPosition(index - 1) ? [getBottleAtPosition(index - 1)] : []"
+                  :model-value="
+                    getBottleAtPosition(index - 1) ? [getBottleAtPosition(index - 1)] : []
+                  "
                   @update:model-value="(bottles) => updateBottleAtPosition(index - 1, bottles)"
                   :group="mainGroup"
                   item-key="id"
@@ -43,8 +53,13 @@
                     />
                   </template>
                   <template #header>
-                    <div v-if="!getBottleAtPosition(index - 1)" class="empty-slot">
-                      <div class="w-12 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50/50">
+                    <div
+                      v-if="!getBottleAtPosition(index - 1)"
+                      class="empty-slot"
+                    >
+                      <div
+                        class="w-12 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gray-50/50"
+                      >
                         <span class="text-gray-400 text-xs">vacío</span>
                       </div>
                     </div>
@@ -94,9 +109,14 @@
                     </div>
                   </div>
                 </template>
-                <template #header v-if="tempVariableArray.length === 0">
+                <template
+                  #header
+                  v-if="tempVariableArray.length === 0"
+                >
                   <div class="text-center text-yellow-600/60 italic">
-                    <div class="w-16 h-24 border-2 border-dashed border-yellow-300 rounded-lg flex items-center justify-center mb-2 mx-auto">
+                    <div
+                      class="w-16 h-24 border-2 border-dashed border-yellow-300 rounded-lg flex items-center justify-center mb-2 mx-auto"
+                    >
                       <span class="text-2xl">?</span>
                     </div>
                     <p class="text-sm">Sin valor asignado</p>
@@ -116,34 +136,52 @@
             <!-- Estructura de la balanza física -->
             <div class="relative w-full h-48 flex flex-col items-center justify-end">
               <!-- Base de la balanza -->
-              <div class="absolute bottom-0 w-32 h-3 bg-gradient-to-b from-gray-400 to-gray-500 rounded-sm shadow-md"></div>
+              <div
+                class="absolute bottom-0 w-32 h-3 bg-gradient-to-b from-gray-400 to-gray-500 rounded-sm shadow-md"
+              ></div>
 
               <!-- Soporte vertical central (sin la línea) -->
-              <div class="absolute bottom-3 w-3 h-28 bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 shadow-lg rounded-t-sm"></div>
+              <div
+                class="absolute bottom-3 w-3 h-28 bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 shadow-lg rounded-t-sm"
+              ></div>
 
               <!-- Punto de apoyo (fulcro) -->
-              <div class="absolute bottom-28 w-6 h-6 bg-gray-600 rounded-full border-2 border-gray-700 shadow-lg z-20"></div>
+              <div
+                class="absolute bottom-28 w-6 h-6 bg-gray-600 rounded-full border-2 border-gray-700 shadow-lg z-20"
+              ></div>
 
               <!-- Barra horizontal (se inclina según el peso) -->
               <div
                 class="absolute bottom-28 w-64 h-2 bg-gradient-to-r from-gray-500 via-gray-400 to-gray-500 rounded-full shadow-lg transition-transform duration-700 origin-center"
                 :style="{
-                  transform: scaleResult.left === 'heavier' ? 'rotate(-8deg)' :
-                             scaleResult.right === 'heavier' ? 'rotate(8deg)' :
-                             'rotate(0deg)'
+                  transform:
+                    scaleResult.left === 'heavier'
+                      ? 'rotate(-8deg)'
+                      : scaleResult.right === 'heavier'
+                        ? 'rotate(8deg)'
+                        : 'rotate(0deg)',
                 }"
               ></div>
 
               <!-- Platillos (sin cadenas visibles) -->
               <div class="absolute bottom-28 w-full flex justify-between px-4">
                 <!-- Platillo izquierdo -->
-                <div class="flex flex-col items-center transition-all duration-700" :style="{
-                  transform: scaleResult.left === 'heavier' ? 'translateY(20px)' :
-                             scaleResult.left === 'lighter' ? 'translateY(-20px)' :
-                             'translateY(0px)'
-                }">
+                <div
+                  class="flex flex-col items-center transition-all duration-700"
+                  :style="{
+                    transform:
+                      scaleResult.left === 'heavier'
+                        ? 'translateY(20px)'
+                        : scaleResult.left === 'lighter'
+                          ? 'translateY(-20px)'
+                          : 'translateY(0px)',
+                  }"
+                >
                   <!-- Plato visual (ovalado/triangular) -->
-                  <div class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl" style="border-radius: 50%; transform: perspective(100px) rotateX(60deg);"></div>
+                  <div
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl"
+                    style="border-radius: 50%; transform: perspective(100px) rotateX(60deg)"
+                  ></div>
 
                   <!-- Área draggable encima del plato -->
                   <draggable
@@ -166,13 +204,22 @@
                 </div>
 
                 <!-- Platillo derecho -->
-                <div class="flex flex-col items-center transition-all duration-700" :style="{
-                  transform: scaleResult.right === 'heavier' ? 'translateY(20px)' :
-                             scaleResult.right === 'lighter' ? 'translateY(-20px)' :
-                             'translateY(0px)'
-                }">
+                <div
+                  class="flex flex-col items-center transition-all duration-700"
+                  :style="{
+                    transform:
+                      scaleResult.right === 'heavier'
+                        ? 'translateY(20px)'
+                        : scaleResult.right === 'lighter'
+                          ? 'translateY(-20px)'
+                          : 'translateY(0px)',
+                  }"
+                >
                   <!-- Plato visual (ovalado/triangular) -->
-                  <div class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl" style="border-radius: 50%; transform: perspective(100px) rotateX(60deg);"></div>
+                  <div
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 border-2 border-black shadow-xl"
+                    style="border-radius: 50%; transform: perspective(100px) rotateX(60deg)"
+                  ></div>
 
                   <!-- Área draggable encima del plato -->
                   <draggable
@@ -223,13 +270,20 @@
 
             <div class="space-y-1 max-h-48 overflow-y-auto mb-4">
               <!-- Mostrar todas las iteraciones (completadas, actual, y pendientes) -->
-              <div v-for="iterNum in totalIterations" :key="iterNum" class="flex items-center gap-2 text-xs font-mono">
+              <div
+                v-for="iterNum in totalIterations"
+                :key="iterNum"
+                class="flex items-center gap-2 text-xs font-mono"
+              >
                 <span
                   class="font-bold min-w-[85px]"
                   :class="{
                     'text-slate-700': iterNum <= currentIteration,
-                    'text-yellow-700': iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0,
-                    'text-slate-400': iterNum > currentIteration + 1 || (iterNum === currentIteration + 1 && comparisonsInCurrentIteration === 0)
+                    'text-yellow-700':
+                      iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0,
+                    'text-slate-400':
+                      iterNum > currentIteration + 1 ||
+                      (iterNum === currentIteration + 1 && comparisonsInCurrentIteration === 0),
                   }"
                 >
                   ITERACION {{ iterNum }}:
@@ -237,29 +291,57 @@
                 <div class="flex gap-0">
                   <!-- Iteración completada -->
                   <template v-if="iterNum <= currentIteration">
-                    <span v-for="i in getIterationComparisons(iterNum)" :key="i" class="text-slate-600">█</span>
+                    <span
+                      v-for="i in getIterationComparisons(iterNum)"
+                      :key="i"
+                      class="text-slate-600"
+                      >█</span
+                    >
                   </template>
                   <!-- Iteración actual en progreso -->
                   <template v-else-if="iterNum === currentIteration + 1">
-                    <span v-for="i in comparisonsInCurrentIteration" :key="i" class="text-yellow-600">█</span>
-                    <span v-for="i in (expectedComparisonsForIteration(iterNum) - comparisonsInCurrentIteration)" :key="'empty-' + i" class="text-slate-300">█</span>
+                    <span
+                      v-for="i in comparisonsInCurrentIteration"
+                      :key="i"
+                      class="text-yellow-600"
+                      >█</span
+                    >
+                    <span
+                      v-for="i in expectedComparisonsForIteration(iterNum) -
+                      comparisonsInCurrentIteration"
+                      :key="'empty-' + i"
+                      class="text-slate-300"
+                      >█</span
+                    >
                   </template>
                   <!-- Iteraciones pendientes -->
                   <template v-else>
-                    <span v-for="i in expectedComparisonsForIteration(iterNum)" :key="i" class="text-slate-300">█</span>
+                    <span
+                      v-for="i in expectedComparisonsForIteration(iterNum)"
+                      :key="i"
+                      class="text-slate-300"
+                      >█</span
+                    >
                   </template>
                 </div>
                 <span
                   class="ml-1 text-xs"
                   :class="{
                     'text-slate-500': iterNum <= currentIteration,
-                    'text-yellow-600': iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0,
-                    'text-slate-400': iterNum > currentIteration + 1 || (iterNum === currentIteration + 1 && comparisonsInCurrentIteration === 0)
+                    'text-yellow-600':
+                      iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0,
+                    'text-slate-400':
+                      iterNum > currentIteration + 1 ||
+                      (iterNum === currentIteration + 1 && comparisonsInCurrentIteration === 0),
                   }"
                 >
-                  {{ iterNum <= currentIteration ? `(${getIterationComparisons(iterNum)} comparaciones) ✓` :
-                     iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0 ? `(${comparisonsInCurrentIteration}/${expectedComparisonsForIteration(iterNum)})` :
-                     `(${expectedComparisonsForIteration(iterNum)} comparaciones)` }}
+                  {{
+                    iterNum <= currentIteration
+                      ? `(${getIterationComparisons(iterNum)} comparaciones) ✓`
+                      : iterNum === currentIteration + 1 && comparisonsInCurrentIteration > 0
+                        ? `(${comparisonsInCurrentIteration}/${expectedComparisonsForIteration(iterNum)})`
+                        : `(${expectedComparisonsForIteration(iterNum)} comparaciones)`
+                  }}
                 </span>
               </div>
             </div>
@@ -271,7 +353,10 @@
               </div>
 
               <!-- Mensaje de estado y botón de reinicio -->
-              <div v-if="currentIteration >= totalIterations" class="space-y-2">
+              <div
+                v-if="currentIteration >= totalIterations"
+                class="space-y-2"
+              >
                 <div class="text-center text-sm text-green-600 font-semibold py-2">
                   🎉 ¡Proceso completado!
                 </div>
@@ -283,7 +368,10 @@
                   <span>TERMINAR PROCESO</span>
                 </button>
               </div>
-              <div v-else class="space-y-2">
+              <div
+                v-else
+                class="space-y-2"
+              >
                 <div class="text-center text-sm text-slate-500 italic py-2">
                   Continúa comparando elementos en la balanza...
                 </div>
@@ -302,16 +390,30 @@
         <!-- Fila Inferior: Estantería Ordenada (Array Visual) -->
         <div class="bg-emerald-50 border-2 border-emerald-200 rounded-xl p-3 shadow-inner">
           <div class="flex items-center justify-center gap-3">
-            <h2 class="text-xl font-bold text-blue-600 whitespace-nowrap">
-              ORDENADOS[]
-            </h2>
+            <h2 class="text-xl font-bold text-blue-600 whitespace-nowrap">ORDENADOS[]</h2>
             <!-- Array estático de 5 posiciones para elementos ordenados -->
             <div class="inline-flex border-4 border-green-500 rounded-lg bg-white/50 p-1.5">
-                <div v-for="index in 5" :key="index" class="array-slot">
+              <div
+                v-for="index in 5"
+                :key="index"
+                class="array-slot"
+              >
                 <!-- Cada slot de la zona ordenada -->
                 <draggable
-                  :model-value="getSortedBottleAtPosition(index - 1) ? [getSortedBottleAtPosition(index - 1)] : []"
-                  @update:model-value="(bottles) => handleSortedShelfChange({ added: bottles.length > 0 ? { element: bottles[0], newIndex: index - 1 } : undefined })"
+                  :model-value="
+                    getSortedBottleAtPosition(index - 1)
+                      ? [getSortedBottleAtPosition(index - 1)]
+                      : []
+                  "
+                  @update:model-value="
+                    (bottles) =>
+                      handleSortedShelfChange({
+                        added:
+                          bottles.length > 0
+                            ? { element: bottles[0], newIndex: index - 1 }
+                            : undefined,
+                      })
+                  "
                   :group="sortedGroup"
                   item-key="id"
                   class="flex items-end justify-center min-h-[80px]"
@@ -326,8 +428,13 @@
                     />
                   </template>
                   <template #header>
-                    <div v-if="!getSortedBottleAtPosition(index - 1)" class="empty-slot">
-                      <div class="w-12 h-20 border-2 border-dashed border-green-300 rounded-lg flex items-center justify-center bg-green-50/50">
+                    <div
+                      v-if="!getSortedBottleAtPosition(index - 1)"
+                      class="empty-slot"
+                    >
+                      <div
+                        class="w-12 h-20 border-2 border-dashed border-green-300 rounded-lg flex items-center justify-center bg-green-50/50"
+                      >
                         <span class="text-green-400 text-xs">vacío</span>
                       </div>
                     </div>
@@ -441,25 +548,22 @@ const expectedComparisonsForIteration = (iterNum: number): number => {
 
 // Function to get comparisons from iteration history
 const getIterationComparisons = (iterNum: number): number => {
-  const iteration = iterationHistory.value.find(it => it.number === iterNum);
+  const iteration = iterationHistory.value.find((it) => it.number === iterNum);
   return iteration ? iteration.comparisons : 0;
 };
 
 // Watch for changes in pans to auto-reset scale
-watch(
-  [leftPanBottle, rightPanBottle],
-  ([newLeft, newRight], [oldLeft, oldRight]) => {
-    // If the scale was in a 'weighed' state and a bottle is removed from either pan
-    if (
-      scaleWeighed.value &&
-      (newLeft.length < oldLeft.length || newRight.length < oldRight.length)
-    ) {
-      // Partially reset the scale to allow a new comparison
-      scaleWeighed.value = false;
-      scaleResult.value = { left: null, right: null };
-    }
+watch([leftPanBottle, rightPanBottle], ([newLeft, newRight], [oldLeft, oldRight]) => {
+  // If the scale was in a 'weighed' state and a bottle is removed from either pan
+  if (
+    scaleWeighed.value &&
+    (newLeft.length < oldLeft.length || newRight.length < oldRight.length)
+  ) {
+    // Partially reset the scale to allow a new comparison
+    scaleWeighed.value = false;
+    scaleResult.value = { left: null, right: null };
   }
-);
+});
 
 // Drag-and-drop group configurations
 const mainGroup = {
@@ -493,9 +597,7 @@ const panGroup = computed(() => ({
 // Computed property to enable/disable the PESAR button
 const canWeigh = computed(
   () =>
-    leftPanBottle.value.length === 1 &&
-    rightPanBottle.value.length === 1 &&
-    !scaleWeighed.value
+    leftPanBottle.value.length === 1 && rightPanBottle.value.length === 1 && !scaleWeighed.value,
 );
 
 // Function to handle changes in temp variable zone
@@ -509,7 +611,9 @@ const handleTempVariableChange = (evt: { added?: { element: Bottle } }) => {
         const extraBottle = tempVariableArray.value.pop();
         if (extraBottle) {
           workbenchBottles.value.push(extraBottle);
-          showError('⚠️ La variable min_actual solo puede almacenar UN elemento (el mínimo de la iteración actual)');
+          showError(
+            '⚠️ La variable min_actual solo puede almacenar UN elemento (el mínimo de la iteración actual)',
+          );
         }
       }, 100);
       return;
@@ -518,7 +622,9 @@ const handleTempVariableChange = (evt: { added?: { element: Bottle } }) => {
     addedBottle.state = 'temp-variable';
     currentMinBottle.value = addedBottle;
     stats.movimientos++;
-    showSuccess(`📝 Elemento guardado en min_actual. Usa la balanza para comparar y encontrar el mínimo real`);
+    showSuccess(
+      `📝 Elemento guardado en min_actual. Usa la balanza para comparar y encontrar el mínimo real`,
+    );
   }
 };
 
@@ -529,7 +635,7 @@ const returnBottleFromTemp = (bottleId: number) => {
     const bottle = tempVariableArray.value.splice(index, 1)[0];
     if (bottle) {
       bottle.state = 'normal';
-      const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+      const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
       if (emptyIndex !== -1) {
         workbenchBottles.value[emptyIndex] = bottle;
       }
@@ -548,13 +654,13 @@ const handleSortedShelfChange = (evt: { added?: { element: Bottle; newIndex: num
     // Prevenir colocación manual - el sistema debe hacerlo automáticamente
     setTimeout(() => {
       sortedShelfBottles.value.splice(addedIndex, 1);
-      const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+      const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
       if (emptyIndex !== -1) {
         workbenchBottles.value[emptyIndex] = addedBottle;
       }
       addedBottle.state = 'normal';
       showError(
-        `⚠️ No puedes mover elementos directamente a ORDENADOS[]. El sistema lo hace automáticamente al terminar cada iteración`
+        `⚠️ No puedes mover elementos directamente a ORDENADOS[]. El sistema lo hace automáticamente al terminar cada iteración`,
       );
     }, 100);
   }
@@ -607,7 +713,7 @@ const weighBottles = () => {
     heavierBottle.state = 'normal';
 
     // Buscar primera posición vacía para retornar el elemento
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+    const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
     if (emptyIndex !== -1) {
       workbenchBottles.value[emptyIndex] = heavierBottle;
     }
@@ -620,7 +726,7 @@ const weighBottles = () => {
         if (oldMin) {
           oldMin.state = 'normal';
           tempVariableArray.value = [];
-          const emptyIdx = workbenchBottles.value.findIndex(b => b === null);
+          const emptyIdx = workbenchBottles.value.findIndex((b) => b === null);
           if (emptyIdx !== -1) {
             workbenchBottles.value[emptyIdx] = oldMin;
           }
@@ -636,7 +742,9 @@ const weighBottles = () => {
       lighterBottle.state = 'temp-variable';
       tempVariableArray.value = [lighterBottle];
       currentMinBottle.value = lighterBottle;
-      showSuccess(`✓ Nuevo mínimo encontrado (peso: ${lighterBottle.weight}) → Guardado en min_actual`);
+      showSuccess(
+        `✓ Nuevo mínimo encontrado (peso: ${lighterBottle.weight}) → Guardado en min_actual`,
+      );
     } else {
       // El mínimo actual sigue siendo menor, retornar este también
       if (lighterBottle === leftBottle) {
@@ -645,11 +753,13 @@ const weighBottles = () => {
         rightPanBottle.value = [];
       }
       lighterBottle.state = 'normal';
-      const emptyIdx = workbenchBottles.value.findIndex(b => b === null);
+      const emptyIdx = workbenchBottles.value.findIndex((b) => b === null);
       if (emptyIdx !== -1) {
         workbenchBottles.value[emptyIdx] = lighterBottle;
       }
-      showSuccess(`ℹ️ El mínimo actual (peso: ${currentMinBottle.value.weight}) sigue siendo menor`);
+      showSuccess(
+        `ℹ️ El mínimo actual (peso: ${currentMinBottle.value.weight}) sigue siendo menor`,
+      );
     }
 
     scaleWeighed.value = false;
@@ -658,7 +768,10 @@ const weighBottles = () => {
     // Verificar si terminamos las comparaciones de esta iteración
     const expectedComparisons = expectedComparisonsForIteration(currentIteration.value + 1);
 
-    if (comparisonsInCurrentIteration.value >= expectedComparisons && tempVariableArray.value.length > 0) {
+    if (
+      comparisonsInCurrentIteration.value >= expectedComparisons &&
+      tempVariableArray.value.length > 0
+    ) {
       // Trasladar automáticamente el mínimo a ORDENADOS[]
       setTimeout(() => {
         const minBottle = tempVariableArray.value[0];
@@ -667,7 +780,7 @@ const weighBottles = () => {
           tempVariableArray.value = [];
 
           // Encontrar la primera posición vacía en el array ordenado
-          const firstEmptyIndex = sortedShelfBottles.value.findIndex(b => b === null);
+          const firstEmptyIndex = sortedShelfBottles.value.findIndex((b) => b === null);
           if (firstEmptyIndex !== -1) {
             sortedShelfBottles.value[firstEmptyIndex] = minBottle;
           }
@@ -686,27 +799,31 @@ const weighBottles = () => {
           // Verificar si ya completamos todas las iteraciones
           if (currentIteration.value >= totalIterations.value) {
             // Mover el último elemento restante a ordenados automáticamente
-            const remaining = workbenchBottles.value.filter(b => b !== null);
+            const remaining = workbenchBottles.value.filter((b) => b !== null);
             if (remaining.length === 1) {
               const lastBottle = remaining[0];
               if (lastBottle) {
                 lastBottle.state = 'consolidated';
-                const lastIndex = workbenchBottles.value.findIndex(b => b?.id === lastBottle.id);
+                const lastIndex = workbenchBottles.value.findIndex((b) => b?.id === lastBottle.id);
                 if (lastIndex !== -1) {
                   workbenchBottles.value[lastIndex] = null;
                 }
 
-                const emptyIndex = sortedShelfBottles.value.findIndex(b => b === null);
+                const emptyIndex = sortedShelfBottles.value.findIndex((b) => b === null);
                 if (emptyIndex !== -1) {
                   sortedShelfBottles.value[emptyIndex] = lastBottle;
                 }
 
-                showSuccess(`🎉 ¡Ordenamiento completado! Todos los elementos están en ORDENADOS[] de menor a mayor`);
+                showSuccess(
+                  `🎉 ¡Ordenamiento completado! Todos los elementos están en ORDENADOS[] de menor a mayor`,
+                );
               }
             }
           } else {
-            const remaining = workbenchBottles.value.filter(b => b !== null);
-            showSuccess(`✅ Mínimo (peso: ${minBottle.weight}) → ORDENADOS[${firstEmptyIndex}]. Inicia Iteración ${currentIteration.value + 1} con ${remaining.length} elementos`);
+            const remaining = workbenchBottles.value.filter((b) => b !== null);
+            showSuccess(
+              `✅ Mínimo (peso: ${minBottle.weight}) → ORDENADOS[${firstEmptyIndex}]. Inicia Iteración ${currentIteration.value + 1} con ${remaining.length} elementos`,
+            );
           }
         }
       }, 500);
@@ -719,7 +836,7 @@ const resetScale = () => {
   const leftBottle = leftPanBottle.value[0];
   if (leftBottle) {
     leftBottle.state = 'normal';
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+    const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
     if (emptyIndex !== -1) {
       workbenchBottles.value[emptyIndex] = leftBottle;
     }
@@ -727,7 +844,7 @@ const resetScale = () => {
   const rightBottle = rightPanBottle.value[0];
   if (rightBottle) {
     rightBottle.state = 'normal';
-    const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+    const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
     if (emptyIndex !== -1) {
       workbenchBottles.value[emptyIndex] = rightBottle;
     }
@@ -748,7 +865,7 @@ const validateSortedShelfPlacement = (bottle: Bottle): boolean => {
 
   if (bottle.weight < lastBottle.weight) {
     showError(
-      `❌ Esta botella (peso: ${bottle.weight}) no puede ir después de una más pesada (peso: ${lastBottle.weight})`
+      `❌ Esta botella (peso: ${bottle.weight}) no puede ir después de una más pesada (peso: ${lastBottle.weight})`,
     );
     return false;
   }
@@ -778,7 +895,7 @@ const returnBottleFromPan = (bottleId: number) => {
   if (leftIndex !== -1) {
     const bottle = leftPanBottle.value.splice(leftIndex, 1)[0];
     if (bottle) {
-      const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+      const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
       if (emptyIndex !== -1) {
         workbenchBottles.value[emptyIndex] = bottle;
       }
@@ -791,7 +908,7 @@ const returnBottleFromPan = (bottleId: number) => {
   if (rightIndex !== -1) {
     const bottle = rightPanBottle.value.splice(rightIndex, 1)[0];
     if (bottle) {
-      const emptyIndex = workbenchBottles.value.findIndex(b => b === null);
+      const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
       if (emptyIndex !== -1) {
         workbenchBottles.value[emptyIndex] = bottle;
       }
@@ -845,9 +962,23 @@ const resetAlgorithm = () => {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-  20%, 40%, 60%, 80% { transform: translateX(10px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-10px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(10px);
+  }
 }
 
 .animate-shake {

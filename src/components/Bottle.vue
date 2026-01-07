@@ -5,11 +5,11 @@
       'heavy-glow': comparison === 'heavier',
       'light-glow': comparison === 'lighter',
       'equal-glow': comparison === 'equal',
-      'consolidated': state === 'consolidated',
-      'comparing': state === 'comparing',
+      consolidated: state === 'consolidated',
+      comparing: state === 'comparing',
       'in-temp-var': state === 'temp-variable',
       'shake-hint': shouldShake,
-      'opacity-40': dimmed
+      'opacity-40': dimmed,
     }"
     draggable="true"
     @click="emit('bottle-clicked', id)"
@@ -30,9 +30,15 @@
       </div>
 
       <!-- Figuras geométricas en lugar de líquido -->
-      <div class="w-full rounded-b-lg overflow-hidden relative" :style="{ height: liquidHeight }">
+      <div
+        class="w-full rounded-b-lg overflow-hidden relative"
+        :style="{ height: liquidHeight }"
+      >
         <div class="absolute inset-0 flex flex-wrap content-end justify-center gap-[1px] p-0.5">
-          <template v-for="(shape, index) in shapes" :key="index">
+          <template
+            v-for="(shape, index) in shapes"
+            :key="index"
+          >
             <!-- Círculo -->
             <div
               v-if="shape.type === 'circle'"
@@ -40,7 +46,7 @@
               :style="{
                 width: shape.size + 'px',
                 height: shape.size + 'px',
-                backgroundColor: shape.color
+                backgroundColor: shape.color,
               }"
             ></div>
             <!-- Cuadrado -->
@@ -50,7 +56,7 @@
               :style="{
                 width: shape.size + 'px',
                 height: shape.size + 'px',
-                backgroundColor: shape.color
+                backgroundColor: shape.color,
               }"
             ></div>
             <!-- Triángulo -->
@@ -60,9 +66,9 @@
               :style="{
                 width: '0',
                 height: '0',
-                borderLeft: (shape.size / 2) + 'px solid transparent',
-                borderRight: (shape.size / 2) + 'px solid transparent',
-                borderBottom: shape.size + 'px solid ' + shape.color
+                borderLeft: shape.size / 2 + 'px solid transparent',
+                borderRight: shape.size / 2 + 'px solid transparent',
+                borderBottom: shape.size + 'px solid ' + shape.color,
               }"
             ></div>
           </template>
@@ -74,7 +80,10 @@
     </div>
 
     <!-- Index label (shown when showIndex is true) -->
-    <div v-if="showIndex !== undefined" class="index-label text-center mt-1 text-sm font-bold text-gray-600">
+    <div
+      v-if="showIndex !== undefined"
+      class="index-label text-center mt-1 text-sm font-bold text-gray-600"
+    >
       {{ showIndex }}
     </div>
   </div>
@@ -125,17 +134,17 @@ const liquidHeight = computed(() => {
 const shapes = computed(() => {
   const shapeTypes = ['circle', 'square', 'triangle'];
   const colors = [
-    'rgb(239 68 68)',    // red
-    'rgb(59 130 246)',   // blue
-    'rgb(34 197 94)',    // green
-    'rgb(168 85 247)',   // purple
-    'rgb(236 72 153)',   // pink
-    'rgb(234 179 8)',    // yellow
-    'rgb(20 184 166)',   // teal
+    'rgb(239 68 68)', // red
+    'rgb(59 130 246)', // blue
+    'rgb(34 197 94)', // green
+    'rgb(168 85 247)', // purple
+    'rgb(236 72 153)', // pink
+    'rgb(234 179 8)', // yellow
+    'rgb(20 184 166)', // teal
   ];
 
   // Number of shapes based on weight (more shapes for denser look)
-  const numShapes = Math.floor(props.weight / 2.5) + 8; 
+  const numShapes = Math.floor(props.weight / 2.5) + 8;
 
   const generatedShapes = [];
   for (let i = 0; i < numShapes; i++) {
@@ -148,7 +157,7 @@ const shapes = computed(() => {
     generatedShapes.push({
       type: shapeTypes[typeIndex],
       color: colors[colorIndex],
-      size: size
+      size: size,
     });
   }
 
@@ -198,7 +207,11 @@ const shapes = computed(() => {
 }
 
 .bottle-consolidated {
-  background: linear-gradient(to bottom, rgba(212, 248, 212, 0.4), rgba(168, 230, 168, 0.4)) !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(212, 248, 212, 0.4),
+    rgba(168, 230, 168, 0.4)
+  ) !important;
   pointer-events: none;
 }
 
@@ -216,7 +229,8 @@ const shapes = computed(() => {
 }
 
 @keyframes pulse-border {
-  0%, 100% {
+  0%,
+  100% {
     border-color: #fbbf24;
     transform: scale(1);
   }
@@ -231,7 +245,8 @@ const shapes = computed(() => {
 }
 
 @keyframes shake-bottles {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0) rotate(0deg);
   }
   25% {
