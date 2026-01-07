@@ -4,16 +4,12 @@ import { v4 as uuidv4 } from 'uuid';
 
 // --- Core State ---
 const numbers = ref<{ id: string; value: number }[]>([]);
-const selectedIds = ref<string[]>([]);
 const history = ref<string[]>([]);
-const isAnimating = ref(false);
 
-// Visual state for the animation
-const animatedState = ref<{
-  numbers: { id: string; value: number | null }[],
-  temp: number | null,
-}>({ numbers: [], temp: null });
-
+// Selection state
+const selectedNumber = ref<{ id: string; value: number; index: number } | null>(null);
+const selectedBox = ref<'min' | null>(null); // Track if min box is selected
+const minBox = ref<{ id: string; value: number; originalIndex: number } | null>(null);
 
 // --- Selection Sort Helper State ---
 const sortedBoundaryIndex = ref(0);
@@ -21,46 +17,81 @@ const isPracticeStarted = ref(false);
 const showMinHint = ref(false);
 const isHintOnCooldown = ref(false);
 
+// Comparison tracking for enforcing algorithm
+const comparedIndices = ref<number[]>([]); // Indices that have been compared
+const currentMinIndex = ref<number | null>(null); // Current minimum found during comparison
+const allCompared = ref(false); // Whether all elements have been compared
 
 // --- Computed Properties for Hints & Controls ---
 const unsortedPart = computed(() => {
-  return numbers.value.filter((n, index) => index >= sortedBoundaryIndex.value);
+  return numbers.value
+    .map((n, index) => ({ ...n, index }))
+    .filter((n) => n.index >= sortedBoundaryIndex.value);
 });
 
 const actualMinInUnsorted = computed(() => {
   if (unsortedPart.value.length === 0) return null;
-  return unsortedPart.value.reduce((min, current) => current.value < min.value ? current : min);
+  return unsortedPart.value.reduce((min, current) => (current.value < min.value ? current : min));
 });
 
-const swapTargetId = computed(() => {
+const swapTargetIndex = computed(() => {
   if (sortedBoundaryIndex.value >= numbers.value.length) return null;
-  return numbers.value[sortedBoundaryIndex.value].id;
+  return sortedBoundaryIndex.value;
 });
 
 const coachHint = computed(() => {
-  if (isAnimating.value) {
-    if (animatedState.value.temp === null) { // This means the 2-second delay is active
-      return "Preparando para intercambiar...";
+  if (!isPracticeStarted.value) return '🎮 Prepara tu lista y presiona ▶ para empezar';
+  if (sortedBoundaryIndex.value >= numbers.value.length) return '🎉 ¡Felicidades! Lista ordenada';
+
+  if (!allCompared.value) {
+    const nextIndex = sortedBoundaryIndex.value + comparedIndices.value.length;
+    if (nextIndex < numbers.value.length) {
+      return `🔍 Compara posición ${nextIndex} → (${comparedIndices.value.length}/${unsortedPart.value.length})`;
     }
-    return "Observa cómo funciona el intercambio...";
   }
-  if (!isPracticeStarted.value) return "Prepara tu lista y haz clic en 'Empezar a Practicar'.";
-  if (sortedBoundaryIndex.value >= numbers.value.length) return "¡Felicidades! Has ordenado la lista.";
-  
-  if (selectedIds.value.length < 2) {
-    return `Selecciona dos números para intercambiar. El objetivo es llevar el mínimo (color amarillo) a la posición resaltada (color fucsia).`;
+
+  if (!minBox.value) {
+    return '👆 Selecciona el mínimo → 📦 Mínimo Encontrado';
   }
-  return "¡Listo para intercambiar! Presiona el botón.";
+
+  return '📦 Mínimo Encontrado → 🎯 Posición objetivo (fucsia)';
 });
 
-const displayNumbers = computed(() => {
-  return isAnimating.value ? animatedState.value.numbers : numbers.value;
+// Categorize history messages for enhanced UI
+const categorizedHistory = computed(() => {
+  return history.value.map((message) => {
+    let type: 'comparison' | 'success' | 'error' | 'info' | 'celebration' = 'info';
+    let icon = '💬';
+
+    if (message.includes('🔍')) {
+      type = 'comparison';
+      icon = '🔍';
+    } else if (
+      message.includes('✅') ||
+      message.includes('Correcto') ||
+      message.includes('Excelente')
+    ) {
+      type = 'success';
+      icon = '✅';
+    } else if (message.includes('❌')) {
+      type = 'error';
+      icon = '❌';
+    } else if (message.includes('🎉')) {
+      type = 'celebration';
+      icon = '🎉';
+    } else if (message.includes('⚠️')) {
+      type = 'error';
+      icon = '⚠️';
+    }
+
+    return { message, type, icon };
+  });
 });
 
 // --- Watcher for Auto-Advancing & Resetting Hint ---
 watch(sortedBoundaryIndex, () => {
-  showMinHint.value = false; // Reset hint visibility
-  isHintOnCooldown.value = false; // Reset hint cooldown
+  showMinHint.value = false;
+  isHintOnCooldown.value = false;
 });
 
 // --- User Actions ---
@@ -72,11 +103,11 @@ function triggerMinHint() {
 
   setTimeout(() => {
     showMinHint.value = false;
-  }, 5000); // Hint is visible for 5 seconds
+  }, 5000);
 
   setTimeout(() => {
     isHintOnCooldown.value = false;
-  }, 15000); // Cooldown is 15 seconds
+  }, 15000);
 }
 
 function addNumber() {
@@ -91,129 +122,247 @@ function removeNumber() {
 
 function startPractice() {
   isPracticeStarted.value = true;
-  history.value.push("¡Práctica iniciada! Ordena la lista usando Selection Sort.");
+  history.value.push('¡Práctica iniciada! Encuentra el mínimo y completa los intercambios.');
 }
 
 function reset() {
   numbers.value = [];
   history.value = [];
-  selectedIds.value = [];
   sortedBoundaryIndex.value = 0;
   isPracticeStarted.value = false;
-  isAnimating.value = false;
-  animatedState.value = { numbers: [], temp: null };
   showMinHint.value = false;
   isHintOnCooldown.value = false;
+  minBox.value = null;
+  selectedNumber.value = null;
+  selectedBox.value = null;
+  comparedIndices.value = [];
+  currentMinIndex.value = null;
+  allCompared.value = false;
 }
 
-function selectItem(id: string) {
-  if (isAnimating.value || !isPracticeStarted.value) return;
-
-  const index = selectedIds.value.indexOf(id);
-  if (index > -1) {
-    selectedIds.value.splice(index, 1);
-  } else if (selectedIds.value.length < 2) {
-    selectedIds.value.push(id);
+function updateNumberValue(index: number, newValue: string) {
+  const parsed = parseInt(newValue);
+  if (!isNaN(parsed) && parsed >= 0 && parsed <= 999) {
+    const num = numbers.value[index];
+    if (num) {
+      num.value = parsed;
+    }
   }
 }
 
-function initiateSwapSequence(idA: string, idB: string) {
-  isAnimating.value = true; // Disable interactions
-  history.value.push("Preparando para el intercambio...");
-  
-  setTimeout(() => {
-    performAnimatedSwap(idA, idB);
-  }, 2000); // 2-second delay before animation starts
-}
+// --- Click-based Selection Functions ---
+function selectNumberFromArray(num: { id: string; value: number }, index: number) {
+  if (!isPracticeStarted.value || index < sortedBoundaryIndex.value) return;
 
+  // Phase 1: Comparing elements sequentially
+  if (!allCompared.value) {
+    const expectedIndex = sortedBoundaryIndex.value + comparedIndices.value.length;
 
-function performAnimatedSwap(idA: string, idB: string) {
-  // Check if the IDs are valid and belong to numbers
-  const numA = numbers.value.find(n => n.id === idA);
-  const numB = numbers.value.find(n => n.id === idB);
+    if (index !== expectedIndex) {
+      history.value.push(
+        `❌ Debes comparar los elementos en orden. Haz clic en la posición ${expectedIndex}.`,
+      );
+      return;
+    }
 
-  if (!numA || !numB) {
-    console.error("Invalid IDs provided for swap:", idA, idB);
-    isAnimating.value = false;
-    selectedIds.value = [];
+    // Add to compared list
+    comparedIndices.value.push(index);
+
+    // Update current minimum
+    const currentMinValue =
+      currentMinIndex.value !== null ? numbers.value[currentMinIndex.value] : null;
+    if (currentMinIndex.value === null || (currentMinValue && num.value < currentMinValue.value)) {
+      currentMinIndex.value = index;
+      history.value.push(
+        `🔍 Comparaste posición ${index} (valor: ${num.value}). Nuevo mínimo encontrado.`,
+      );
+    } else if (currentMinValue) {
+      history.value.push(
+        `🔍 Comparaste posición ${index} (valor: ${num.value}). El mínimo sigue siendo ${currentMinValue.value}.`,
+      );
+    }
+
+    // Check if all elements have been compared
+    if (comparedIndices.value.length === unsortedPart.value.length) {
+      allCompared.value = true;
+      const minValue = currentMinIndex.value !== null ? numbers.value[currentMinIndex.value] : null;
+      if (minValue) {
+        history.value.push(
+          `✅ Has comparado todos los elementos. El mínimo es ${minValue.value} en posición ${currentMinIndex.value}.`,
+        );
+      }
+    }
+
     return;
   }
 
-  // Determine if it was a "correct" swap for Selection Sort
-  const wasCorrectSwap = (idA === actualMinInUnsorted.value?.id && idB === swapTargetId.value) ||
-                         (idB === actualMinInUnsorted.value?.id && idA === swapTargetId.value);
-
-  const indexA = numbers.value.findIndex(n => n.id === idA);
-  const indexB = numbers.value.findIndex(n => n.id === idB);
-  const valA = numbers.value[indexA].value;
-  const valB = numbers.value[indexB].value;
-  
-  // Initial state for animation
-  animatedState.value.numbers = JSON.parse(JSON.stringify(numbers.value));
-  animatedState.value.temp = null;
-
-  // Step 1: A -> temp
-  setTimeout(() => {
-    animatedState.value.temp = valA;
-    animatedState.value.numbers[indexA].value = null;
-    history.value.push(`1. Guardando ${valA} en la variable temporal.`);
-  }, 500);
-
-  // Step 2: B -> A
-  setTimeout(() => {
-    animatedState.value.numbers[indexA].value = valB;
-    animatedState.value.numbers[indexB].value = null;
-    history.value.push(`2. Moviendo ${valB} a la posición del primer número.`);
-  }, 1500);
-
-  // Step 3: temp -> B
-  setTimeout(() => {
-    animatedState.value.numbers[indexB].value = valA;
-    animatedState.value.temp = null;
-    history.value.push(`3. Moviendo ${valA} desde la temporal a la segunda posición.`);
-  }, 2500);
-
-  // Finalization
-  setTimeout(() => {
-    // Update the actual data model
-    [numbers.value[indexA].value, numbers.value[indexB].value] = [valB, valA];
-    
-    if (wasCorrectSwap) {
-       history.value.push(`¡Bien hecho! ${actualMinInUnsorted.value?.value} está en la posición correcta.`);
-       sortedBoundaryIndex.value++;
-    } else {
-       history.value.push(`Intercambio completado. (Para Selection Sort, busca el mínimo de la sección no ordenada).`);
+  // Phase 2: Selecting the minimum to place in box
+  if (!minBox.value) {
+    if (index !== currentMinIndex.value) {
+      history.value.push(
+        `❌ Debes seleccionar el mínimo encontrado (posición ${currentMinIndex.value}).`,
+      );
+      return;
     }
 
-    selectedIds.value = [];
-    isAnimating.value = false;
-  }, 3500);
+    selectedNumber.value = { ...num, index };
+    history.value.push(`Seleccionaste el mínimo ${num.value}.`);
+  }
 }
 
+function placeInMinBox() {
+  if (!selectedNumber.value || minBox.value) return;
+
+  const selectedIndex = selectedNumber.value.index;
+
+  minBox.value = {
+    id: selectedNumber.value.id,
+    value: selectedNumber.value.value,
+    originalIndex: selectedIndex,
+  };
+
+  // Clear the value from the array
+  const arrayItem = numbers.value[selectedIndex];
+  if (arrayItem) {
+    arrayItem.value = -1; // Use -1 to indicate empty slot
+  }
+
+  history.value.push(`Colocaste ${selectedNumber.value.value} en "Mínimo Encontrado".`);
+  selectedNumber.value = null;
+}
+
+// --- Manual Swap Functions ---
+function selectMinBox() {
+  if (!minBox.value) return;
+  selectedBox.value = 'min';
+  selectedNumber.value = null;
+  history.value.push(
+    `Seleccionaste "Mínimo Encontrado" (${minBox.value.value}). Haz clic en una posición del array.`,
+  );
+}
+
+function placeBoxValueInArray(index: number) {
+  if (!selectedBox.value || selectedBox.value !== 'min') return;
+  if (index < sortedBoundaryIndex.value) return;
+  if (!minBox.value) return;
+
+  const arrayItem = numbers.value[index];
+  if (!arrayItem) return;
+
+  // Get the value that was at the target position
+  const targetValue = arrayItem.value;
+
+  // Place min value at target position
+  arrayItem.value = minBox.value.value;
+  history.value.push(`Colocaste ${minBox.value.value} en la posición ${index}.`);
+
+  // Place target value back at min's original position
+  const minOriginalIndex = minBox.value.originalIndex;
+  const minOriginalItem = numbers.value[minOriginalIndex];
+  if (minOriginalItem && targetValue !== -1) {
+    minOriginalItem.value = targetValue;
+    history.value.push(`El valor ${targetValue} se movió a la posición ${minOriginalIndex}.`);
+  }
+
+  minBox.value = null;
+  selectedBox.value = null;
+
+  // Check if swap was correct
+  checkSwapCompletion();
+}
+
+function checkSwapCompletion() {
+  setTimeout(() => {
+    const currentPosition = numbers.value[sortedBoundaryIndex.value];
+    const actualMin = actualMinInUnsorted.value;
+
+    if (currentPosition && actualMin && currentPosition.value <= actualMin.value) {
+      history.value.push(`✅ ¡Excelente! El mínimo está en la posición correcta.`);
+      sortedBoundaryIndex.value++;
+
+      // Reset comparison tracking for next iteration
+      comparedIndices.value = [];
+      currentMinIndex.value = null;
+      allCompared.value = false;
+
+      if (sortedBoundaryIndex.value >= numbers.value.length) {
+        history.value.push('🎉 ¡Felicidades! Has ordenado toda la lista correctamente.');
+      }
+    } else {
+      history.value.push(`⚠️ El intercambio no colocó el mínimo en la posición correcta.`);
+      // Reset to try again
+      comparedIndices.value = [];
+      currentMinIndex.value = null;
+      allCompared.value = false;
+    }
+  }, 300);
+}
 </script>
 
 <template>
   <div class="page-container">
     <div class="container">
       <h1 class="title">Practicando Selection Sort</h1>
-      <p class="subtitle">Selecciona dos números y observa cómo se intercambian usando una variable temporal.</p>
-      
+      <p class="subtitle">
+        Haz clic en los números y las casillas para practicar el algoritmo de ordenamiento.
+      </p>
+
       <div class="controls-container">
-        <button v-if="!isPracticeStarted" @click="addNumber" class="btn btn-icon btn-primary" title="Añadir Número" :disabled="numbers.value.length >= 15">+</button>
-        <button v-if="!isPracticeStarted" @click="removeNumber" class="btn btn-icon btn-secondary" title="Quitar Número" :disabled="numbers.length === 0">-</button>
-        
-        <div v-if="!isPracticeStarted && numbers.length > 0" class="separator"></div>
+        <button
+          v-if="!isPracticeStarted"
+          @click="addNumber"
+          class="btn btn-icon btn-primary"
+          title="Añadir Número"
+          :disabled="numbers.length >= 15"
+        >
+          +
+        </button>
+        <button
+          v-if="!isPracticeStarted"
+          @click="removeNumber"
+          class="btn btn-icon btn-secondary"
+          title="Quitar Número"
+          :disabled="numbers.length === 0"
+        >
+          -
+        </button>
 
-        <button v-if="!isPracticeStarted && numbers.length > 0" @click="startPractice" class="btn btn-icon btn-accent" title="Empezar a Practicar">▶</button>
-        <button @click="reset" class="btn btn-icon btn-secondary" title="Reiniciar">↻</button>
-        
-        <div v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length" class="separator"></div>
-        
-        <button v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length" @click="triggerMinHint" class="btn btn-icon btn-hint" title="Mostrar Pista del Mínimo" :disabled="isHintOnCooldown || showMinHint">💡</button>
-      </div>
+        <div
+          v-if="!isPracticeStarted"
+          class="separator"
+        ></div>
 
-      <div class="main-swap-controls">
-         <button v-if="isPracticeStarted && selectedIds.length === 2" @click="initiateSwapSequence(selectedIds[0], selectedIds[1])" class="btn btn-accent" :disabled="isAnimating">Realizar Intercambio ⇄</button>
+        <button
+          v-if="!isPracticeStarted"
+          @click="startPractice"
+          class="btn btn-icon btn-accent"
+          title="Empezar a Practicar"
+          :disabled="numbers.length === 0"
+        >
+          ▶
+        </button>
+        <button
+          @click="reset"
+          class="btn btn-icon btn-secondary"
+          title="Reiniciar"
+        >
+          ↻
+        </button>
+
+        <div
+          v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length"
+          class="separator"
+        ></div>
+
+        <button
+          v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length"
+          @click="triggerMinHint"
+          class="btn btn-icon btn-hint"
+          title="Mostrar Pista del Mínimo"
+          :disabled="isHintOnCooldown || showMinHint || !allCompared"
+        >
+          💡
+        </button>
       </div>
 
       <div class="coach-hint">
@@ -223,52 +372,88 @@ function performAnimatedSwap(idA: string, idB: string) {
       <div class="main-area">
         <div class="numbers-container">
           <div
-            v-for="(num, index) in displayNumbers"
+            v-for="(num, index) in numbers"
             :key="num.id"
             class="number-wrapper"
-            @click="selectItem(num.id)"
-            :class="{ 
-              'sorted': !isAnimating && index < sortedBoundaryIndex,
-              'selected': selectedIds.includes(num.id),
-              'empty': num.value === null,
-              'is-swap-target': !isAnimating && num.id === swapTargetId,
-              'is-actual-min': !isAnimating && num.id === actualMinInUnsorted?.id && showMinHint
+            @click="
+              isPracticeStarted
+                ? selectedBox
+                  ? placeBoxValueInArray(index)
+                  : selectNumberFromArray(num, index)
+                : null
+            "
+            :class="{
+              sorted: index < sortedBoundaryIndex,
+              selected: selectedNumber?.id === num.id,
+              'is-swap-target': index === swapTargetIndex,
+              'is-actual-min': num.id === actualMinInUnsorted?.id && showMinHint,
+              editable: !isPracticeStarted,
+              empty: num.value === -1,
+              compared: comparedIndices.includes(index),
+              'current-min': index === currentMinIndex && !allCompared,
             }"
           >
-            <span v-if="num.value !== null" class="number-value">{{ num.value }}</span>
+            <input
+              v-if="!isPracticeStarted"
+              type="number"
+              class="number-input"
+              :value="num.value"
+              @input="updateNumberValue(index, ($event.target as HTMLInputElement).value)"
+              @click.stop
+              min="0"
+              max="999"
+            />
+            <span
+              v-else-if="num.value !== -1"
+              class="number-value"
+              >{{ num.value }}</span
+            >
           </div>
         </div>
 
         <div class="temp-area">
           <div class="min-found-area">
             <div class="temp-label label-min-found">Mínimo Encontrado</div>
-            <div 
+            <div
               class="min-found-box number-wrapper"
-              :class="{ 'has-value': (isAnimating ? animatedState.temp !== null : false) }"
+              :class="{
+                'has-value': minBox !== null,
+                'pulse-subtle': selectedNumber !== null && !minBox,
+              }"
+              @click="minBox ? selectMinBox() : placeInMinBox()"
             >
-              <span v-if="isAnimating && animatedState.temp" class="number-value">{{ animatedState.temp }}</span>
-            </div>
-          </div>
-          
-          <div class="separator-vertical"></div>
-
-          <div class="temp-var-area">
-            <div class="temp-label">Variable Temporal</div>
-            <div 
-              class="temp-box number-wrapper" 
-              :class="{ 'has-value': (isAnimating ? animatedState.temp !== null : false) }"
-            >
-              <span v-if="isAnimating && animatedState.temp" class="number-value">{{ animatedState.temp }}</span>
+              <span
+                v-if="minBox"
+                class="number-value"
+                >{{ minBox.value }}</span
+              >
             </div>
           </div>
         </div>
       </div>
-      
-      <div class="history-container" v-if="history.length > 0">
-        <h2 class="history-title">Historial de Pasos</h2>
-        <ul class="history-list">
-          <li v-for="(move, index) in history" :key="index">{{ move }}</li>
-        </ul>
+
+      <div
+        class="history-container"
+        v-if="history.length > 0"
+      >
+        <div class="history-header">
+          <h2 class="history-title">📜 Historial de Pasos</h2>
+          <span class="history-count"
+            >{{ history.length }} {{ history.length === 1 ? 'paso' : 'pasos' }}</span
+          >
+        </div>
+        <div class="history-list">
+          <div
+            v-for="(item, index) in categorizedHistory"
+            :key="index"
+            class="history-item"
+            :class="`history-${item.type}`"
+          >
+            <span class="history-icon">{{ item.icon }}</span>
+            <span class="history-message">{{ item.message.replace(item.icon, '').trim() }}</span>
+            <span class="history-index">#{{ index + 1 }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -278,32 +463,86 @@ function performAnimatedSwap(idA: string, idB: string) {
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 .page-container {
   --fuchsia: #ff00ff;
-  --purple: #8A2BE2;
-  --pink: #FFC0CB;
+  --purple: #8a2be2;
+  --pink: #ffc0cb;
   --bg-dark: #1a1a1a;
   --bg-light: #2a2a2a;
   --text-color: #f0f0f0;
   --sorted-color: #03dac6;
   --min-hint-color: #f0e68c;
-  display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
-  background-color: var(--bg-dark); font-family: 'Poppins', sans-serif; color: var(--text-color); padding: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  font-family: 'Poppins', sans-serif;
+  color: var(--text-color);
+  padding: 2rem;
 }
-.container { width: 100%; max-width: 1050px; text-align: center; }
-.title { font-size: 2.5rem; font-weight: 600; color: var(--fuchsia); margin-bottom: 0.5rem; text-shadow: 0 0 10px var(--fuchsia); }
-.subtitle { font-size: 1.1rem; color: var(--pink); margin-bottom: 1rem; }
-.controls-container { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem; min-height: 60px; background-color: rgba(42, 42, 42, 0.5); padding: 1rem; border-radius: 12px; }
-.separator { width: 2px; height: 24px; background-color: var(--purple); margin: 0 0.5rem; }
-.coach-hint { min-height: 2.5em; font-size: 1.1rem; color: var(--pink); margin-bottom: 1rem; font-style: italic; }
-.main-swap-controls { min-height: 60px; display: flex; justify-content: center; align-items: center; margin-bottom: 1rem; }
-.main-area { display: flex; flex-direction: column; align-items: center; gap: 2rem; margin-bottom: 1rem; }
-.numbers-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; min-height: 272px; max-width: 980px; }
+.container {
+  width: 100%;
+  max-width: 1050px;
+  text-align: center;
+}
+.title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--fuchsia);
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 10px var(--fuchsia);
+}
+.subtitle {
+  font-size: 1.1rem;
+  color: var(--pink);
+  margin-bottom: 1rem;
+}
+.controls-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  min-height: 60px;
+  background-color: rgba(42, 42, 42, 0.5);
+  padding: 1rem;
+  border-radius: 12px;
+}
+.separator {
+  width: 2px;
+  height: 24px;
+  background-color: var(--purple);
+  margin: 0 0.5rem;
+}
+.coach-hint {
+  min-height: 2.5em;
+  font-size: 1.1rem;
+  color: var(--pink);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+.main-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+.numbers-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 180px;
+  max-width: 980px;
+}
 
-.temp-area { 
-  display: flex; 
-  gap: 2rem; 
+.temp-area {
+  display: flex;
+  gap: 2rem;
   align-items: flex-start;
 }
-.min-found-area, .temp-var-area {
+.min-found-area,
+.temp-var-area {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -311,60 +550,419 @@ function performAnimatedSwap(idA: string, idB: string) {
 }
 .separator-vertical {
   width: 2px;
-  height: 80px; /* Match number-wrapper height */
+  height: 80px;
   background-color: var(--purple);
   align-self: center;
-  margin-top: 1.5rem; /* Align with boxes */
+  margin-top: 1.5rem;
 }
 
-.temp-label { font-size: 1rem; font-weight: 600; color: var(--fuchsia); }
+.temp-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--fuchsia);
+}
 
 .label-min-found {
   color: var(--min-hint-color);
 }
 
-.history-container { width: 100%; max-width: 750px; margin: 1rem auto; background-color: var(--bg-light); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--purple); text-align: left; }
-.history-title { font-size: 1.5rem; color: var(--fuchsia); margin-bottom: 1rem; text-align: center; }
-.history-list { list-style-type: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
-.history-item { background: var(--bg-dark); padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 8px; border-left: 4px solid var(--fuchsia); }
+.history-container {
+  width: 100%;
+  max-width: 850px;
+  margin: 2rem auto 1rem;
+  background: linear-gradient(135deg, rgba(42, 42, 42, 0.95), rgba(30, 30, 30, 0.95));
+  backdrop-filter: blur(10px);
+  padding: 0;
+  border-radius: 16px;
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
 
-.btn { padding: 0.8rem 1.5rem; border: none; font-weight: 600; cursor: pointer; transition: all 0.3s ease; color: white; border-radius: 8px; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-primary { background-color: var(--fuchsia); }
-.btn-secondary { background-color: var(--purple); }
-.btn-accent { background: linear-gradient(45deg, var(--fuchsia), var(--purple)); }
-.btn-hint { background-color: var(--min-hint-color); color: #1a1a1a; }
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(90deg, rgba(138, 43, 226, 0.15), rgba(255, 0, 255, 0.1));
+  border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+.history-title {
+  font-size: 1.4rem;
+  color: var(--fuchsia);
+  margin: 0;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+.history-count {
+  font-size: 0.9rem;
+  color: var(--pink);
+  background: rgba(255, 192, 203, 0.1);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 192, 203, 0.3);
+  font-weight: 500;
+}
+
+.history-list {
+  padding: 1rem;
+  margin: 0;
+  max-height: 350px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.history-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--fuchsia), var(--purple));
+  border-radius: 10px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  animation: slideIn 0.4s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.history-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  transition: width 0.3s ease;
+}
+
+.history-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.history-item:hover::before {
+  width: 5px;
+}
+
+.history-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.history-message {
+  flex: 1;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #e0e0e0;
+}
+
+.history-index {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 600;
+  min-width: 35px;
+  text-align: right;
+}
+
+/* Message type styles */
+.history-comparison {
+  background: rgba(74, 158, 255, 0.08);
+  border-left: 3px solid #4a9eff;
+}
+
+.history-comparison::before {
+  background: #4a9eff;
+}
+
+.history-comparison:hover {
+  background: rgba(74, 158, 255, 0.15);
+}
+
+.history-success {
+  background: rgba(3, 218, 198, 0.08);
+  border-left: 3px solid #03dac6;
+}
+
+.history-success::before {
+  background: #03dac6;
+}
+
+.history-success:hover {
+  background: rgba(3, 218, 198, 0.15);
+}
+
+.history-error {
+  background: rgba(255, 82, 82, 0.08);
+  border-left: 3px solid #ff5252;
+}
+
+.history-error::before {
+  background: #ff5252;
+}
+
+.history-error:hover {
+  background: rgba(255, 82, 82, 0.15);
+}
+
+.history-info {
+  background: rgba(138, 43, 226, 0.08);
+  border-left: 3px solid var(--purple);
+}
+
+.history-info::before {
+  background: var(--purple);
+}
+
+.history-info:hover {
+  background: rgba(138, 43, 226, 0.15);
+}
+
+.history-celebration {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 0, 255, 0.1));
+  border-left: 3px solid gold;
+  animation: celebration-pulse 2s ease-in-out infinite;
+}
+
+.history-celebration::before {
+  background: linear-gradient(180deg, gold, var(--fuchsia));
+}
+
+@keyframes celebration-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  }
+}
+
+.btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  border-radius: 8px;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background-color: var(--fuchsia);
+}
+.btn-secondary {
+  background-color: var(--purple);
+}
+.btn-accent {
+  background: linear-gradient(45deg, var(--fuchsia), var(--purple));
+}
+.btn-hint {
+  background-color: var(--min-hint-color);
+  color: #1a1a1a;
+}
 
 .btn-icon {
-  width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem; line-height: 0;
-  display: flex; justify-content: center; align-items: center; padding: 0;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
 }
-.btn-icon[title="Añadir Número"], .btn-icon[title="Quitar Número"] { font-size: 2rem; font-weight: bold; }
+.btn-icon[title='Añadir Número'],
+.btn-icon[title='Quitar Número'] {
+  font-size: 2rem;
+  font-weight: bold;
+}
 
 .number-wrapper {
-  width: 80px; height: 80px; display: flex; justify-content: center; align-items: center;
-  background-color: var(--bg-light); border: 2px solid var(--purple); border-radius: 12px;
-  transition: all 0.3s ease; position: relative; cursor: default;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-light);
+  border: 2px solid var(--purple);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
 }
-.number-wrapper:not(.sorted):not(.empty) { cursor: pointer; }
 
-.number-value { font-size: 1.8rem; font-weight: 600; }
-.number-wrapper.empty { background-color: #2e2e2e; border-style: dashed; }
-.number-wrapper.sorted { border-color: var(--sorted-color); opacity: 0.6; }
-.number-wrapper.selected { transform: scale(1.1); box-shadow: 0 0 20px white; border-color: white; }
+.number-value {
+  font-size: 1.4rem;
+  font-weight: 600;
+  user-select: none;
+}
 
-.min-found-box { 
+.number-wrapper.sorted {
+  border-color: var(--sorted-color);
+  opacity: 0.6;
+  cursor: default;
+}
+
+.number-wrapper.selected {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px white;
+  border-color: white;
+}
+
+.number-wrapper.empty {
+  background-color: #1e1e1e;
   border-style: dashed;
-  border-color: var(--min-hint-color); /* Yellow border */
+  border-color: #444;
+  opacity: 0.5;
+  cursor: default;
 }
-.min-found-box.has-value { border-style: solid; border-color: var(--fuchsia); box-shadow: 0 0 20px var(--fuchsia); }
-.temp-box { border-style: dashed; cursor: default; }
-.temp-box.has-value { border-style: solid; border-color: var(--fuchsia); box-shadow: 0 0 20px var(--fuchsia); }
 
-.number-wrapper.is-swap-target:not(.sorted) { box-shadow: 0 0 20px var(--fuchsia); }
-.number-wrapper.is-actual-min:not(.sorted) { border-color: var(--min-hint-color); }
+.number-wrapper.compared {
+  border-color: #4a9eff;
+  background-color: rgba(74, 158, 255, 0.1);
+}
+
+.number-wrapper.current-min {
+  border-color: var(--min-hint-color);
+  background-color: rgba(240, 230, 140, 0.15);
+  box-shadow: 0 0 15px rgba(240, 230, 140, 0.3);
+}
+
+.min-found-box {
+  border-style: dashed;
+  border-color: var(--min-hint-color);
+}
+
+/* Yellow pulse animation - stays yellow */
+@keyframes yellow-pulse {
+  0%,
+  100% {
+    border-color: var(--min-hint-color);
+    box-shadow:
+      0 0 20px var(--min-hint-color),
+      0 0 40px var(--min-hint-color);
+  }
+  50% {
+    border-color: #ffff00;
+    box-shadow:
+      0 0 40px #ffff00,
+      0 0 80px #ffff00;
+  }
+}
+
+.min-found-box.has-value {
+  border-style: solid;
+  border-color: var(--min-hint-color);
+  animation: yellow-pulse 2s ease-in-out infinite;
+}
+
+/* Subtle pulse animation for any selection */
+@keyframes pulse-subtle {
+  0%,
+  100% {
+    box-shadow: 0 0 10px var(--min-hint-color);
+    border-color: var(--min-hint-color);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--min-hint-color);
+    border-color: #fff8a0;
+  }
+}
+
+.pulse-subtle {
+  animation: pulse-subtle 1.5s ease-in-out infinite;
+}
+
+.number-wrapper.is-swap-target:not(.sorted) {
+  box-shadow: 0 0 20px var(--fuchsia);
+  border-color: var(--fuchsia);
+}
+
+.number-wrapper.is-actual-min:not(.sorted) {
+  border-color: var(--min-hint-color);
+}
+
 .number-wrapper.is-actual-min:not(.sorted)::after {
-  content: 'Mín'; position: absolute; top: -10px; right: -10px; background: var(--min-hint-color);
-  color: black; font-size: 0.7rem; font-weight: bold; padding: 2px 4px; border-radius: 4px;
+  content: 'Mín';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--min-hint-color);
+  color: black;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.number-input {
+  width: 70px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+}
+
+.number-input:focus {
+  color: var(--fuchsia);
+}
+
+.number-wrapper.editable {
+  cursor: text;
+  border-color: var(--purple);
+}
+
+.number-wrapper.editable:hover {
+  border-color: var(--fuchsia);
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+}
+
+/* Hide number input arrows */
+.number-input::-webkit-inner-spin-button,
+.number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.number-input[type='number'] {
+  -moz-appearance: textfield;
 }
 </style>
