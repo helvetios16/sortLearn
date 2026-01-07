@@ -5,14 +5,17 @@
       'heavy-glow': comparison === 'heavier',
       'light-glow': comparison === 'lighter',
       'equal-glow': comparison === 'equal',
-      'consolidated': state === 'consolidated',
-      'comparing': state === 'comparing',
+      consolidated: state === 'consolidated',
+      comparing: state === 'comparing',
       'in-temp-var': state === 'temp-variable',
     }"
     @dblclick="emit('return-bottle', id)"
   >
     <!-- Burbuja de mensaje -->
-    <div v-if="message" class="message-bubble">
+    <div
+      v-if="message"
+      class="message-bubble"
+    >
       {{ message }}
       <div class="message-arrow"></div>
     </div>
@@ -32,7 +35,10 @@
     </div>
 
     <!-- Index label (shown when showIndex is true) -->
-    <div v-if="showIndex !== undefined" class="index-label text-center mt-1 text-sm font-bold text-gray-600">
+    <div
+      v-if="showIndex !== undefined"
+      class="index-label text-center mt-1 text-sm font-bold text-gray-600"
+    >
       {{ showIndex }}
     </div>
   </div>
@@ -46,7 +52,13 @@ const props = defineProps<{
   weight: number;
   color: string; // Tailwind class like 'bg-red-300'
   comparison?: 'heavier' | 'lighter' | 'equal' | null;
-  state?: 'normal' | 'consolidated' | 'comparing' | 'temp-variable';
+  state?:
+    | 'normal'
+    | 'consolidated'
+    | 'comparing'
+    | 'temp-variable'
+    | 'in-sorted-zone'
+    | 'being-searched';
   showIndex?: number;
   message?: string; // Mensaje de burbuja para mostrar sobre el frasco
 }>();
@@ -88,7 +100,9 @@ const bottleImageSrc = computed(() => {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    filter 0.2s ease-in-out;
 }
 
 .bottle-image-container:hover .bottle-image {
@@ -118,7 +132,11 @@ const bottleImageSrc = computed(() => {
 }
 
 .bottle-consolidated {
-  background: linear-gradient(to bottom, rgba(212, 248, 212, 0.4), rgba(168, 230, 168, 0.4)) !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(212, 248, 212, 0.4),
+    rgba(168, 230, 168, 0.4)
+  ) !important;
   pointer-events: none;
 }
 
@@ -136,7 +154,8 @@ const bottleImageSrc = computed(() => {
 }
 
 @keyframes pulse-border {
-  0%, 100% {
+  0%,
+  100% {
     border-color: #fbbf24;
     transform: scale(1);
   }
