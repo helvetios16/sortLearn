@@ -4,7 +4,7 @@ import Visualize from '../views/Visualize.vue';
 import Compare from '../views/Compare.vue';
 import Learn from '../views/Learn.vue';
 import UnderConstruction from '../views/UnderConstruction.vue';
-import Test from '../views/Test.vue';
+import SelectionSortPractice from '../views/SelectionSortPractice.vue';
 import { featureFlags } from '../features';
 
 const router = createRouter({
@@ -59,7 +59,7 @@ const router = createRouter({
     {
       path: '/test',
       name: 'test',
-      component: Test,
+      component: SelectionSortPractice,
     },
   ],
 });
