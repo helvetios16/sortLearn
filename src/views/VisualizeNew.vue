@@ -10,6 +10,52 @@
     </div>
 
     <div class="container mx-auto px-4 py-2 h-[calc(100vh-85px)] flex flex-col gap-4">
+      <!-- Messages & Instruction (MOVED UP) -->
+      <div
+        v-if="message || instructionHint"
+        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
+        :class="{
+          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
+            message && messageType === 'error',
+          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
+            message && messageType === 'success',
+          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
+            !message || messageType === 'info',
+        }"
+      >
+        <!-- Icono Grande (Compactado) -->
+        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
+          <span v-if="message && messageType === 'error'">🛑</span>
+          <span v-else-if="message && messageType === 'success'">🎉</span>
+          <span v-else>💡</span>
+        </div>
+
+        <!-- Texto con Jerarquía (Compactado) -->
+        <div class="flex-1 flex flex-col justify-center">
+          <span
+            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
+            :class="{
+              'text-red-700': message && messageType === 'error',
+              'text-emerald-700': message && messageType === 'success',
+              'text-amber-800': !message || messageType === 'info',
+            }"
+          >
+            {{
+              message && messageType === 'error'
+                ? 'ATENCIÓN REQUERIDA'
+                : message && messageType === 'success'
+                  ? '¡MUY BIEN!'
+                  : 'GUÍA DE PASOS'
+            }}
+          </span>
+          <span
+            class="text-base md:text-lg font-medium leading-tight"
+            v-html="message || instructionHint"
+          >
+          </span>
+        </div>
+      </div>
+
       <!-- Top Row: Lista de Frascos + Balanza (Principal focus) -->
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
@@ -382,52 +428,6 @@
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Messages & Instruction (Barra completa en medio) -->
-      <div
-        v-if="message || instructionHint"
-        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
-        :class="{
-          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
-            message && messageType === 'error',
-          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
-            message && messageType === 'success',
-          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
-            !message || messageType === 'info',
-        }"
-      >
-        <!-- Icono Grande (Compactado) -->
-        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
-          <span v-if="message && messageType === 'error'">🛑</span>
-          <span v-else-if="message && messageType === 'success'">🎉</span>
-          <span v-else>💡</span>
-        </div>
-
-        <!-- Texto con Jerarquía (Compactado) -->
-        <div class="flex-1 flex flex-col justify-center">
-          <span
-            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
-            :class="{
-              'text-red-700': message && messageType === 'error',
-              'text-emerald-700': message && messageType === 'success',
-              'text-amber-800': !message || messageType === 'info',
-            }"
-          >
-            {{
-              message && messageType === 'error'
-                ? 'ATENCIÓN REQUERIDA'
-                : message && messageType === 'success'
-                  ? '¡MUY BIEN!'
-                  : 'GUÍA DE PASOS'
-            }}
-          </span>
-          <span
-            class="text-base md:text-lg font-medium leading-tight"
-            v-html="message || instructionHint"
-          >
-          </span>
         </div>
       </div>
 
