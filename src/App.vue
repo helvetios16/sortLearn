@@ -3,37 +3,48 @@ import { RouterLink, RouterView } from 'vue-router';
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/">Inicio</RouterLink>
-      <RouterLink to="/visualize">Visualizar</RouterLink>
-      <RouterLink to="/compare">Comparar</RouterLink>
-      <RouterLink to="/learn">Aprender</RouterLink>
-      <RouterLink to="/test">Probar</RouterLink>
-    </nav>
+  <header class="bg-white shadow-md">
+    <div class="container mx-auto px-4">
+      <nav class="flex items-center justify-center space-x-4 h-16">
+        <RouterLink
+          to="/"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Inicio</RouterLink
+        >
+
+        <RouterLink
+          to="/visualize"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Visualizar</RouterLink
+        >
+
+        <RouterLink
+          to="/compare"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Comparar</RouterLink
+        >
+
+        <RouterLink
+          to="/learn"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Aprender</RouterLink
+        >
+
+        <RouterLink
+          to="/test"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Probar</RouterLink
+        >
+      </nav>
+    </div>
   </header>
 
-  <main>
+  <main class="container mx-auto p-4">
     <RouterView />
   </main>
 </template>
-
-<style scoped>
-nav {
-  width: 100%;
-  font-size: 1rem;
-  text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-</style>
