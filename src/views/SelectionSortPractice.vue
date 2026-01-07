@@ -300,669 +300,253 @@ function checkSwapCompletion() {
 </script>
 
 <template>
-  <div class="page-container">
-    <div class="container">
-      <h1 class="title">Practicando Selection Sort</h1>
-      <p class="subtitle">
-        Haz clic en los números y las casillas para practicar el algoritmo de ordenamiento.
+  <div class="min-h-screen bg-gray-50 text-gray-800">
+    <div class="container mx-auto p-4 md:p-8">
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500">
+        Práctica de Selection Sort
+      </h1>
+      <p class="text-center text-slate-500 mb-8 font-medium">
+        Haz clic en los números y las casillas para ejecutar el algoritmo paso a paso.
       </p>
 
-      <div class="controls-container">
-        <button
-          v-if="!isPracticeStarted"
-          @click="addNumber"
-          class="btn btn-icon btn-primary"
-          title="Añadir Número"
-          :disabled="numbers.length >= 15"
-        >
-          +
-        </button>
-        <button
-          v-if="!isPracticeStarted"
-          @click="removeNumber"
-          class="btn btn-icon btn-secondary"
-          title="Quitar Número"
-          :disabled="numbers.length === 0"
-        >
-          -
-        </button>
+      <!-- Panel de Control -->
+      <div class="bg-white border border-gray-200 rounded-xl shadow-md p-4 mb-8 max-w-4xl mx-auto">
+        <div class="flex flex-wrap justify-center items-center gap-4">
+          <template v-if="!isPracticeStarted">
+            <button
+              @click="addNumber"
+              class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 font-bold text-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Añadir Número"
+              :disabled="numbers.length >= 15"
+            >
+              +
+            </button>
+            <button
+              @click="removeNumber"
+              class="w-12 h-12 flex items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 font-bold text-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Quitar Número"
+              :disabled="numbers.length === 0"
+            >
+              -
+            </button>
 
-        <div
-          v-if="!isPracticeStarted"
-          class="separator"
-        ></div>
+            <div class="w-px h-8 bg-gray-300 mx-2"></div>
 
-        <button
-          v-if="!isPracticeStarted"
-          @click="startPractice"
-          class="btn btn-icon btn-accent"
-          title="Empezar a Practicar"
-          :disabled="numbers.length === 0"
-        >
-          ▶
-        </button>
-        <button
-          @click="reset"
-          class="btn btn-icon btn-secondary"
-          title="Reiniciar"
-        >
-          ↻
-        </button>
+            <button
+              @click="startPractice"
+              class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold rounded-lg shadow hover:shadow-lg hover:scale-105 transform transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              title="Empezar a Practicar"
+              :disabled="numbers.length === 0"
+            >
+              <span>▶</span> EMPEZAR
+            </button>
+          </template>
 
-        <div
-          v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length"
-          class="separator"
-        ></div>
-
-        <button
-          v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length"
-          @click="triggerMinHint"
-          class="btn btn-icon btn-hint"
-          title="Mostrar Pista del Mínimo"
-          :disabled="isHintOnCooldown || showMinHint || !allCompared"
-        >
-          💡
-        </button>
-      </div>
-
-      <div class="coach-hint">
-        <p>{{ coachHint }}</p>
-      </div>
-
-      <div class="main-area">
-        <div class="numbers-container">
-          <div
-            v-for="(num, index) in numbers"
-            :key="num.id"
-            class="number-wrapper"
-            @click="
-              isPracticeStarted
-                ? selectedBox
-                  ? placeBoxValueInArray(index)
-                  : selectNumberFromArray(num, index)
-                : null
-            "
-            :class="{
-              sorted: index < sortedBoundaryIndex,
-              selected: selectedNumber?.id === num.id,
-              'is-swap-target': index === swapTargetIndex,
-              'is-actual-min': num.id === actualMinInUnsorted?.id && showMinHint,
-              editable: !isPracticeStarted,
-              empty: num.value === -1,
-              compared: comparedIndices.includes(index),
-              'current-min': index === currentMinIndex && !allCompared,
-            }"
+          <button
+            @click="reset"
+            class="px-4 py-2 bg-slate-200 text-slate-700 font-bold rounded-lg hover:bg-slate-300 transition-colors flex items-center gap-2"
+            title="Reiniciar"
           >
-            <input
-              v-if="!isPracticeStarted"
-              type="number"
-              class="number-input"
-              :value="num.value"
-              @input="updateNumberValue(index, ($event.target as HTMLInputElement).value)"
-              @click.stop
-              min="0"
-              max="999"
-            />
-            <span
-              v-else-if="num.value !== -1"
-              class="number-value"
-              >{{ num.value }}</span
-            >
-          </div>
-        </div>
+            <span>↻</span> REINICIAR
+          </button>
 
-        <div class="temp-area">
-          <div class="min-found-area">
-            <div class="temp-label label-min-found">Mínimo Encontrado</div>
-            <div
-              class="min-found-box number-wrapper"
-              :class="{
-                'has-value': minBox !== null,
-                'pulse-subtle': selectedNumber !== null && !minBox,
-              }"
-              @click="minBox ? selectMinBox() : placeInMinBox()"
+          <template v-if="isPracticeStarted && sortedBoundaryIndex < numbers.length">
+            <div class="w-px h-8 bg-gray-300 mx-2"></div>
+            <button
+              @click="triggerMinHint"
+              class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 hover:bg-yellow-200 font-bold text-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Mostrar Pista del Mínimo"
+              :disabled="isHintOnCooldown || showMinHint || !allCompared"
             >
-              <span
-                v-if="minBox"
-                class="number-value"
-                >{{ minBox.value }}</span
-              >
-            </div>
-          </div>
+              💡
+            </button>
+          </template>
         </div>
       </div>
 
-      <div
-        class="history-container"
-        v-if="history.length > 0"
+      <!-- Hint Banner -->
+      <div 
+        class="max-w-4xl mx-auto mb-8 p-4 rounded-xl border-l-8 text-center shadow-sm transition-all duration-300"
+        :class="[
+          coachHint.includes('❌') ? 'bg-red-50 border-red-500 text-red-800' :
+          coachHint.includes('🎉') ? 'bg-green-50 border-green-500 text-green-800' :
+          'bg-blue-50 border-blue-500 text-blue-800'
+        ]"
       >
-        <div class="history-header">
-          <h2 class="history-title">📜 Historial de Pasos</h2>
-          <span class="history-count"
-            >{{ history.length }} {{ history.length === 1 ? 'paso' : 'pasos' }}</span
-          >
+        <p class="text-lg font-bold flex items-center justify-center gap-2">
+            {{ coachHint }}
+        </p>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto items-start">
+        
+        <!-- Área Principal: Array y Mínimo -->
+        <div class="flex-1 w-full flex flex-col gap-8">
+            
+            <!-- Array Visual -->
+            <div class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-6 shadow-inner min-h-[200px] flex items-center justify-center">
+                <div class="flex flex-wrap justify-center gap-3">
+                <div
+                    v-for="(num, index) in numbers"
+                    :key="num.id"
+                    class="relative group"
+                    @click="
+                    isPracticeStarted
+                        ? selectedBox
+                        ? placeBoxValueInArray(index)
+                        : selectNumberFromArray(num, index)
+                        : null
+                    "
+                >   
+                    <!-- Index Label -->
+                    <div class="absolute -top-6 left-0 w-full text-center text-xs font-mono font-bold text-slate-400">
+                        {{ index }}
+                    </div>
+
+                    <!-- Number Box -->
+                    <div 
+                        class="w-14 h-16 md:w-16 md:h-20 flex items-center justify-center rounded-xl border-b-4 text-xl md:text-2xl font-bold transition-all duration-200 cursor-pointer shadow-sm relative bg-white"
+                        :class="[
+                            // Estado Ordenado
+                            index < sortedBoundaryIndex 
+                                ? 'bg-emerald-100 border-emerald-500 text-emerald-700' 
+                                : 'border-slate-300 text-slate-700 hover:-translate-y-1',
+                            
+                            // Estados de Interacción
+                            selectedNumber?.id === num.id ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10' : '',
+                            index === swapTargetIndex ? 'ring-4 ring-pink-300 border-pink-400' : '',
+                            
+                            // Pistas y Comparaciones
+                            num.id === actualMinInUnsorted?.id && showMinHint ? 'ring-4 ring-yellow-300 border-yellow-400' : '',
+                            comparedIndices.includes(index) ? 'bg-blue-50 border-blue-300 text-blue-900' : '',
+                            index === currentMinIndex && !allCompared ? 'bg-yellow-50 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]' : '',
+                            
+                            // Vacío
+                            num.value === -1 ? 'bg-slate-100 border-dashed border-slate-300 text-transparent pointer-events-none' : '',
+                            
+                            // Editable
+                            !isPracticeStarted ? 'hover:border-purple-300' : ''
+                        ]"
+                    >
+                        <input
+                            v-if="!isPracticeStarted"
+                            type="number"
+                            class="w-full h-full bg-transparent text-center outline-none"
+                            :value="num.value"
+                            @input="updateNumberValue(index, ($event.target as HTMLInputElement).value)"
+                            @click.stop
+                            min="0"
+                            max="999"
+                        />
+                        <span v-else-if="num.value !== -1">{{ num.value }}</span>
+                        
+                        <!-- Badges/Etiquetas -->
+                        <div v-if="index < sortedBoundaryIndex" class="absolute -bottom-2 right-1 text-[10px] bg-emerald-500 text-white px-1 rounded">OK</div>
+                        <div v-if="index === currentMinIndex && !allCompared" class="absolute -top-2 -right-2 text-[10px] bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full font-bold shadow-sm z-20">min?</div>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Área de Variable Temporal (Mínimo Encontrado) -->
+            <div class="flex justify-center">
+                <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 shadow-lg flex flex-col items-center gap-2 min-w-[200px]">
+                    <h3 class="text-sm font-bold text-yellow-800 uppercase tracking-wide">Mínimo Encontrado</h3>
+                    
+                    <div
+                        class="w-20 h-20 flex items-center justify-center rounded-xl border-b-4 text-3xl font-bold transition-all cursor-pointer bg-white"
+                        :class="[
+                            minBox 
+                                ? 'border-yellow-500 text-yellow-900 shadow-md scale-105' 
+                                : 'border-dashed border-yellow-300 text-yellow-200',
+                            selectedBox === 'min' ? 'ring-4 ring-purple-400 border-purple-500' : '',
+                            selectedNumber !== null && !minBox ? 'animate-pulse ring-4 ring-yellow-200' : ''
+                        ]"
+                        @click="minBox ? selectMinBox() : placeInMinBox()"
+                    >
+                        <span v-if="minBox">{{ minBox.value }}</span>
+                        <span v-else class="text-4xl text-yellow-200 select-none">?</span>
+                    </div>
+                    
+                    <p class="text-xs text-yellow-600 font-medium text-center max-w-[180px]">
+                        {{ minBox ? 'Haz clic para colocarlo en su posición final' : 'Selecciona el menor del array para traerlo aquí' }}
+                    </p>
+                </div>
+            </div>
+
         </div>
-        <div class="history-list">
-          <div
-            v-for="(item, index) in categorizedHistory"
-            :key="index"
-            class="history-item"
-            :class="`history-${item.type}`"
-          >
-            <span class="history-icon">{{ item.icon }}</span>
-            <span class="history-message">{{ item.message.replace(item.icon, '').trim() }}</span>
-            <span class="history-index">#{{ index + 1 }}</span>
-          </div>
+
+        <!-- Panel Lateral: Historial -->
+        <div class="w-full lg:w-80 flex-shrink-0" v-if="history.length > 0">
+             <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden sticky top-4">
+                <div class="bg-slate-50 p-3 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="font-bold text-slate-700 flex items-center gap-2">
+                        <span>📜</span> Historial
+                    </h2>
+                    <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
+                        {{ history.length }} pasos
+                    </span>
+                </div>
+                
+                <div class="max-h-[500px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                    <div
+                        v-for="(item, index) in categorizedHistory.slice().reverse()"
+                        :key="index"
+                        class="p-2.5 rounded-lg text-sm border-l-4 shadow-sm animate-fade-in"
+                        :class="[
+                            item.type === 'error' ? 'bg-red-50 border-red-400 text-red-900' :
+                            item.type === 'success' ? 'bg-emerald-50 border-emerald-400 text-emerald-900' :
+                            item.type === 'celebration' ? 'bg-amber-50 border-amber-400 text-amber-900' :
+                            item.type === 'comparison' ? 'bg-blue-50 border-blue-400 text-blue-900' :
+                            'bg-gray-50 border-gray-300 text-gray-700'
+                        ]"
+                    >
+                        <div class="flex gap-2">
+                            <span class="text-base select-none">{{ item.icon }}</span>
+                            <span class="leading-snug">{{ item.message.replace(item.icon, '').trim() }}</span>
+                        </div>
+                         <div class="text-[10px] text-right opacity-50 mt-1 font-mono">Paso {{ history.length - index }}</div>
+                    </div>
+                </div>
+             </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-.page-container {
-  --fuchsia: #ff00ff;
-  --purple: #8a2be2;
-  --pink: #ffc0cb;
-  --bg-dark: #1a1a1a;
-  --bg-light: #2a2a2a;
-  --text-color: #f0f0f0;
-  --sorted-color: #03dac6;
-  --min-hint-color: #f0e68c;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  background-color: var(--bg-dark);
-  font-family: 'Poppins', sans-serif;
-  color: var(--text-color);
-  padding: 2rem;
+/* Custom Scrollbar for History */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
 }
-.container {
-  width: 100%;
-  max-width: 1050px;
-  text-align: center;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
-.title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--fuchsia);
-  margin-bottom: 0.5rem;
-  text-shadow: 0 0 10px var(--fuchsia);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
 }
-.subtitle {
-  font-size: 1.1rem;
-  color: var(--pink);
-  margin-bottom: 1rem;
-}
-.controls-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  min-height: 60px;
-  background-color: rgba(42, 42, 42, 0.5);
-  padding: 1rem;
-  border-radius: 12px;
-}
-.separator {
-  width: 2px;
-  height: 24px;
-  background-color: var(--purple);
-  margin: 0 0.5rem;
-}
-.coach-hint {
-  min-height: 2.5em;
-  font-size: 1.1rem;
-  color: var(--pink);
-  margin-bottom: 1rem;
-  font-style: italic;
-}
-.main-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-  margin-bottom: 1rem;
-}
-.numbers-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  min-height: 180px;
-  max-width: 980px;
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
-.temp-area {
-  display: flex;
-  gap: 2rem;
-  align-items: flex-start;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-.min-found-area,
-.temp-var-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-.separator-vertical {
-  width: 2px;
-  height: 80px;
-  background-color: var(--purple);
-  align-self: center;
-  margin-top: 1.5rem;
-}
-
-.temp-label {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--fuchsia);
-}
-
-.label-min-found {
-  color: var(--min-hint-color);
-}
-
-.history-container {
-  width: 100%;
-  max-width: 850px;
-  margin: 2rem auto 1rem;
-  background: linear-gradient(135deg, rgba(42, 42, 42, 0.95), rgba(30, 30, 30, 0.95));
-  backdrop-filter: blur(10px);
-  padding: 0;
-  border-radius: 16px;
-  border: 1px solid rgba(138, 43, 226, 0.3);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  overflow: hidden;
-}
-
-.history-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  background: linear-gradient(90deg, rgba(138, 43, 226, 0.15), rgba(255, 0, 255, 0.1));
-  border-bottom: 1px solid rgba(138, 43, 226, 0.2);
-}
-
-.history-title {
-  font-size: 1.4rem;
-  color: var(--fuchsia);
-  margin: 0;
-  font-weight: 600;
-  text-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
-}
-
-.history-count {
-  font-size: 0.9rem;
-  color: var(--pink);
-  background: rgba(255, 192, 203, 0.1);
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 192, 203, 0.3);
-  font-weight: 500;
-}
-
-.history-list {
-  padding: 1rem;
-  margin: 0;
-  max-height: 350px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.history-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.history-list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-.history-list::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--fuchsia), var(--purple));
-  border-radius: 10px;
-}
-
-.history-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  animation: slideIn 0.4s ease-out;
-  position: relative;
-  overflow: hidden;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.history-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  transition: width 0.3s ease;
-}
-
-.history-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.history-item:hover::before {
-  width: 5px;
-}
-
-.history-icon {
-  font-size: 1.3rem;
-  flex-shrink: 0;
-  filter: drop-shadow(0 0 4px currentColor);
-}
-
-.history-message {
-  flex: 1;
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: #e0e0e0;
-}
-
-.history-index {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
-  min-width: 35px;
-  text-align: right;
-}
-
-/* Message type styles */
-.history-comparison {
-  background: rgba(74, 158, 255, 0.08);
-  border-left: 3px solid #4a9eff;
-}
-
-.history-comparison::before {
-  background: #4a9eff;
-}
-
-.history-comparison:hover {
-  background: rgba(74, 158, 255, 0.15);
-}
-
-.history-success {
-  background: rgba(3, 218, 198, 0.08);
-  border-left: 3px solid #03dac6;
-}
-
-.history-success::before {
-  background: #03dac6;
-}
-
-.history-success:hover {
-  background: rgba(3, 218, 198, 0.15);
-}
-
-.history-error {
-  background: rgba(255, 82, 82, 0.08);
-  border-left: 3px solid #ff5252;
-}
-
-.history-error::before {
-  background: #ff5252;
-}
-
-.history-error:hover {
-  background: rgba(255, 82, 82, 0.15);
-}
-
-.history-info {
-  background: rgba(138, 43, 226, 0.08);
-  border-left: 3px solid var(--purple);
-}
-
-.history-info::before {
-  background: var(--purple);
-}
-
-.history-info:hover {
-  background: rgba(138, 43, 226, 0.15);
-}
-
-.history-celebration {
-  background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 0, 255, 0.1));
-  border-left: 3px solid gold;
-  animation: celebration-pulse 2s ease-in-out infinite;
-}
-
-.history-celebration::before {
-  background: linear-gradient(180deg, gold, var(--fuchsia));
-}
-
-@keyframes celebration-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-  }
-}
-
-.btn {
-  padding: 0.8rem 1.5rem;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: white;
-  border-radius: 8px;
-}
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.btn-primary {
-  background-color: var(--fuchsia);
-}
-.btn-secondary {
-  background-color: var(--purple);
-}
-.btn-accent {
-  background: linear-gradient(45deg, var(--fuchsia), var(--purple));
-}
-.btn-hint {
-  background-color: var(--min-hint-color);
-  color: #1a1a1a;
-}
-
-.btn-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  line-height: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0;
-}
-.btn-icon[title='Añadir Número'],
-.btn-icon[title='Quitar Número'] {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.number-wrapper {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: var(--bg-light);
-  border: 2px solid var(--purple);
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  position: relative;
-  cursor: pointer;
-}
-
-.number-value {
-  font-size: 1.4rem;
-  font-weight: 600;
-  user-select: none;
-}
-
-.number-wrapper.sorted {
-  border-color: var(--sorted-color);
-  opacity: 0.6;
-  cursor: default;
-}
-
-.number-wrapper.selected {
-  transform: scale(1.1);
-  box-shadow: 0 0 20px white;
-  border-color: white;
-}
-
-.number-wrapper.empty {
-  background-color: #1e1e1e;
-  border-style: dashed;
-  border-color: #444;
-  opacity: 0.5;
-  cursor: default;
-}
-
-.number-wrapper.compared {
-  border-color: #4a9eff;
-  background-color: rgba(74, 158, 255, 0.1);
-}
-
-.number-wrapper.current-min {
-  border-color: var(--min-hint-color);
-  background-color: rgba(240, 230, 140, 0.15);
-  box-shadow: 0 0 15px rgba(240, 230, 140, 0.3);
-}
-
-.min-found-box {
-  border-style: dashed;
-  border-color: var(--min-hint-color);
-}
-
-/* Yellow pulse animation - stays yellow */
-@keyframes yellow-pulse {
-  0%,
-  100% {
-    border-color: var(--min-hint-color);
-    box-shadow:
-      0 0 20px var(--min-hint-color),
-      0 0 40px var(--min-hint-color);
-  }
-  50% {
-    border-color: #ffff00;
-    box-shadow:
-      0 0 40px #ffff00,
-      0 0 80px #ffff00;
-  }
-}
-
-.min-found-box.has-value {
-  border-style: solid;
-  border-color: var(--min-hint-color);
-  animation: yellow-pulse 2s ease-in-out infinite;
-}
-
-/* Subtle pulse animation for any selection */
-@keyframes pulse-subtle {
-  0%,
-  100% {
-    box-shadow: 0 0 10px var(--min-hint-color);
-    border-color: var(--min-hint-color);
-  }
-  50% {
-    box-shadow: 0 0 20px var(--min-hint-color);
-    border-color: #fff8a0;
-  }
-}
-
-.pulse-subtle {
-  animation: pulse-subtle 1.5s ease-in-out infinite;
-}
-
-.number-wrapper.is-swap-target:not(.sorted) {
-  box-shadow: 0 0 20px var(--fuchsia);
-  border-color: var(--fuchsia);
-}
-
-.number-wrapper.is-actual-min:not(.sorted) {
-  border-color: var(--min-hint-color);
-}
-
-.number-wrapper.is-actual-min:not(.sorted)::after {
-  content: 'Mín';
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  background: var(--min-hint-color);
-  color: black;
-  font-size: 0.7rem;
-  font-weight: bold;
-  padding: 2px 4px;
-  border-radius: 4px;
-}
-
-.number-input {
-  width: 70px;
-  height: 40px;
-  background: transparent;
-  border: none;
-  color: var(--text-color);
-  font-size: 1.8rem;
-  font-weight: 600;
-  text-align: center;
-  font-family: 'Poppins', sans-serif;
-  outline: none;
-}
-
-.number-input:focus {
-  color: var(--fuchsia);
-}
-
-.number-wrapper.editable {
-  cursor: text;
-  border-color: var(--purple);
-}
-
-.number-wrapper.editable:hover {
-  border-color: var(--fuchsia);
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* Hide number input arrows */
-.number-input::-webkit-inner-spin-button,
-.number-input::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
 }
-
-.number-input[type='number'] {
+input[type=number] {
   -moz-appearance: textfield;
 }
 </style>
