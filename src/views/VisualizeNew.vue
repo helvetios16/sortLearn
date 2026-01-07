@@ -258,15 +258,22 @@
                 :style="{ transform: leftPanTransform }"
               >
                 <div
-                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl"
-                  :class="{
-                    'shadow-[0_0_20px_rgba(234,179,8,0.6)] ring-4 ring-yellow-400 ring-opacity-70 scale-110':
-                      highlightLeftPan,
-                  }"
+                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl relative"
                   @drop="onDropOnScale($event, 'left')"
                   @dragover="onDragOver"
                 >
-                  <div class="min-h-[70px] flex items-center justify-center">
+                  <!-- Placeholder Visual (Yellow for Min) -->
+                  <div
+                    v-if="!leftBottle"
+                    class="absolute top-2 w-20 h-28 border-4 border-yellow-400 rounded-xl bg-yellow-50/30 transition-all duration-300 pointer-events-none"
+                    :class="
+                      draggedBottleIndex === minIndex
+                        ? 'animate-pulse shadow-[0_0_20px_rgba(250,204,21,0.8)] border-solid scale-105 bg-yellow-100/50 opacity-100'
+                        : 'border-dashed opacity-40'
+                    "
+                  ></div>
+
+                  <div class="min-h-[70px] flex items-center justify-center z-10 relative">
                     <Bottle
                       v-if="leftBottle"
                       :id="leftBottle.id"
@@ -277,7 +284,7 @@
                     />
                   </div>
                   <div
-                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1"
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1 z-10"
                     style="transform: perspective(100px) rotateX(60deg)"
                   ></div>
                 </div>
@@ -289,15 +296,22 @@
                 :style="{ transform: rightPanTransform }"
               >
                 <div
-                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl"
-                  :class="{
-                    'shadow-[0_0_20px_rgba(34,211,238,0.6)] ring-4 ring-cyan-400 ring-opacity-70 scale-110':
-                      highlightRightPan,
-                  }"
+                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl relative"
                   @drop="onDropOnScale($event, 'right')"
                   @dragover="onDragOver"
                 >
-                  <div class="min-h-[70px] flex items-center justify-center">
+                  <!-- Placeholder Visual (Cyan for Compare) -->
+                  <div
+                    v-if="!rightBottle"
+                    class="absolute top-2 w-20 h-28 border-4 border-cyan-400 rounded-xl bg-cyan-50/30 transition-all duration-300 pointer-events-none"
+                    :class="
+                      draggedBottleIndex !== null && draggedBottleIndex !== minIndex
+                        ? 'animate-pulse shadow-[0_0_20px_rgba(34,211,238,0.8)] border-solid scale-105 bg-cyan-100/50 opacity-100'
+                        : 'border-dashed opacity-40'
+                    "
+                  ></div>
+
+                  <div class="min-h-[70px] flex items-center justify-center z-10 relative">
                     <Bottle
                       v-if="rightBottle"
                       :id="rightBottle.id"
@@ -308,7 +322,7 @@
                     />
                   </div>
                   <div
-                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1"
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1 z-10"
                     style="transform: perspective(100px) rotateX(60deg)"
                   ></div>
                 </div>
