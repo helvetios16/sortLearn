@@ -609,11 +609,11 @@
         <div class="col-span-4 flex flex-col gap-3">
           <!-- Cuadro Menor Actual -->
           <div
-            class="rounded-lg shadow-md p-2 border-2 transition-all duration-300 flex-1 flex flex-col"
+            class="rounded-lg shadow-md p-2 transition-all duration-300 flex-1 flex flex-col relative"
             :class="[
               waitingForNewMinDrag
-                ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
-                : 'bg-yellow-50 border-gray-800',
+                ? 'bg-emerald-50 border-4 border-dashed border-emerald-500 shadow-emerald-100 shadow-xl'
+                : 'bg-yellow-50 border border-gray-800',
               {
                 'opacity-20 grayscale pointer-events-none':
                   shouldDimBottomPanels && !waitingForNewMinDrag,
@@ -622,6 +622,17 @@
             @drop="onDropOnMinBox"
             @dragover="onDragOver"
           >
+            <!-- Overlay PONER AQUÍ -->
+            <div
+              v-if="waitingForNewMinDrag"
+              class="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
+            >
+              <div
+                class="bg-white/95 px-4 py-2 rounded-full border-2 border-emerald-600 text-emerald-700 font-black text-xs uppercase tracking-widest shadow-lg animate-bounce"
+              >
+                👇 Poner Aquí 👇
+              </div>
+            </div>
             <h3
               class="text-sm font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-1"
             >
