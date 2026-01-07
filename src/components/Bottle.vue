@@ -31,7 +31,7 @@
 
       <!-- Figuras geométricas en lugar de líquido -->
       <div class="w-full rounded-b-lg overflow-hidden relative" :style="{ height: liquidHeight }">
-        <div class="absolute inset-0 flex flex-wrap items-end justify-center gap-0.5 p-1">
+        <div class="absolute inset-0 flex flex-wrap content-end justify-center gap-[1px] p-0.5">
           <template v-for="(shape, index) in shapes" :key="index">
             <!-- Círculo -->
             <div
@@ -134,8 +134,8 @@ const shapes = computed(() => {
     'rgb(20 184 166)',   // teal
   ];
 
-  // Number of shapes based on weight (more weight = more shapes)
-  const numShapes = Math.floor(props.weight / 10) + 3; // 3-13 shapes
+  // Number of shapes based on weight (more shapes for denser look)
+  const numShapes = Math.floor(props.weight / 2.5) + 8; 
 
   const generatedShapes = [];
   for (let i = 0; i < numShapes; i++) {
@@ -143,7 +143,7 @@ const shapes = computed(() => {
     const seed = props.id * 1000 + props.weight + i;
     const typeIndex = (seed * 7) % shapeTypes.length;
     const colorIndex = (seed * 13) % colors.length;
-    const size = 4 + ((seed * 3) % 4); // Size between 4-7px
+    const size = 3 + ((seed * 3) % 4); // Size between 3-6px (smaller)
 
     generatedShapes.push({
       type: shapeTypes[typeIndex],
