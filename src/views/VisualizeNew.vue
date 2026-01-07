@@ -1673,11 +1673,23 @@ watch([leftBottle, rightBottle], ([left, right]) => {
 // Initialize
 const initializeBottles = () => {
   const bottles: Bottle[] = [];
+  const palette = [
+    'bg-red-400',
+    'bg-blue-400',
+    'bg-green-400',
+    'bg-purple-400',
+    'bg-yellow-400',
+    'bg-pink-400',
+    'bg-cyan-400',
+    'bg-orange-400',
+  ];
+  palette.sort(() => Math.random() - 0.5);
+
   for (let i = 0; i < 5; i++) {
     bottles.push({
       id: i + 1,
       weight: Math.floor(Math.random() * 80) + 20,
-      color: 'bg-blue-300',
+      color: palette[i % palette.length],
     });
   }
   unsortedBottles.value = bottles;
