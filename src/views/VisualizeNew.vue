@@ -324,17 +324,17 @@
         </div>
 
         <!-- COMPLEJIDAD -->
-        <div class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative"
+        <div class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative overflow-hidden flex flex-col"
              :class="{ 
                'opacity-20 grayscale pointer-events-none': shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'complexity'),
                'z-[100] ring-4 ring-yellow-400 scale-105 shadow-2xl': showMidQuiz && quizTopic === 'complexity'
              }">
-          <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-1">
+          <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-1 shrink-0">
             <span>📊</span> <span>COMPLEJIDAD</span>
           </h3>
-          <div class="flex flex-col gap-2 h-full">
+          <div class="flex flex-col gap-2 h-full overflow-hidden">
              <!-- Totales -->
-            <div class="grid grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 gap-2 shrink-0">
                 <div class="bg-blue-50 rounded p-1.5 text-center border border-blue-200">
                   <p class="text-[9px] text-blue-700 uppercase tracking-wider font-bold mb-0.5">Total Comparaciones</p>
                   <p class="text-xl font-extrabold text-blue-600 leading-none">{{ comparisons }}</p>
@@ -346,14 +346,14 @@
             </div>
 
             <!-- Desglose por Iteración -->
-            <div class="bg-white rounded border border-gray-200 p-1.5 flex-1 flex flex-col justify-start">
-                <div class="flex justify-between items-end mb-1 border-b border-gray-100 pb-1">
+            <div class="bg-white rounded border border-gray-200 p-1 flex-1 flex flex-col justify-start overflow-hidden">
+                <div class="flex justify-between items-end mb-0.5 border-b border-gray-100 pb-0.5 shrink-0">
                     <span class="text-[9px] font-black text-gray-500 uppercase tracking-wider">Comparaciones por Vuelta</span>
                     <span class="text-[8px] text-gray-400 italic"></span>
                 </div>
-                <div class="space-y-1">
+                <div class="space-y-[3px] overflow-y-auto pr-0.5">
                   <div v-for="(maxComp, idx) in [4, 3, 2, 1]" :key="idx" 
-                       class="flex justify-between items-center px-2 py-1 rounded transition-all duration-300 gap-2"
+                       class="flex justify-between items-center px-1.5 py-[3px] rounded transition-all duration-300 gap-1.5"
                        :class="currentIteration === idx ? 'bg-blue-50 border-l-2 border-blue-500 shadow-sm' : (currentIteration > idx ? 'bg-gray-50' : '')">
                      
                      <!-- Título -->
@@ -363,9 +363,9 @@
                      </span>
 
                      <!-- Barra de Progreso Segmentada -->
-                     <div class="flex-1 flex justify-end gap-[1px] h-2 mx-1">
+                     <div class="flex-1 flex justify-end gap-[1px] h-[7px] mx-1">
                        <div v-for="n in maxComp" :key="n"
-                            class="w-6 rounded-[1px] transition-colors duration-300"
+                            class="w-4 rounded-[1px] transition-colors duration-300"
                             :class="n <= (currentIteration > idx ? maxComp : (currentIteration === idx ? Math.max(0, currentCompareIndex) : 0)) 
                                     ? (currentIteration > idx ? 'bg-emerald-400' : 'bg-blue-500') 
                                     : 'bg-gray-200'">
@@ -373,11 +373,11 @@
                      </div>
 
                      <!-- Contador -->
-                     <span class="font-mono text-[11px] whitespace-nowrap min-w-[30px] text-right">
-                        <span v-if="currentIteration === idx" class="font-extrabold text-blue-700 text-xs">{{ Math.max(0, currentCompareIndex) }}</span>
+                     <span class="font-mono text-[10px] whitespace-nowrap min-w-[28px] text-right leading-none">
+                        <span v-if="currentIteration === idx" class="font-extrabold text-blue-700 text-[11px]">{{ Math.max(0, currentCompareIndex) }}</span>
                         <span v-else-if="currentIteration > idx" class="text-green-600 font-bold">{{ maxComp }}</span>
                         <span v-else class="text-gray-300">0</span>
-                        <span class="text-[10px] text-gray-400 opacity-70"> / {{ maxComp }}</span>
+                        <span class="text-[9px] text-gray-400 opacity-70"> / {{ maxComp }}</span>
                      </span>
                   </div>
                 </div>
@@ -467,9 +467,17 @@
 
               <!-- --- SPACE QUIZ --- -->
               <template v-else>
-                  <p class="text-gray-600 text-sm mt-2">Observa la sección de memoria resaltada. Usamos una variable para recordar el mínimo.</p>
-                  <p class="text-gray-800 font-bold mt-2 text-lg">¿Cómo crece la MEMORIA EXTRA necesaria si aumenta la cantidad de datos (n)?</p>
-                  <p class="text-xs text-gray-500 mt-1 italic">(Nota: No cuentes el array original, solo el espacio adicional "extra")</p>
+                  <!-- PHASE 1: Concrete Case -->
+                  <div v-if="currentQuizPhase === 1">
+                      <p class="text-gray-600 text-sm mt-2">Observa la sección de memoria resaltada. Ya hemos hecho 2 vueltas.</p>
+                      <p class="text-gray-800 font-bold mt-2 text-lg">¿Cuántas variables EXTRA (además del array original) estamos usando para encontrar el menor?</p>
+                  </div>
+
+                  <!-- PHASE 2: Generalization -->
+                  <div v-else>
+                      <p class="text-gray-600 text-sm mt-2">Ahora imagina que ordenamos 1,000,000 de elementos...</p>
+                      <p class="text-gray-800 font-bold mt-2 text-lg">¿Cuánto espacio extra necesitaríamos?</p>
+                  </div>
               </template>
           </div>
           
@@ -541,23 +549,45 @@
 
           <!-- --- SPACE OPTIONS --- -->
           <template v-else>
-             <div class="space-y-3">
+             <!-- PHASE 1 OPTIONS -->
+             <div v-if="currentQuizPhase === 1" class="space-y-3">
+              <button @click="handleMidQuizAnswer('1var')" 
+                      :disabled="midQuizSolved"
+                      class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
+                  <span>A) 1 variable (mínimo)</span>
+              </button>
+              
+              <button @click="handleMidQuizAnswer('nvars')" 
+                      :disabled="midQuizSolved"
+                      class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
+                  <span>B) 1 variable por cada elemento (N)</span>
+              </button>
+              
+              <button @click="handleMidQuizAnswer('2vars')" 
+                      :disabled="midQuizSolved"
+                      class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
+                  <span>C) 2 variables por vuelta</span>
+              </button>
+             </div>
+
+             <!-- PHASE 2 OPTIONS -->
+             <div v-else class="space-y-3">
               <button @click="handleMidQuizAnswer('on')" 
                       :disabled="midQuizSolved"
                       class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
-                  <span>A) O(n) - Sube proporcionalmente</span>
+                  <span>A) Aumenta mucho (Lineal O(n))</span>
               </button>
               
               <button @click="handleMidQuizAnswer('on2')" 
                       :disabled="midQuizSolved"
                       class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
-                  <span>B) O(n²) - Sube al cuadrado</span>
+                  <span>B) Aumenta muchísimo (Cuadrático O(n²))</span>
               </button>
               
               <button @click="handleMidQuizAnswer('o1')" 
                       :disabled="midQuizSolved"
                       class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group">
-                  <span>C) O(1) - Es constante (solo variables fijas)</span>
+                  <span>C) Se mantiene en 1 variable (Constante O(1))</span>
               </button>
              </div>
           </template>
@@ -586,22 +616,47 @@ const handleMidQuizAnswer = (option: string) => {
   // ==========================================
   // TOPIC: SPACE COMPLEXITY (Iteration 2)
   // ==========================================
+  // ==========================================
+  // TOPIC: SPACE COMPLEXITY (Iteration 2)
+  // ==========================================
   if (quizTopic.value === 'space') {
-      if (option === 'o1') {
-          midQuizFeedback.value = {
-            type: 'success',
-            text: '¡CORRECTO! 💾 <br> <b>Complejidad Espacial O(1) (Constante)</b>.<br> Solo necesitas una variable extra para guardar el "Menor Actual". No importa si hay 10 o 1000 elementos, el espacio extra nunca crece. ¡Es un algoritmo "in-place"!'
-          };
-          midQuizSolved.value = true;
-          setTimeout(() => {
-            showMidQuiz.value = false;
-            midQuizFeedback.value = null;
-            continueNextIteration();
-          }, 6000);
-      } else if (option === 'on') {
-          midQuizFeedback.value = { type: 'error', text: 'Incorrecto. 💾 <br> El array original NO cuenta como espacio "extra". No estamos creando copias del array.' };
-      } else if (option === 'on2') {
-          midQuizFeedback.value = { type: 'error', text: 'Incorrecto. 💾 <br> Las comparaciones consumen tiempo (CPU), no memoria (RAM).' };
+      // --- PHASE 1: Variables Count ---
+      if (currentQuizPhase.value === 1) {
+          if (option === '1var') {
+              midQuizFeedback.value = {
+                type: 'success',
+                text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra (min_index) para rastrear al menor. No creamos nuevos arrays.'
+              };
+              midQuizSolved.value = true;
+              setTimeout(() => {
+                midQuizFeedback.value = null;
+                midQuizSolved.value = false;
+                currentQuizPhase.value = 2; // Go to Space Phase 2
+              }, 3000);
+          } else if (option === 'nvars') {
+              midQuizFeedback.value = { type: 'error', text: 'Incorrecto. 💾 <br> No estamos creando una variable por cada elemento. Solo una para el líder.' };
+          } else if (option === '2vars') {
+              midQuizFeedback.value = { type: 'error', text: 'Incorrecto. 💾 <br> Solo necesitamos recordar la POSICIÓN del menor.' };
+          }
+      } 
+      // --- PHASE 2: Generalization O(1) ---
+      else if (currentQuizPhase.value === 2) {
+          if (option === 'o1') {
+              midQuizFeedback.value = {
+                type: 'success',
+                text: '¡EXACTO! 🎓 <br> Si la cantidad de elementos (N) aumenta a 1 millón, ¡sigues necesitando solo <b>1 variable extra</b>!<br> Por eso la complejidad espacial es <b>Constante O(1)</b>.'
+              };
+              midQuizSolved.value = true;
+              setTimeout(() => {
+                showMidQuiz.value = false;
+                midQuizFeedback.value = null;
+                continueNextIteration();
+              }, 6000);
+          } else if (option === 'on') {
+              midQuizFeedback.value = { type: 'error', text: 'Incorrecto. ❌ <br> El espacio extra NO crece con los datos.' };
+          } else if (option === 'on2') {
+               midQuizFeedback.value = { type: 'error', text: 'Incorrecto. ❌ <br> No estamos duplicando datos.' };
+          }
       }
       return;
   }
@@ -1275,6 +1330,8 @@ const finalizeIterationLogic = () => {
     if (currentIteration.value === 2) {
         quizTopic.value = 'space';
         currentQuizPhase.value = 1;
+        midQuizSolved.value = false; // Reset solution state
+        midQuizFeedback.value = null;
         showMidQuiz.value = true;
         return;
     }
