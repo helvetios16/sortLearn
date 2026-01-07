@@ -22,6 +22,15 @@ const comparedIndices = ref<number[]>([]); // Indices that have been compared
 const currentMinIndex = ref<number | null>(null); // Current minimum found during comparison
 const allCompared = ref(false); // Whether all elements have been compared
 
+// Drag and drop state
+const draggedItem = ref<{
+  id: string;
+  value: number;
+  index: number;
+  source: 'array' | 'minBox';
+} | null>(null);
+const dropTarget = ref<{ index: number; type: 'array' | 'minBox' } | null>(null);
+
 // --- Computed Properties for Hints & Controls ---
 const unsortedPart = computed(() => {
   return numbers.value
@@ -297,6 +306,117 @@ function checkSwapCompletion() {
     }
   }, 300);
 }
+
+// --- Drag and Drop Functions ---
+function handleDragStart(
+  event: DragEvent,
+  num: { id: string; value: number },
+  index: number,
+  source: 'array' | 'minBox',
+) {
+  if (!isPracticeStarted.value) return;
+  if (source === 'array' && index < sortedBoundaryIndex.value) return;
+
+  draggedItem.value = { id: num.id, value: num.value, index, source };
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', num.id);
+  }
+}
+
+function handleDragOver(event: DragEvent, index: number, type: 'array' | 'minBox') {
+  if (!draggedItem.value) return;
+
+  // Always prevent default to allow drop
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (event.dataTransfer) {
+    event.dataTransfer.dropEffect = 'move';
+  }
+  dropTarget.value = { index, type };
+}
+
+function handleDragLeave() {
+  dropTarget.value = null;
+}
+
+function handleDrop(event: DragEvent, targetIndex: number, targetType: 'array' | 'minBox') {
+  event.preventDefault();
+  if (!draggedItem.value) return;
+
+  const source = draggedItem.value.source;
+  const sourceIndex = draggedItem.value.index;
+
+  // Case 1: Dragging from array to minBox (selecting minimum)
+  if (source === 'array' && targetType === 'minBox') {
+    if (!allCompared.value) {
+      history.value.push('❌ Debes comparar todos los elementos antes de seleccionar el mínimo.');
+      draggedItem.value = null;
+      dropTarget.value = null;
+      return;
+    }
+
+    if (sourceIndex !== currentMinIndex.value) {
+      history.value.push(
+        `❌ Debes seleccionar el mínimo encontrado (posición ${currentMinIndex.value}).`,
+      );
+      draggedItem.value = null;
+      dropTarget.value = null;
+      return;
+    }
+
+    // Place in minBox
+    minBox.value = {
+      id: draggedItem.value.id,
+      value: draggedItem.value.value,
+      originalIndex: sourceIndex,
+    };
+
+    const arrayItem = numbers.value[sourceIndex];
+    if (arrayItem) {
+      arrayItem.value = -1;
+    }
+
+    history.value.push(`Arrastraste ${draggedItem.value.value} a "Mínimo Encontrado".`);
+  }
+  // Case 2: Dragging from minBox to array (swapping)
+  else if (source === 'minBox' && targetType === 'array') {
+    if (targetIndex < sortedBoundaryIndex.value) {
+      history.value.push('❌ No puedes colocar el mínimo en una posición ya ordenada.');
+      draggedItem.value = null;
+      dropTarget.value = null;
+      return;
+    }
+
+    if (!minBox.value) return;
+
+    const arrayItem = numbers.value[targetIndex];
+    if (!arrayItem) return;
+
+    const targetValue = arrayItem.value;
+    arrayItem.value = minBox.value.value;
+    history.value.push(`Colocaste ${minBox.value.value} en la posición ${targetIndex}.`);
+
+    const minOriginalIndex = minBox.value.originalIndex;
+    const minOriginalItem = numbers.value[minOriginalIndex];
+    if (minOriginalItem && targetValue !== -1) {
+      minOriginalItem.value = targetValue;
+      history.value.push(`El valor ${targetValue} se movió a la posición ${minOriginalIndex}.`);
+    }
+
+    minBox.value = null;
+    checkSwapCompletion();
+  }
+
+  draggedItem.value = null;
+  dropTarget.value = null;
+}
+
+function handleDragEnd() {
+  draggedItem.value = null;
+  dropTarget.value = null;
+}
 </script>
 
 <template>
@@ -414,6 +534,7 @@ function checkSwapCompletion() {
 
                 <!-- Number Box -->
                 <div
+                  :draggable="isPracticeStarted && index >= sortedBoundaryIndex && num.value !== -1"
                   class="w-14 h-16 md:w-16 md:h-20 flex items-center justify-center rounded-xl border-b-4 text-xl md:text-2xl font-bold transition-all duration-200 cursor-pointer shadow-sm relative bg-white"
                   :class="[
                     // Estado Ordenado
@@ -451,12 +572,26 @@ function checkSwapCompletion() {
 
                     // Vacío
                     num.value === -1
-                      ? 'bg-slate-100 border-dashed border-slate-300 text-transparent pointer-events-none'
+                      ? 'bg-slate-100 border-dashed border-slate-300 text-transparent'
                       : '',
 
                     // Editable
                     !isPracticeStarted ? 'hover:border-purple-300' : '',
+
+                    // Drag and Drop states
+                    isPracticeStarted && index >= sortedBoundaryIndex && num.value !== -1
+                      ? 'cursor-grab'
+                      : '',
+                    draggedItem?.id === num.id ? 'opacity-50 cursor-grabbing' : '',
+                    dropTarget?.type === 'array' && dropTarget?.index === index
+                      ? 'ring-4 ring-blue-500 bg-blue-50'
+                      : '',
                   ]"
+                  @dragstart="handleDragStart($event, num, index, 'array')"
+                  @dragover="handleDragOver($event, index, 'array')"
+                  @dragleave="handleDragLeave()"
+                  @drop="handleDrop($event, index, 'array')"
+                  @dragend="handleDragEnd()"
                 >
                   <input
                     v-if="!isPracticeStarted"
@@ -498,6 +633,7 @@ function checkSwapCompletion() {
               </h3>
 
               <div
+                :draggable="minBox !== null"
                 class="w-20 h-20 flex items-center justify-center rounded-xl border-b-4 text-3xl font-bold transition-all cursor-pointer bg-white"
                 :class="[
                   minBox
@@ -508,8 +644,19 @@ function checkSwapCompletion() {
                   selectedNumber !== null && !minBox && allCompared
                     ? 'animate-pulse-strong ring-4 ring-yellow-400'
                     : '',
+                  // Drag and Drop states
+                  minBox ? 'cursor-grab' : '',
+                  draggedItem?.source === 'minBox' ? 'opacity-50 cursor-grabbing' : '',
+                  dropTarget?.type === 'minBox' ? 'ring-4 ring-blue-500 bg-blue-50' : '',
                 ]"
                 @click="minBox ? selectMinBox() : placeInMinBox()"
+                @dragstart="
+                  minBox ? handleDragStart($event, minBox, minBox.originalIndex, 'minBox') : null
+                "
+                @dragover="handleDragOver($event, -1, 'minBox')"
+                @dragleave="handleDragLeave()"
+                @drop="handleDrop($event, -1, 'minBox')"
+                @dragend="handleDragEnd()"
               >
                 <span v-if="minBox">{{ minBox.value }}</span>
                 <span
