@@ -1,11 +1,13 @@
 <template>
-  <div class="min-h-screen bg-gray-50 overflow-hidden">
+  <div
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
+  >
     <!-- Title -->
-    <div class="text-center py-4 bg-white border-b border-gray-200">
+    <div class="text-center py-3 bg-white/80 shadow-sm border-b border-gray-200">
       <h1
-        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
+        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
       >
-        Visualizador de Selection Sort
+        SELECTION SORT - Algoritmo de Ordenamiento por Selección
       </h1>
     </div>
 
@@ -14,22 +16,23 @@
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
         <div
-          class="col-span-8 bg-white rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300"
+          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border-2 border-blue-300 transition-all duration-300"
           :class="{
-            'ring-4 ring-purple-400 ring-opacity-50 shadow-lg': isInitialState,
+            'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
+              isInitialState,
           }"
         >
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-bold text-purple-800 flex items-center gap-2">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base font-bold text-blue-700 flex items-center gap-2">
               LISTA DE FRASCOS
               <span
                 v-if="isInitialState"
                 class="flex h-3 w-3 relative"
               >
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
                 ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
               </span>
             </h3>
             <div class="flex gap-4 text-sm">
@@ -61,7 +64,12 @@
           </div>
 
           <div
-            class="bg-gradient-to-r from-green-50/50 via-gray-50 to-amber-50/50 rounded-lg p-2 h-[calc(100%-48px)]"
+            class="bg-gradient-to-r from-green-50 via-gray-50 to-amber-50 rounded-lg p-2 h-[calc(100%-40px)] transition-all duration-500 relative"
+            :class="{
+              'ring-4 ring-indigo-500 shadow-[0_0_30px_rgba(99,102,241,0.5)] scale-[1.01] z-[100]':
+                showMidQuiz && quizTopic === 'strategy',
+              'opacity-20 grayscale': showMidQuiz && quizTopic !== 'strategy',
+            }"
           >
             <div class="relative flex gap-12 justify-center items-center h-full">
               <!-- Dynamic Labels -->
@@ -75,7 +83,7 @@
                   class="flex justify-center items-end pb-1 transition-all duration-500 border-r-2 border-gray-300/50"
                   :style="{ width: currentIteration * 20 + '%' }"
                 >
-                  <span class="text-2xl md:text-3xl text-gray-300 font-bold tracking-tight">
+                  <span class="text-xl md:text-2xl text-gray-400 font-bold tracking-tight">
                     Ordenados
                   </span>
                 </div>
@@ -85,7 +93,7 @@
                   v-if="currentIteration < 5"
                   class="flex justify-center items-end pb-1 transition-all duration-500 flex-1"
                 >
-                  <span class="text-2xl md:text-3xl text-gray-400 font-bold tracking-tight">
+                  <span class="text-xl md:text-2xl text-gray-500 font-bold tracking-tight">
                     Desordenados
                   </span>
                 </div>
@@ -150,6 +158,21 @@
                   class="relative z-10"
                 />
 
+                <!-- MIN DEFAULT TIP -->
+                <div
+                  v-if="showMinDefaultTip && currentIteration === 0 && idx === 0"
+                  class="absolute -top-[70px] z-50 animate-bounce pointer-events-none w-32 flex flex-col items-center"
+                >
+                  <div
+                    class="relative bg-white text-gray-800 text-[10px] p-2 rounded-lg border-2 border-indigo-500 shadow-xl text-center font-bold leading-tight"
+                  >
+                    El "menor" es el primero por defecto
+                    <div
+                      class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-b-2 border-r-2 border-indigo-500 transform rotate-45"
+                    ></div>
+                  </div>
+                </div>
+
                 <div
                   class="text-center mt-1 text-xs font-bold"
                   :class="idx < currentIteration ? 'text-green-700' : 'text-gray-600'"
@@ -184,16 +207,16 @@
         <div class="col-span-4 flex flex-col gap-2 relative">
           <!-- BALANZA -->
           <div
-            class="bg-white rounded-2xl shadow-md p-3 border border-gray-200 flex-1 relative transition-all duration-300"
+            class="bg-white rounded-lg shadow-md p-2 border border-blue-300 flex-1 relative transition-all duration-300"
             :class="{
               'opacity-30 pointer-events-none':
                 waitingForNewMinDrag || waitingForSwapDrag || iterationSummary.show,
-              'ring-4 ring-purple-400 ring-opacity-50 shadow-lg':
+              'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
                 isInitialState && !waitingForNewMinDrag,
             }"
           >
             <h3
-              class="text-lg font-bold text-purple-800 mb-1 text-center flex justify-center items-center gap-2"
+              class="text-sm font-bold text-gray-700 mb-1 text-center flex justify-center items-center gap-2"
             >
               <span>⚖️</span>
               <span>BALANZA</span>
@@ -202,9 +225,9 @@
                 class="flex h-3 w-3 relative"
               >
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
                 ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
               </span>
             </h3>
 
@@ -375,28 +398,30 @@
       <!-- Messages & Instruction (Barra completa en medio) -->
       <div
         v-if="message || instructionHint"
-        class="p-4 rounded-xl shadow-lg border-l-8 flex items-center gap-4 transition-all duration-500 transform hover:scale-[1.005]"
+        class="p-2 rounded-r-lg rounded-bl-lg shadow-lg border-l-8 flex items-center gap-3 transition-all duration-500 transform hover:scale-[1.005] min-h-[60px]"
         :class="{
-          'bg-red-50 border-red-500 text-red-800 shadow-red-100':
-            message && messageType === 'error',
-          'bg-green-50 border-green-500 text-green-900 shadow-green-100':
+          'bg-white border-red-500 text-red-800 shadow-red-100': message && messageType === 'error',
+          'bg-white border-green-500 text-green-900 shadow-green-100':
             message && messageType === 'success',
-          'bg-white border-purple-500 text-slate-800 shadow-purple-100':
+          'bg-white border-blue-500 text-slate-800 shadow-blue-100':
             !message || messageType === 'info',
         }"
       >
-        <div class="text-4xl shrink-0 animate-bounce cursor-default select-none ml-2">
+        <!-- Icono Grande (Compactado) -->
+        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
           <span v-if="message && messageType === 'error'">🛑</span>
           <span v-else-if="message && messageType === 'success'">🎉</span>
           <span v-else>💡</span>
         </div>
+
+        <!-- Texto con Jerarquía (Compactado) -->
         <div class="flex-1 flex flex-col justify-center">
           <span
-            class="text-sm font-black uppercase tracking-widest leading-none mb-1 opacity-70"
+            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
             :class="{
-              'text-red-700': message && messageType === 'error',
-              'text-green-700': message && messageType === 'success',
-              'text-purple-700': !message || messageType === 'info',
+              'text-red-600': message && messageType === 'error',
+              'text-green-600': message && messageType === 'success',
+              'text-blue-600': !message || messageType === 'info',
             }"
           >
             {{
@@ -408,9 +433,10 @@
             }}
           </span>
           <span
-            class="text-lg font-semibold leading-tight"
+            class="text-base md:text-lg font-medium leading-tight"
             v-html="message || instructionHint"
-          ></span>
+          >
+          </span>
         </div>
       </div>
 
@@ -418,7 +444,7 @@
       <div class="grid grid-cols-12 gap-8 h-[35%]">
         <!-- MEMORIA -->
         <div
-          class="col-span-4 bg-white rounded-2xl shadow-md p-3 border border-gray-200 overflow-auto transition-all duration-500 relative"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-purple-200 overflow-auto transition-all duration-500 relative"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'space'),
@@ -426,31 +452,31 @@
               showMidQuiz && quizTopic === 'space',
           }"
         >
-          <h3 class="text-base font-bold text-purple-800 mb-2 flex items-center gap-2">
+          <h3 class="text-sm font-bold text-purple-700 mb-1 flex items-center gap-1">
             <span>🧠</span> <span>MEMORIA</span>
           </h3>
-          <p class="text-xs text-gray-600 font-semibold mb-1">Array[]:</p>
-          <div class="grid grid-cols-5 gap-1 mb-2">
+          <p class="text-[10px] text-gray-600 font-semibold mb-1">Array[]:</p>
+          <div class="grid grid-cols-5 gap-0.5 mb-2">
             <div
               v-for="(value, idx) in memoryArray"
               :key="'mem-' + idx"
-              class="border rounded-md p-1 text-center text-xs font-mono"
+              class="border rounded p-1 text-center text-[10px] font-mono"
               :class="{
-                'border-green-400 bg-green-50': idx < currentIteration,
+                'border-green-500 bg-green-50': idx < currentIteration,
                 'border-yellow-400 bg-yellow-50': idx === minIndex && idx >= currentIteration,
                 'border-cyan-400 bg-cyan-50':
                   idx === currentIteration + currentCompareIndex &&
                   idx >= currentIteration &&
                   idx !== minIndex,
-                'border-gray-300 bg-gray-100':
+                'border-gray-300 bg-gray-50':
                   idx >= currentIteration &&
                   idx !== minIndex &&
                   idx !== currentIteration + currentCompareIndex,
               }"
             >
-              <div class="text-xs text-gray-500">[{{ idx }}]</div>
+              <div class="text-[8px] text-gray-500">[{{ idx }}]</div>
               <div
-                class="font-bold text-base"
+                class="font-bold text-sm"
                 :class="idx < currentIteration ? 'text-green-700' : 'text-gray-800'"
               >
                 {{ value !== null ? value : '-' }}
@@ -459,108 +485,107 @@
           </div>
           <div class="grid grid-cols-3 gap-2 mb-3 text-xs">
             <div
-              class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-md border border-green-300"
+              class="flex items-center gap-1 bg-green-50 px-2 py-1 rounded border border-green-300"
             >
-              <div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
-              <span class="text-xs font-semibold text-green-800">Ordenado</span>
+              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span class="text-[10px] font-semibold text-green-800">Ordenado</span>
             </div>
             <div
-              class="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-300"
+              class="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded border border-yellow-300"
             >
-              <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full"></div>
-              <span class="text-xs font-semibold text-yellow-800">Menor</span>
+              <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <span class="text-[10px] font-semibold text-yellow-800">Menor</span>
             </div>
             <div
-              class="flex items-center gap-1.5 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-300"
+              class="flex items-center gap-1 bg-cyan-50 px-2 py-1 rounded border border-cyan-300"
             >
-              <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full"></div>
-              <span class="text-xs font-semibold text-cyan-800">A comparar</span>
+              <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
+              <span class="text-[10px] font-semibold text-cyan-800">A comparar</span>
             </div>
           </div>
-          <div class="bg-amber-100 border border-amber-400 rounded-lg p-2">
-            <p class="text-sm font-bold text-amber-800">
-              min_index =
-              <span class="text-2xl font-mono">{{ minIndex !== null ? minIndex : '?' }}</span>
+          <div class="bg-amber-50 border border-amber-400 rounded p-1.5 mb-1">
+            <p class="text-[10px] font-bold text-amber-800">
+              min_index = <span class="text-lg">{{ minIndex !== null ? minIndex : '?' }}</span>
             </p>
           </div>
         </div>
 
         <!-- COMPLEJIDAD -->
         <div
-          class="col-span-4 bg-white rounded-2xl shadow-md p-3 border border-gray-200 transition-all duration-500 relative overflow-hidden flex flex-col"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative overflow-hidden flex flex-col"
           :class="{
             'opacity-20 grayscale pointer-events-none':
-              shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'complexity'),
+              shouldDimBottomPanels &&
+              !(showMidQuiz && (quizTopic === 'complexity' || quizTopic === 'math')),
             'z-[100] ring-4 ring-yellow-400 scale-105 shadow-2xl':
-              showMidQuiz && quizTopic === 'complexity',
+              showMidQuiz && (quizTopic === 'complexity' || quizTopic === 'math'),
           }"
         >
-          <h3 class="text-base font-bold text-purple-800 mb-2 flex items-center gap-2 shrink-0">
+          <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-1 shrink-0">
             <span>📊</span> <span>COMPLEJIDAD</span>
           </h3>
-          <div class="flex flex-col gap-3 h-full overflow-hidden">
+          <div class="flex flex-col gap-2 h-full overflow-hidden">
             <!-- Totales -->
-            <div class="grid grid-cols-2 gap-3 shrink-0">
-              <div class="bg-purple-50/50 rounded-lg p-2 text-center border border-purple-200">
-                <p class="text-xs text-purple-800 uppercase tracking-wider font-bold mb-0.5">
+            <div class="grid grid-cols-2 gap-2 shrink-0">
+              <div class="bg-blue-50 rounded p-1.5 text-center border border-blue-200">
+                <p class="text-[9px] text-blue-700 uppercase tracking-wider font-bold mb-0.5">
                   Total Comparaciones
                 </p>
-                <p class="text-2xl font-extrabold text-purple-700 leading-none">
-                  {{ comparisons }}
-                </p>
+                <p class="text-xl font-extrabold text-blue-600 leading-none">{{ comparisons }}</p>
               </div>
-              <div class="bg-pink-50/50 rounded-lg p-2 text-center border border-pink-200">
-                <p class="text-xs text-pink-800 uppercase tracking-wider font-bold mb-0.5">
+              <div class="bg-purple-50 rounded p-1.5 text-center border border-purple-200">
+                <p class="text-[9px] text-purple-700 uppercase tracking-wider font-bold mb-0.5">
                   Intercambios
                 </p>
-                <p class="text-2xl font-extrabold text-pink-700 leading-none">{{ swaps }}</p>
+                <p class="text-xl font-extrabold text-purple-600 leading-none">{{ swaps }}</p>
               </div>
             </div>
 
             <!-- Desglose por Iteración -->
             <div
-              class="bg-gray-50 rounded-lg border border-gray-200 p-1.5 flex-1 flex flex-col justify-start overflow-hidden"
+              class="bg-white rounded border border-gray-200 p-1 flex-1 flex flex-col justify-start overflow-hidden"
             >
               <div
-                class="flex justify-between items-end mb-1 border-b border-gray-200 pb-1 shrink-0"
+                class="flex justify-between items-end mb-0.5 border-b border-gray-100 pb-0.5 shrink-0"
               >
-                <span class="text-xs font-black text-gray-500 uppercase tracking-wider"
+                <span class="text-[9px] font-black text-gray-500 uppercase tracking-wider"
                   >Comparaciones por Vuelta</span
                 >
+                <span class="text-[8px] text-gray-400 italic"></span>
               </div>
-              <div class="space-y-1 overflow-y-auto pr-0.5">
+              <div class="space-y-[3px] overflow-y-auto pr-0.5">
                 <div
                   v-for="(maxComp, idx) in [4, 3, 2, 1]"
                   :key="idx"
-                  class="flex justify-between items-center px-2 py-1 rounded-md transition-all duration-300 gap-2"
+                  class="flex justify-between items-center px-1.5 py-[3px] rounded transition-all duration-300 gap-1.5"
                   :class="
                     currentIteration === idx
-                      ? 'bg-purple-100 border-l-4 border-purple-500 shadow-sm'
+                      ? 'bg-blue-50 border-l-2 border-blue-500 shadow-sm'
                       : currentIteration > idx
-                        ? 'bg-gray-100'
+                        ? 'bg-gray-50'
                         : ''
                   "
                 >
                   <!-- Título -->
                   <span
-                    class="text-xs uppercase tracking-wide font-bold whitespace-nowrap"
+                    class="text-[10px] uppercase tracking-wide font-bold whitespace-nowrap"
                     :class="
                       currentIteration === idx
-                        ? 'text-purple-800'
+                        ? 'text-blue-700'
                         : currentIteration > idx
                           ? 'text-gray-500'
-                          : 'text-gray-400'
+                          : 'text-gray-300'
                     "
                   >
                     VUELTA {{ idx + 1 }}
                   </span>
 
                   <!-- Barra de Progreso Segmentada -->
-                  <div class="flex-1 flex justify-end gap-0.5 h-2.5 mx-1">
+                  <div class="flex-1 flex justify-end gap-[1px] h-[7px] mx-1">
                     <div
                       v-for="n in maxComp"
                       :key="n"
-                      class="w-5 rounded-sm transition-colors duration-300"
+                      class="w-4 rounded-[1px] transition-colors duration-300"
                       :class="
                         n <=
                         (currentIteration > idx
@@ -569,33 +594,33 @@
                             ? Math.max(0, currentCompareIndex)
                             : 0)
                           ? currentIteration > idx
-                            ? 'bg-emerald-500'
-                            : 'bg-purple-500'
-                          : 'bg-gray-300'
+                            ? 'bg-emerald-400'
+                            : 'bg-blue-500'
+                          : 'bg-gray-200'
                       "
                     ></div>
                   </div>
 
                   <!-- Contador -->
                   <span
-                    class="font-mono text-xs whitespace-nowrap min-w-[32px] text-right leading-none"
+                    class="font-mono text-[10px] whitespace-nowrap min-w-[28px] text-right leading-none"
                   >
                     <span
                       v-if="currentIteration === idx"
-                      class="font-extrabold text-purple-800 text-sm"
+                      class="font-extrabold text-blue-700 text-[11px]"
                       >{{ Math.max(0, currentCompareIndex) }}</span
                     >
                     <span
                       v-else-if="currentIteration > idx"
-                      class="text-green-700 font-bold"
+                      class="text-green-600 font-bold"
                       >{{ maxComp }}</span
                     >
                     <span
                       v-else
-                      class="text-gray-400"
+                      class="text-gray-300"
                       >0</span
                     >
-                    <span class="text-xs text-gray-500 opacity-70"> / {{ maxComp }}</span>
+                    <span class="text-[9px] text-gray-400 opacity-70"> / {{ maxComp }}</span>
                   </span>
                 </div>
               </div>
@@ -607,7 +632,7 @@
         <div class="col-span-4 flex flex-col gap-3">
           <!-- Cuadro Menor Actual -->
           <div
-            class="rounded-2xl shadow-md p-3 border-2 transition-all duration-300 flex-1 flex flex-col"
+            class="rounded-lg shadow-md p-2 border-2 transition-all duration-300 flex-1 flex flex-col"
             :class="[
               waitingForNewMinDrag
                 ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
@@ -621,7 +646,7 @@
             @dragover="onDragOver"
           >
             <h3
-              class="text-base font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-2"
+              class="text-sm font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-1"
             >
               <span>🏆</span> <span>MENOR ACTUAL (min_actual)</span>
             </h3>
@@ -639,31 +664,23 @@
               />
               <div
                 v-else
-                class="text-yellow-400 text-4xl font-bold"
+                class="text-yellow-400 text-3xl"
               >
                 ?
               </div>
-              <p class="text-sm text-center text-yellow-800 mt-1 font-mono font-semibold">
-                {{ minBottle ? `Idx: ${minIndex} | Peso: ${minBottle.weight}` : '...' }}
+              <p class="text-[10px] text-center text-yellow-700 mt-1 font-mono">
+                {{ minBottle ? `Idx:${minIndex} | Peso:${minBottle.weight}` : '...' }}
               </p>
             </div>
           </div>
 
           <!-- Botones de Acción -->
-          <div class="h-14 flex gap-3">
+          <div class="h-12 flex gap-2">
             <button
               @click="resetAlgorithm"
-              class="flex-1 bg-white border-2 border-gray-300 text-gray-800 font-bold rounded-xl shadow-sm transition-all hover:bg-gray-100 hover:border-gray-400 flex items-center justify-center gap-2 text-base uppercase tracking-wide"
+              class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wide"
             >
-              <span>↻</span> <span>Reiniciar</span>
-            </button>
-
-            <button
-              v-if="isComplete"
-              @click="showQuiz = true"
-              class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-base uppercase tracking-wide animate-bounce"
-            >
-              <span>✅</span> <span>Test</span>
+              <span>🔄</span> <span>Reiniciar</span>
             </button>
           </div>
         </div>
@@ -674,71 +691,170 @@
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
-    class="fixed inset-0 bg-gray-900/60 z-[90] flex items-center justify-center backdrop-blur-sm p-4"
+    class="fixed inset-0 bg-black/80 z-[90] flex justify-end items-start backdrop-blur-sm p-4 pr-6 pt-24"
   >
     <div
-      class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-purple-500"
+      class="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500"
     >
       <div class="text-center mb-6">
-        <div class="text-5xl mb-3">
-          {{ quizTopic === 'space' ? '💾' : currentQuizPhase === 1 ? '🧠' : '🤔' }}
+        <div class="text-4xl mb-2">
+          {{
+            quizTopic === 'strategy'
+              ? '🦁'
+              : quizTopic === 'space'
+                ? '💾'
+                : currentQuizPhase === 1
+                  ? '🧠'
+                  : '🤔'
+          }}
         </div>
-        <h2 class="text-3xl font-black text-purple-800 uppercase">
-          {{ quizTopic === 'space' ? 'Test de Memoria (Espacio)' : 'Test de Razonamiento' }}
+        <h2 class="text-2xl font-black text-indigo-700 uppercase">
+          {{
+            quizTopic === 'strategy'
+              ? 'Estrategia del Algoritmo'
+              : quizTopic === 'space'
+                ? 'Test de Memoria (Espacio)'
+                : 'Test de Razonamiento'
+          }}
         </h2>
 
         <!-- --- TIME QUIZ --- -->
         <template v-if="quizTopic === 'complexity'">
           <!-- PREGUNTA 1 -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-lg mt-3">
+            <p class="text-gray-600 text-sm mt-2">
               Acabas de completar la primera vuelta con <b>5 elementos</b> e hiciste
               <b>4 comparaciones</b>.
             </p>
-            <p class="text-gray-800 font-bold mt-3 text-xl">
+            <p class="text-gray-800 font-bold mt-2 text-lg">
               Si tuvieras "n" elementos, ¿cuántas comparaciones harías en la primera vuelta?
             </p>
           </div>
 
           <!-- PREGUNTA 2 -->
           <div v-else-if="currentQuizPhase === 2">
-            <p class="text-gray-600 text-lg mt-3">Imagina ahora un caso hipotético...</p>
-            <p class="text-gray-800 font-bold mt-3 text-xl">
-              Si la lista hubiera estado <u>YA ORDENADA</u> al inicio, ¿cuántas comparaciones haría
-              el algoritmo?
+            <p class="text-gray-600 text-sm mt-2">Imagina ahora un caso hipotético...</p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              Si la lista hubiera estado <u>YA ORDENADA</u> (mejor caso) al inicio, ¿cuántas
+              comparaciones haría el algoritmo?
             </p>
           </div>
 
           <!-- PREGUNTA 3 -->
           <div v-else>
-            <p class="text-gray-600 text-lg mt-3">Última pregunta para expertos...</p>
-            <p class="text-gray-800 font-bold mt-3 text-xl">
+            <p class="text-gray-600 text-sm mt-2">Última pregunta para expertos...</p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
               ¿Y si la lista estuviera <u>TOTALMENTE INVERTIDA</u> (peor caso)? ¿Qué pasaría con las
               comparaciones?
             </p>
           </div>
         </template>
 
-        <!-- --- SPACE QUIZ --- -->
-        <template v-else>
+        <!-- --- STRATEGY QUIZ Questions --- -->
+        <template v-else-if="quizTopic === 'strategy'">
+          <!-- PHASE 1: Action -->
+          <div v-if="currentQuizPhase === 1">
+            <p class="text-gray-600 text-sm mt-2">Observa los frascos resaltados...</p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              ¿Qué operación exacta hemos repetido en cada iteración hasta ahora?
+            </p>
+          </div>
+
+          <!-- PHASE 2: Strategy/Greedy -->
+          <div v-else-if="currentQuizPhase === 2">
+            <p class="text-gray-600 text-sm mt-2">
+              Esta forma de actuar ("tomar el mejor ahora mismo") tiene un nombre...
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              ¿Cuál es la <u>Estrategia Formal</u> que usa Selection Sort?
+            </p>
+          </div>
+
+          <!-- PHASE 3: Invariant -->
+          <div v-else>
+            <p class="text-gray-600 text-sm mt-2">
+              Mira la línea divisoria entre Ordenados y Desordenados...
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              ¿Qué regla (Invariante) se cumple SIEMPRE al final de cada vuelta?
+            </p>
+          </div>
+        </template>
+
+        <!-- --- MATH/BIG O QUIZ Questions --- -->
+        <template v-else-if="quizTopic === 'math'">
+          <!-- PHASE 1: Summation -->
+          <div v-if="currentQuizPhase === 1">
+            <p class="text-gray-600 text-sm mt-2">
+              Mira el total de operaciones (4 + 3 + 2 + 1 = 10)...
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              ¿Por qué sale exactamente ese número? ¿Qué fórmula matemática representa esta suma?
+            </p>
+          </div>
+
+          <!-- PHASE 2: Big O Inference -->
+          <div v-else-if="currentQuizPhase === 2">
+            <p class="text-gray-600 text-sm mt-2">
+              La fórmula anterior es <span class="font-mono bg-gray-100 px-1">n(n-1)/2</span>. Si
+              expandimos eso, obtenemos algo proporcional a
+              <span class="font-mono bg-gray-100 px-1">n²</span>.
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              ¿Cómo llamamos a esta clase de complejidad en notación Big O?
+            </p>
+          </div>
+
+          <!-- PHASE 3: Scaling Prediction -->
+          <div v-else>
+            <p class="text-gray-600 text-sm mt-2">
+              Ahora usa tu intuición de <span class="font-mono font-bold">O(n²)</span>.
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-lg">
+              Si <u>TRIPLICAMOS</u> (x3) la cantidad de datos de entrada... ¿Cuánto aumentarán las
+              comparaciones?
+            </p>
+          </div>
+        </template>
+
+        <!-- --- SPACE QUIZ Questions --- -->
+        <template v-else-if="quizTopic === 'space'">
           <!-- PHASE 1: Concrete Case -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-lg mt-3">
+            <p class="text-gray-600 text-sm mt-2">
               Observa la sección de memoria resaltada. Ya hemos hecho 2 vueltas.
             </p>
-            <p class="text-gray-800 font-bold mt-3 text-xl">
+            <p class="text-gray-800 font-bold mt-2 text-lg">
               ¿Cuántas variables EXTRA (además del array original) estamos usando para encontrar el
               menor?
             </p>
           </div>
 
           <!-- PHASE 2: Generalization -->
-          <div v-else>
-            <p class="text-gray-600 text-lg mt-3">
-              Ahora imagina que ordenamos 1,000,000 de elementos...
+          <div v-else-if="currentQuizPhase === 2">
+            <p class="text-indigo-900 font-medium text-lg mt-3 mb-2">
+              Ahora imagina que ordenamos <br />
+              <span
+                class="inline-block bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded border-2 border-yellow-300 font-black text-2xl transform rotate-[-1deg] shadow-sm my-1"
+              >
+                1,000,000
+              </span>
+              <br />
+              de elementos...
             </p>
-            <p class="text-gray-800 font-bold mt-3 text-xl">
+            <p class="text-gray-800 font-bold mt-2 text-xl">
               ¿Cuánto espacio extra necesitaríamos?
+            </p>
+          </div>
+
+          <!-- PHASE 3: VERDICT -->
+          <div v-else>
+            <p class="text-gray-600 font-medium text-base mt-2">
+              Veredicto Final 🤔: Teniendo en cuenta todo (Número de comparaciones y Espacio
+              O(1))...
+            </p>
+            <p class="text-gray-800 font-bold mt-2 text-xl">
+              ¿Recomendarías Selection Sort para ordenar esa lista de 1000000 de datos?
             </p>
           </div>
         </template>
@@ -754,7 +870,7 @@
           <button
             @click="handleMidQuizAnswer('n')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) n comparaciones</span>
           </button>
@@ -762,7 +878,7 @@
           <button
             @click="handleMidQuizAnswer('n-1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) n - 1 comparaciones</span>
           </button>
@@ -770,7 +886,7 @@
           <button
             @click="handleMidQuizAnswer('n/2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) n / 2 comparaciones</span>
           </button>
@@ -784,7 +900,7 @@
           <button
             @click="handleMidQuizAnswer('zero')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) Cero (Detecta que está ordenada)</span>
           </button>
@@ -792,7 +908,7 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) Menos comparaciones</span>
           </button>
@@ -800,7 +916,7 @@
           <button
             @click="handleMidQuizAnswer('same')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) Las mismas comparaciones</span>
           </button>
@@ -814,7 +930,7 @@
           <button
             @click="handleMidQuizAnswer('more')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) Aumentan drásticamente</span>
           </button>
@@ -822,7 +938,7 @@
           <button
             @click="handleMidQuizAnswer('constant')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) Se mantienen igual</span>
           </button>
@@ -830,15 +946,189 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) Se reducen (por ser el peor caso)</span>
           </button>
         </div>
       </template>
 
+      <!-- --- STRATEGY OPTIONS --- -->
+      <template v-else-if="quizTopic === 'strategy'">
+        <!-- PHASE 1 OPTIONS -->
+        <div
+          v-if="currentQuizPhase === 1"
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('min_to_start')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) Encuentro el MÍNIMO y lo pongo al INICIO.</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('max_to_end')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) Encuentro el MÁXIMO y lo pongo al FINAL.</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('neighbors')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Intercambio solo vecinos adyacentes.</span>
+          </button>
+        </div>
+
+        <!-- PHASE 2 OPTIONS -->
+        <div
+          v-else-if="currentQuizPhase === 2"
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('divide')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) Divide y Vencerás (Divide & Conquer)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('greedy')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) Voraz (Greedy) - Tomar lo mejor localmente</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('dynamic')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Programación Dinámica</span>
+          </button>
+        </div>
+
+        <!-- PHASE 3 OPTIONS -->
+        <div
+          v-else
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('only_left')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) La parte izquierda siempre está ordenada.</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('random')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) La parte derecha es aleatoria y menor.</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('invariant_ok')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Izquierda ordenada + Derecha (Mayores) Desordenada.</span>
+          </button>
+        </div>
+      </template>
+
+      <!-- --- MATH OPTIONS --- -->
+      <template v-else-if="quizTopic === 'math'">
+        <!-- PHASE 1 OPTIONS -->
+        <div
+          v-if="currentQuizPhase === 1"
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('sum_gauss')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) Suma de Gauss: (n-1) * n / 2</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('sum_random')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) Es el factorial de n (n!)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('sum_linear')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Es simplemente n * 2</span>
+          </button>
+        </div>
+
+        <!-- PHASE 2 OPTIONS -->
+        <div
+          v-else-if="currentQuizPhase === 2"
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('linear')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) Lineal O(n)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('log')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) Logarítmica O(log n)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('quadratic')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Cuadrática O(n²)</span>
+          </button>
+        </div>
+
+        <!-- PHASE 3 OPTIONS -->
+        <div
+          v-else
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('scale_3')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) Aumentan 3 veces (Lineal)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('scale_6')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) Aumentan 6 veces (Doble)</span>
+          </button>
+          <button
+            @click="handleMidQuizAnswer('scale_9')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) Aumentan 9 veces (Cuadrado de 3)</span>
+          </button>
+        </div>
+      </template>
+
       <!-- --- SPACE OPTIONS --- -->
-      <template v-else>
+      <template v-else-if="quizTopic === 'space'">
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
@@ -871,7 +1161,7 @@
 
         <!-- PHASE 2 OPTIONS -->
         <div
-          v-else
+          v-else-if="currentQuizPhase === 2"
           class="space-y-3"
         >
           <button
@@ -898,19 +1188,92 @@
             <span>C) Se mantiene en 1 variable (Constante O(1))</span>
           </button>
         </div>
+
+        <!-- PHASE 3 OPTIONS -->
+        <div
+          v-else
+          class="space-y-3"
+        >
+          <button
+            @click="handleMidQuizAnswer('yes_mem')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>A) SÍ, porque ahorra mucha memoria RAM.</span>
+          </button>
+
+          <button
+            @click="handleMidQuizAnswer('no')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>B) NO, tardaría demasiado por las comparaciones.</span>
+          </button>
+
+          <button
+            @click="handleMidQuizAnswer('yes_easy')"
+            :disabled="midQuizSolved"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+          >
+            <span>C) SÍ, es simple y rápido de implementar.</span>
+          </button>
+        </div>
       </template>
 
       <!-- Feedback -->
       <div
         v-if="midQuizFeedback"
-        class="mt-6 p-4 rounded-lg text-center font-bold animate-pulse"
+        class="mt-4 p-3 rounded-lg text-center font-bold animate-pulse"
         :class="
           midQuizFeedback.type === 'success'
-            ? 'bg-green-100 text-green-800 border border-green-300'
-            : 'bg-red-100 text-red-800 border border-red-300'
+            ? 'bg-green-100 text-green-700 border border-green-300'
+            : 'bg-red-100 text-red-700 border border-red-300'
         "
       >
         <span v-html="midQuizFeedback.text"></span>
+      </div>
+    </div>
+  </div>
+  <!-- RESET CONFIRMATION MODAL -->
+  <div
+    v-if="showResetConfirmation"
+    class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full border-4 border-orange-400 transform scale-100 animate-bounce-in text-center relative overflow-hidden"
+    >
+      <!-- Background Pattern -->
+      <div
+        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 via-red-400 to-orange-400"
+      ></div>
+
+      <div class="mb-4 text-6xl animate-pulse">⚠️</div>
+
+      <h3 class="text-2xl font-black text-gray-800 mb-2 uppercase tracking-tight">
+        ¿Reiniciar Todo?
+      </h3>
+
+      <p class="text-gray-600 font-medium mb-6 leading-relaxed">
+        Tu progreso actual se perderá y el algoritmo volverá al inicio con nuevos datos.
+        <br />
+        <span class="text-xs text-orange-600 font-bold uppercase tracking-widest mt-2 block"
+          >Esta acción es irreversible</span
+        >
+      </p>
+
+      <div class="flex gap-3 justify-center">
+        <button
+          @click="showResetConfirmation = false"
+          class="px-5 py-2.5 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 border-2 border-transparent transition-all hover:scale-105 active:scale-95"
+        >
+          Cancelar
+        </button>
+        <button
+          @click="confirmReset"
+          class="px-5 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg shadow-orange-200 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
+        >
+          <span>🔄</span> Sí, Reiniciar
+        </button>
       </div>
     </div>
   </div>
@@ -924,8 +1287,11 @@ import Bottle from '../components/Bottle.vue';
 const showMidQuiz = ref(false);
 const midQuizSolved = ref(false);
 const currentQuizPhase = ref(1); // 1, 2, 3 phases
-const quizTopic = ref<'complexity' | 'space'>('complexity'); // New state
+const quizTopic = ref<'complexity' | 'space' | 'strategy' | 'math'>('complexity'); // New state with math
 const midQuizFeedback = ref<{ type: 'success' | 'error'; text: string } | null>(null);
+
+const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
+const showResetConfirmation = ref(false); // Modal state for reset warnings
 
 const handleMidQuizAnswer = (option: string) => {
   // ==========================================
@@ -969,10 +1335,10 @@ const handleMidQuizAnswer = (option: string) => {
         };
         midQuizSolved.value = true;
         setTimeout(() => {
-          showMidQuiz.value = false;
           midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 6000);
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 3; // Go to Space Phase 3 (Verdict)
+        }, 5000);
       } else if (option === 'on') {
         midQuizFeedback.value = {
           type: 'error',
@@ -985,86 +1351,278 @@ const handleMidQuizAnswer = (option: string) => {
         };
       }
     }
+    // --- PHASE 3: Verdict (Efficiency Balance) ---
+    else if (currentQuizPhase.value === 3) {
+      if (option === 'no') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡BRILLANTE! 🌟 <br> Aunque usa <u>poca memoria</u> (bueno), hace <b>DEMASIADAS comparaciones</b> (malo).<br> Para 1 millón de datos, haría ~500 mil millones de comparaciones. ¡Tardaría años! 🐢',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          showMidQuiz.value = false;
+          midQuizFeedback.value = null;
+          continueNextIteration();
+        }, 7000); // 7s to read final verdict
+      } else if (option === 'yes_mem') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Cuidado... ⚠️ <br> Ahorrar memoria es genial, pero el TIEMPO de espera sería inaceptable por las comparaciones O(n²).',
+        };
+      } else if (option === 'yes_easy') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ⚠️ <br> "Fácil" no significa "Rápido". En producción, la velocidad suele importar más que la simplicidad del código.',
+        };
+      }
+    }
+    return;
+  }
+
+  // ==========================================
+  // TOPIC: STRATEGY & INVARIANT (Iteration 3)
+  // ==========================================
+  if (quizTopic.value === 'strategy') {
+    // --- PHASE 1: Action Analysis ---
+    if (currentQuizPhase.value === 1) {
+      if (option === 'min_to_start') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡ASI ES! 👋 <br> Básicamente buscamos al "más pequeño" del grupo desordenado y lo "rescatamos" llevándolo a la zona segura (ordenada) al inicio.',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 2;
+        }, 4000);
+      } else if (option === 'max_to_end') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Eso sería Bubble Sort (burbujear el mayor al final).',
+        };
+      } else if (option === 'neighbors') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> No solo comparamos vecinos, escaneamos TODO para hallar el mínimo real.',
+        };
+      }
+    }
+    // --- PHASE 2: Official Strategy (Greedy) ---
+    else if (currentQuizPhase.value === 2) {
+      if (option === 'greedy') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡CORRECTO! 🦁 <b>VORAZ (Greedy)</b>.<br> En cada paso, toma la mejor decisión local (el mínimo actual) sin pensar en el futuro, y eso construye la solución global.',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 3;
+        }, 5000);
+      } else if (option === 'divide') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Divide y Vencerás rompe el problema en subproblemas (como Merge Sort), aquí no dividimos nada.',
+        };
+      } else if (option === 'dynamic') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> No estamos reutilizando sub-soluciones complejas.',
+        };
+      }
+    }
+    // --- PHASE 3: Invariant ---
+    else if (currentQuizPhase.value === 3) {
+      if (option === 'invariant_ok') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡EXACTO! 🛡️ <b>La Invariante</b>.<br> La parte izquierda siempre crece ordenada. La derecha disminuye desordenada, y todos en la derecha son MAYORES que los de la izquierda.',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          showMidQuiz.value = false;
+          midQuizFeedback.value = null;
+          continueNextIteration();
+        }, 6000);
+      } else if (option === 'only_left') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incompleto. ⚠️ <br> La izquierda está ordenada, sí, pero falta la relación con la derecha.',
+        };
+      } else if (option === 'random') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> La parte derecha no es aleatoria, contiene siempre elementos mayores que la parte ordenada.',
+        };
+      }
+    }
+    return;
+  }
+
+  // ==========================================
+  // TOPIC: MATH & BIG O (Iteration 4)
+  // ==========================================
+  if (quizTopic.value === 'math') {
+    // --- PHASE 1: Summation ---
+    if (currentQuizPhase.value === 1) {
+      if (option === 'sum_gauss') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡EXCELENTE! 🔢 <br> Es la suma de Gauss de 1 a (n-1).<br> Matemáticamente: <b>n(n-1) / 2</b>.',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 2;
+        }, 4000);
+      } else if (option === 'sum_random') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> El factorial crece muchísimo más rápido.',
+        };
+      } else if (option === 'sum_linear') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> 5 * 2 = 10 coincide por casualidad aquí, pero no es la fórmula general.',
+        };
+      }
+    }
+    // --- PHASE 2: Big O ---
+    else if (currentQuizPhase.value === 2) {
+      if (option === 'quadratic') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡CORRECTO! 📈 <b>O(n²)</b>.<br> En Big O, el término al cuadrado (n²) domina al lineal (n), así que decimos que el algoritmo es "Cuadrático".',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 3;
+        }, 5000);
+      } else if (option === 'linear') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Si fuera lineal, al doblar los datos, el tiempo se doblaría. Aquí crece mucho más.',
+        };
+      } else if (option === 'log') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Logarítmico sería muy rápido (como Binary Search).',
+        };
+      }
+    }
+    // --- PHASE 3: Scaling ---
+    else if (currentQuizPhase.value === 3) {
+      if (option === 'scale_9') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡IMPRESIONANTE! 🚀 <br> Si triplicas la entrada (3x), el esfuerzo se multiplica por 3² = <b>9 veces</b>.<br> ¡Por eso Selection Sort es peligroso para listas grandes!',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          showMidQuiz.value = false;
+          midQuizFeedback.value = null;
+          continueNextIteration();
+        }, 7000);
+      } else if (option === 'scale_3') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Eso sería lineal O(n). Aquí pagamos el precio al cuadrado.',
+        };
+      } else if (option === 'scale_6') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Recuerda elevar al cuadrado el factor de crecimiento (3²).',
+        };
+      }
+    }
     return;
   }
 
   // ==========================================
   // TOPIC: TIME COMPLEXITY (Iteration 1)
   // ==========================================
-  // --- PHASE 1: Generaliza Fórmula ---
-  if (currentQuizPhase.value === 1) {
-    if (option === 'n-1') {
-      midQuizFeedback.value = {
-        type: 'success',
-        text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
-      };
-      midQuizSolved.value = true;
-      setTimeout(() => {
-        midQuizFeedback.value = null;
-        midQuizSolved.value = false;
-        currentQuizPhase.value = 2; // Go to Phase 2
-      }, 2500);
-    } else if (option === 'n') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. No comparas el elemento consigo mismo.',
-      };
-    } else if (option === 'n/2') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. Debes comparar con TODOS los restantes, no solo la mitad.',
-      };
+  if (quizTopic.value === 'complexity') {
+    // --- PHASE 1: Generaliza Fórmula ---
+    if (currentQuizPhase.value === 1) {
+      if (option === 'n-1') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 2; // Go to Phase 2
+        }, 2500);
+      } else if (option === 'n') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. No comparas el elemento consigo mismo.',
+        };
+      } else if (option === 'n/2') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. Debes comparar con TODOS los restantes, no solo la mitad.',
+        };
+      }
     }
-  }
-  // --- PHASE 2: Sorted Scenario ---
-  else if (currentQuizPhase.value === 2) {
-    if (option === 'same') {
-      midQuizFeedback.value = {
-        type: 'success',
-        text: '¡EXACTO! 🧠 <br> <b>Selection Sort es "ciego" al orden.</b> <br> Siempre realiza todas las comparaciones para asegurarse de encontrar el mínimo, incluso si ya está ordenado.',
-      };
-      midQuizSolved.value = true;
-      setTimeout(() => {
-        midQuizFeedback.value = null;
-        midQuizSolved.value = false;
-        currentQuizPhase.value = 3; // Go to Phase 3
-      }, 3500); // 3.5s to read explanation
-    } else if (option === 'zero') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. ❌ <br> El algoritmo <b>no sabe</b> que está ordenado mágicamente. Debe verificarlo.',
-      };
-    } else if (option === 'fewer') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. ❌ <br> Selection Sort no se detiene antes. Sigue buscando el mínimo hasta el final.',
-      };
+    // --- PHASE 2: Sorted Scenario ---
+    else if (currentQuizPhase.value === 2) {
+      if (option === 'same') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡EXACTO! 🧠 <br> <b>Selection Sort es "ciego" al orden.</b> <br> Siempre realiza todas las comparaciones para asegurarse de encontrar el mínimo, incluso si ya está ordenado.',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          midQuizFeedback.value = null;
+          midQuizSolved.value = false;
+          currentQuizPhase.value = 3; // Go to Phase 3
+        }, 3500); // 3.5s to read explanation
+      } else if (option === 'zero') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> El algoritmo <b>no sabe</b> que está ordenado mágicamente. Debe verificarlo.',
+        };
+      } else if (option === 'fewer') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Selection Sort no se detiene antes. Sigue buscando el mínimo hasta el final.',
+        };
+      }
     }
-  }
-  // --- PHASE 3: Reversed Scenario ---
-  else if (currentQuizPhase.value === 3) {
-    if (option === 'constant') {
-      midQuizFeedback.value = {
-        type: 'success',
-        text: '¡MAESTRO DEL ORDENAMIENTO! 🎓 <br> Has entendido la clave: <b>Selection Sort siempre hace n-1 comparaciones por vuelta</b>.<br> No importa si está ordenada, invertida o aleatoria. ¡Su complejidad de comparaciones es constante!',
-      };
-      midQuizSolved.value = true;
-      setTimeout(() => {
-        showMidQuiz.value = false;
-        midQuizFeedback.value = null;
-        continueNextIteration();
-      }, 6000); // 6s to read final completion message
-    } else if (option === 'more') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. ❌ <br> Aunque es el "peor caso" para intercambios, ¡las <b>comparaciones</b> son exactamente las mismas!',
-      };
-    } else if (option === 'fewer') {
-      midQuizFeedback.value = {
-        type: 'error',
-        text: 'Incorrecto. ❌ <br> No hay atajos, el algoritmo compara todo contra todo siempre.',
-      };
+    // --- PHASE 3: Reversed Scenario ---
+    else if (currentQuizPhase.value === 3) {
+      if (option === 'constant') {
+        midQuizFeedback.value = {
+          type: 'success',
+          text: '¡MAESTRO DEL ORDENAMIENTO! 🎓 <br> Has entendido la clave: <b>Selection Sort siempre hace n-1 comparaciones por vuelta</b>.<br> No importa si está ordenada, invertida o aleatoria. ¡Su complejidad de comparaciones es constante!',
+        };
+        midQuizSolved.value = true;
+        setTimeout(() => {
+          showMidQuiz.value = false;
+          midQuizFeedback.value = null;
+          continueNextIteration();
+        }, 6000); // 6s to read final completion message
+      } else if (option === 'more') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> Aunque es el "peor caso" para intercambios, ¡las <b>comparaciones</b> son exactamente las mismas!',
+        };
+      } else if (option === 'fewer') {
+        midQuizFeedback.value = {
+          type: 'error',
+          text: 'Incorrecto. ❌ <br> No hay atajos, el algoritmo compara todo contra todo siempre.',
+        };
+      }
     }
+    return;
   }
 };
 // ------------------
@@ -1178,6 +1736,7 @@ const initializeBottles = () => {
   waitingForSwapDrag.value = false;
   scaleNotification.value = '';
   scaleNotificationType.value = null;
+  showMinDefaultTip.value = true; // Show tooltip at start
 
   // Mensaje introductorio con formato rico y mayor duración
   showMessage(
@@ -1363,6 +1922,7 @@ const onBottleClick = (index: number) => {
 
 // Drag and Drop Functions
 const onDragStart = (event: DragEvent, index: number) => {
+  showMinDefaultTip.value = false; // Hide tooltip on interaction
   // Restrict interactions based on state
   if (waitingForNewMinDrag.value && index !== pendingNewMinIndex.value) {
     event.preventDefault();
@@ -1722,6 +2282,36 @@ const finalizeIterationLogic = () => {
       return;
     }
 
+    // Check for Mid-Sort Quiz 3: Strategy & Invariant (End of 3rd Iteration)
+    if (currentIteration.value === 3) {
+      quizTopic.value = 'strategy';
+      currentQuizPhase.value = 1;
+      midQuizSolved.value = false;
+      midQuizFeedback.value = null;
+      showMidQuiz.value = true;
+      return;
+    }
+
+    // Check for Final Quiz 4: Math & Big O (End of 4th Iteration)
+    if (currentIteration.value === 4) {
+      quizTopic.value = 'math';
+      currentQuizPhase.value = 1;
+      midQuizSolved.value = false;
+      midQuizFeedback.value = null;
+      showMidQuiz.value = true;
+      return;
+    }
+
+    // Check for Final Quiz 4: Math & Big O (End of 4th Iteration)
+    if (currentIteration.value === 4) {
+      quizTopic.value = 'math';
+      currentQuizPhase.value = 1;
+      midQuizSolved.value = false;
+      midQuizFeedback.value = null;
+      showMidQuiz.value = true;
+      return;
+    }
+
     continueNextIteration();
   }, 1000);
 };
@@ -1770,7 +2360,17 @@ const finishSort = () => {
 };
 
 const resetAlgorithm = () => {
+  // Check if there is any progress to lose
+  if (currentIteration.value > 0 || comparisons.value > 0) {
+    showResetConfirmation.value = true;
+    return;
+  }
   initializeBottles();
+};
+
+const confirmReset = () => {
+  initializeBottles();
+  showResetConfirmation.value = false;
 };
 
 // Initialize on mount
