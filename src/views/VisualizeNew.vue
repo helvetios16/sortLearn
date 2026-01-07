@@ -14,7 +14,7 @@
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
         <div
-          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border-2 border-blue-300 transition-all duration-300"
+          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border border-gray-800 transition-all duration-300"
         >
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-base font-bold text-blue-700 flex items-center gap-2">
@@ -144,16 +144,18 @@
                 />
 
                 <!-- MIN DEFAULT TIP -->
+                <!-- MIN DEFAULT TIP - LEFT SIDE -->
                 <div
                   v-if="showMinDefaultTip && currentIteration === 0 && idx === 0"
-                  class="absolute -top-[70px] z-50 animate-bounce pointer-events-none w-32 flex flex-col items-center"
+                  class="absolute -left-[100px] top-1/2 -translate-y-1/2 z-50 animate-pulse pointer-events-none w-24 flex flex-row items-center justify-end px-1"
                 >
                   <div
                     class="relative bg-white text-gray-800 text-[10px] p-2 rounded-lg border-2 border-indigo-500 shadow-xl text-center font-bold leading-tight"
                   >
                     El "menor" es el primero por defecto
+                    <!-- Flecha apuntando a la derecha (hacia el frasco) -->
                     <div
-                      class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-b-2 border-r-2 border-indigo-500 transform rotate-45"
+                      class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-t-2 border-r-2 border-indigo-500 transform rotate-45"
                     ></div>
                   </div>
                 </div>
@@ -192,7 +194,7 @@
         <div class="col-span-4 flex flex-col gap-2 relative">
           <!-- BALANZA -->
           <div
-            class="bg-white rounded-lg shadow-md p-2 border border-blue-300 flex-1 relative transition-all duration-300"
+            class="bg-white rounded-lg shadow-md p-2 border border-gray-800 flex-1 relative transition-all duration-300"
             :class="{
               'opacity-30 pointer-events-none':
                 waitingForNewMinDrag || waitingForSwapDrag || iterationSummary.show,
@@ -372,12 +374,13 @@
       <!-- Messages & Instruction (Barra completa en medio) -->
       <div
         v-if="message || instructionHint"
-        class="p-2 rounded-r-lg rounded-bl-lg shadow-lg border-l-8 flex items-center gap-3 transition-all duration-500 transform hover:scale-[1.005] min-h-[60px]"
+        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
         :class="{
-          'bg-white border-red-500 text-red-800 shadow-red-100': message && messageType === 'error',
-          'bg-white border-green-500 text-green-900 shadow-green-100':
+          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
+            message && messageType === 'error',
+          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
             message && messageType === 'success',
-          'bg-white border-blue-500 text-slate-800 shadow-blue-100':
+          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
             !message || messageType === 'info',
         }"
       >
@@ -393,9 +396,9 @@
           <span
             class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
             :class="{
-              'text-red-600': message && messageType === 'error',
-              'text-green-600': message && messageType === 'success',
-              'text-blue-600': !message || messageType === 'info',
+              'text-red-700': message && messageType === 'error',
+              'text-emerald-700': message && messageType === 'success',
+              'text-amber-800': !message || messageType === 'info',
             }"
           >
             {{
@@ -418,7 +421,7 @@
       <div class="grid grid-cols-12 gap-8 h-[35%]">
         <!-- MEMORIA -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-purple-200 overflow-auto transition-all duration-500 relative"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-gray-800 overflow-auto transition-all duration-500 relative"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'space'),
@@ -486,7 +489,7 @@
 
         <!-- COMPLEJIDAD -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative overflow-hidden flex flex-col"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-gray-800 transition-all duration-500 relative overflow-hidden flex flex-col"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels &&
@@ -610,10 +613,9 @@
             :class="[
               waitingForNewMinDrag
                 ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
-                : 'bg-yellow-50 border-yellow-400',
+                : 'bg-yellow-50 border-gray-800',
               {
-                'opacity-20 grayscale pointer-events-none':
-                  waitingForSwapDrag || (draggedBottleIndex !== null && !waitingForNewMinDrag),
+                'opacity-20 grayscale pointer-events-none': shouldDimBottomPanels,
               },
             ]"
             @drop="onDropOnMinBox"
@@ -1859,6 +1861,9 @@ const highlightRightPan = computed(() => {
 });
 
 const shouldDimBottomPanels = computed(() => {
+  // Estado inicial: Opaco hasta que se pese por primera vez para enfocar en la balanza
+  if (comparisons.value === 0 && !scaleWeighed.value) return true;
+
   // Dim if waiting for special actions OR if dragging something that isn't for those actions
   if (waitingForNewMinDrag.value || waitingForSwapDrag.value) return true;
 
