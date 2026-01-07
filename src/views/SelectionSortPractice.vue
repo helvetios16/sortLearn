@@ -425,7 +425,9 @@ function checkSwapCompletion() {
                     selectedNumber?.id === num.id
                       ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10'
                       : '',
-                    index === swapTargetIndex ? 'ring-4 ring-pink-300 border-pink-400' : '',
+                    index === swapTargetIndex && minBox
+                      ? 'ring-4 ring-pink-300 border-pink-400'
+                      : '',
 
                     // Pistas y Comparaciones
                     num.id === actualMinInUnsorted?.id && showMinHint
