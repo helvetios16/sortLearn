@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import Visualize from '../views/VisualizeNew.vue';
-import Compare from '../views/Compare.vue';
 import Learn from '../views/Learn.vue';
 import UnderConstruction from '../views/UnderConstruction.vue';
 import SelectionSortPractice from '../views/SelectionSortPractice.vue';
@@ -21,18 +20,6 @@ const router = createRouter({
       component: Visualize,
       beforeEnter: (to, from, next) => {
         if (featureFlags.visualize) {
-          next();
-        } else {
-          next({ name: 'under-construction' });
-        }
-      },
-    },
-    {
-      path: '/compare',
-      name: 'compare',
-      component: Compare,
-      beforeEnter: (to, from, next) => {
-        if (featureFlags.compare) {
           next();
         } else {
           next({ name: 'under-construction' });

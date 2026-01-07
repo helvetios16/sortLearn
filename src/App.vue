@@ -21,13 +21,6 @@ import { RouterLink, RouterView } from 'vue-router';
         >
 
         <RouterLink
-          to="/compare"
-          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          active-class="bg-purple-100 text-purple-700"
-          >Comparar</RouterLink
-        >
-
-        <RouterLink
           to="/learn"
           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
           active-class="bg-purple-100 text-purple-700"
