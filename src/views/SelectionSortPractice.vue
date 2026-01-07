@@ -302,7 +302,9 @@ function checkSwapCompletion() {
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800">
     <div class="container mx-auto p-4 md:p-8">
-      <h1 class="text-3xl md:text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500">
+      <h1
+        class="text-3xl md:text-4xl font-extrabold mb-2 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
+      >
         Práctica de Selection Sort
       </h1>
       <p class="text-center text-slate-500 mb-8 font-medium">
@@ -365,152 +367,197 @@ function checkSwapCompletion() {
       </div>
 
       <!-- Hint Banner -->
-      <div 
+      <div
         class="max-w-4xl mx-auto mb-8 p-4 rounded-xl border-l-8 text-center shadow-sm transition-all duration-300"
         :class="[
-          coachHint.includes('❌') ? 'bg-red-50 border-red-500 text-red-800' :
-          coachHint.includes('🎉') ? 'bg-green-50 border-green-500 text-green-800' :
-          'bg-blue-50 border-blue-500 text-blue-800'
+          coachHint.includes('❌')
+            ? 'bg-red-50 border-red-500 text-red-800'
+            : coachHint.includes('🎉')
+              ? 'bg-green-50 border-green-500 text-green-800'
+              : 'bg-blue-50 border-blue-500 text-blue-800',
         ]"
       >
         <p class="text-lg font-bold flex items-center justify-center gap-2">
-            {{ coachHint }}
+          {{ coachHint }}
         </p>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto items-start">
-        
         <!-- Área Principal: Array y Mínimo -->
         <div class="flex-1 w-full flex flex-col gap-8">
-            
-            <!-- Array Visual -->
-            <div class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-6 shadow-inner min-h-[200px] flex items-center justify-center">
-                <div class="flex flex-wrap justify-center gap-3">
+          <!-- Array Visual -->
+          <div
+            class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-6 shadow-inner min-h-[200px] flex items-center justify-center"
+          >
+            <div class="flex flex-wrap justify-center gap-3">
+              <div
+                v-for="(num, index) in numbers"
+                :key="num.id"
+                class="relative group"
+                @click="
+                  isPracticeStarted
+                    ? selectedBox
+                      ? placeBoxValueInArray(index)
+                      : selectNumberFromArray(num, index)
+                    : null
+                "
+              >
+                <!-- Index Label -->
                 <div
-                    v-for="(num, index) in numbers"
-                    :key="num.id"
-                    class="relative group"
-                    @click="
-                    isPracticeStarted
-                        ? selectedBox
-                        ? placeBoxValueInArray(index)
-                        : selectNumberFromArray(num, index)
-                        : null
-                    "
-                >   
-                    <!-- Index Label -->
-                    <div class="absolute -top-6 left-0 w-full text-center text-xs font-mono font-bold text-slate-400">
-                        {{ index }}
-                    </div>
+                  class="absolute -top-6 left-0 w-full text-center text-xs font-mono font-bold text-slate-400"
+                >
+                  {{ index }}
+                </div>
 
-                    <!-- Number Box -->
-                    <div 
-                        class="w-14 h-16 md:w-16 md:h-20 flex items-center justify-center rounded-xl border-b-4 text-xl md:text-2xl font-bold transition-all duration-200 cursor-pointer shadow-sm relative bg-white"
-                        :class="[
-                            // Estado Ordenado
-                            index < sortedBoundaryIndex 
-                                ? 'bg-emerald-100 border-emerald-500 text-emerald-700' 
-                                : 'border-slate-300 text-slate-700 hover:-translate-y-1',
-                            
-                            // Estados de Interacción
-                            selectedNumber?.id === num.id ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10' : '',
-                            index === swapTargetIndex ? 'ring-4 ring-pink-300 border-pink-400' : '',
-                            
-                            // Pistas y Comparaciones
-                            num.id === actualMinInUnsorted?.id && showMinHint ? 'ring-4 ring-yellow-300 border-yellow-400' : '',
-                            comparedIndices.includes(index) ? 'bg-blue-50 border-blue-300 text-blue-900' : '',
-                            index === currentMinIndex && !allCompared ? 'bg-yellow-50 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]' : '',
-                            
-                            // Vacío
-                            num.value === -1 ? 'bg-slate-100 border-dashed border-slate-300 text-transparent pointer-events-none' : '',
-                            
-                            // Editable
-                            !isPracticeStarted ? 'hover:border-purple-300' : ''
-                        ]"
-                    >
-                        <input
-                            v-if="!isPracticeStarted"
-                            type="number"
-                            class="w-full h-full bg-transparent text-center outline-none"
-                            :value="num.value"
-                            @input="updateNumberValue(index, ($event.target as HTMLInputElement).value)"
-                            @click.stop
-                            min="0"
-                            max="999"
-                        />
-                        <span v-else-if="num.value !== -1">{{ num.value }}</span>
-                        
-                        <!-- Badges/Etiquetas -->
-                        <div v-if="index < sortedBoundaryIndex" class="absolute -bottom-2 right-1 text-[10px] bg-emerald-500 text-white px-1 rounded">OK</div>
-                        <div v-if="index === currentMinIndex && !allCompared" class="absolute -top-2 -right-2 text-[10px] bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full font-bold shadow-sm z-20">min?</div>
-                    </div>
+                <!-- Number Box -->
+                <div
+                  class="w-14 h-16 md:w-16 md:h-20 flex items-center justify-center rounded-xl border-b-4 text-xl md:text-2xl font-bold transition-all duration-200 cursor-pointer shadow-sm relative bg-white"
+                  :class="[
+                    // Estado Ordenado
+                    index < sortedBoundaryIndex
+                      ? 'bg-emerald-100 border-emerald-500 text-emerald-700'
+                      : 'border-slate-300 text-slate-700 hover:-translate-y-1',
+
+                    // Estados de Interacción
+                    selectedNumber?.id === num.id
+                      ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10'
+                      : '',
+                    index === swapTargetIndex ? 'ring-4 ring-pink-300 border-pink-400' : '',
+
+                    // Pistas y Comparaciones
+                    num.id === actualMinInUnsorted?.id && showMinHint
+                      ? 'ring-4 ring-yellow-300 border-yellow-400'
+                      : '',
+                    comparedIndices.includes(index)
+                      ? 'bg-blue-50 border-blue-300 text-blue-900'
+                      : '',
+                    index === currentMinIndex && !allCompared
+                      ? 'bg-yellow-50 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]'
+                      : '',
+
+                    // Vacío
+                    num.value === -1
+                      ? 'bg-slate-100 border-dashed border-slate-300 text-transparent pointer-events-none'
+                      : '',
+
+                    // Editable
+                    !isPracticeStarted ? 'hover:border-purple-300' : '',
+                  ]"
+                >
+                  <input
+                    v-if="!isPracticeStarted"
+                    type="number"
+                    class="w-full h-full bg-transparent text-center outline-none"
+                    :value="num.value"
+                    @input="updateNumberValue(index, ($event.target as HTMLInputElement).value)"
+                    @click.stop
+                    min="0"
+                    max="999"
+                  />
+                  <span v-else-if="num.value !== -1">{{ num.value }}</span>
+
+                  <!-- Badges/Etiquetas -->
+                  <div
+                    v-if="index < sortedBoundaryIndex"
+                    class="absolute -bottom-2 right-1 text-[10px] bg-emerald-500 text-white px-1 rounded"
+                  >
+                    OK
+                  </div>
+                  <div
+                    v-if="index === currentMinIndex && !allCompared"
+                    class="absolute -top-2 -right-2 text-[10px] bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded-full font-bold shadow-sm z-20"
+                  >
+                    min?
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
+          </div>
 
-            <!-- Área de Variable Temporal (Mínimo Encontrado) -->
-            <div class="flex justify-center">
-                <div class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 shadow-lg flex flex-col items-center gap-2 min-w-[200px]">
-                    <h3 class="text-sm font-bold text-yellow-800 uppercase tracking-wide">Mínimo Encontrado</h3>
-                    
-                    <div
-                        class="w-20 h-20 flex items-center justify-center rounded-xl border-b-4 text-3xl font-bold transition-all cursor-pointer bg-white"
-                        :class="[
-                            minBox 
-                                ? 'border-yellow-500 text-yellow-900 shadow-md scale-105' 
-                                : 'border-dashed border-yellow-300 text-yellow-200',
-                            selectedBox === 'min' ? 'ring-4 ring-purple-400 border-purple-500' : '',
-                            selectedNumber !== null && !minBox ? 'animate-pulse ring-4 ring-yellow-200' : ''
-                        ]"
-                        @click="minBox ? selectMinBox() : placeInMinBox()"
-                    >
-                        <span v-if="minBox">{{ minBox.value }}</span>
-                        <span v-else class="text-4xl text-yellow-200 select-none">?</span>
-                    </div>
-                    
-                    <p class="text-xs text-yellow-600 font-medium text-center max-w-[180px]">
-                        {{ minBox ? 'Haz clic para colocarlo en su posición final' : 'Selecciona el menor del array para traerlo aquí' }}
-                    </p>
-                </div>
+          <!-- Área de Variable Temporal (Mínimo Encontrado) -->
+          <div class="flex justify-center">
+            <div
+              class="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4 shadow-lg flex flex-col items-center gap-2 min-w-[200px]"
+            >
+              <h3 class="text-sm font-bold text-yellow-800 uppercase tracking-wide">
+                Mínimo Encontrado
+              </h3>
+
+              <div
+                class="w-20 h-20 flex items-center justify-center rounded-xl border-b-4 text-3xl font-bold transition-all cursor-pointer bg-white"
+                :class="[
+                  minBox
+                    ? 'border-yellow-500 text-yellow-900 shadow-md scale-105'
+                    : 'border-dashed border-yellow-300 text-yellow-200',
+                  selectedBox === 'min' ? 'ring-4 ring-purple-400 border-purple-500' : '',
+                  selectedNumber !== null && !minBox ? 'animate-pulse ring-4 ring-yellow-200' : '',
+                ]"
+                @click="minBox ? selectMinBox() : placeInMinBox()"
+              >
+                <span v-if="minBox">{{ minBox.value }}</span>
+                <span
+                  v-else
+                  class="text-4xl text-yellow-200 select-none"
+                  >?</span
+                >
+              </div>
+
+              <p class="text-xs text-yellow-600 font-medium text-center max-w-[180px]">
+                {{
+                  minBox
+                    ? 'Haz clic para colocarlo en su posición final'
+                    : 'Selecciona el menor del array para traerlo aquí'
+                }}
+              </p>
             </div>
-
+          </div>
         </div>
 
         <!-- Panel Lateral: Historial -->
-        <div class="w-full lg:w-80 flex-shrink-0" v-if="history.length > 0">
-             <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden sticky top-4">
-                <div class="bg-slate-50 p-3 border-b border-gray-200 flex justify-between items-center">
-                    <h2 class="font-bold text-slate-700 flex items-center gap-2">
-                        <span>📜</span> Historial
-                    </h2>
-                    <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
-                        {{ history.length }} pasos
-                    </span>
-                </div>
-                
-                <div class="max-h-[500px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
-                    <div
-                        v-for="(item, index) in categorizedHistory.slice().reverse()"
-                        :key="index"
-                        class="p-2.5 rounded-lg text-sm border-l-4 shadow-sm animate-fade-in"
-                        :class="[
-                            item.type === 'error' ? 'bg-red-50 border-red-400 text-red-900' :
-                            item.type === 'success' ? 'bg-emerald-50 border-emerald-400 text-emerald-900' :
-                            item.type === 'celebration' ? 'bg-amber-50 border-amber-400 text-amber-900' :
-                            item.type === 'comparison' ? 'bg-blue-50 border-blue-400 text-blue-900' :
-                            'bg-gray-50 border-gray-300 text-gray-700'
-                        ]"
-                    >
-                        <div class="flex gap-2">
-                            <span class="text-base select-none">{{ item.icon }}</span>
-                            <span class="leading-snug">{{ item.message.replace(item.icon, '').trim() }}</span>
-                        </div>
-                         <div class="text-[10px] text-right opacity-50 mt-1 font-mono">Paso {{ history.length - index }}</div>
-                    </div>
-                </div>
-             </div>
-        </div>
+        <div
+          class="w-full lg:w-80 flex-shrink-0"
+          v-if="history.length > 0"
+        >
+          <div
+            class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden sticky top-4"
+          >
+            <div class="bg-slate-50 p-3 border-b border-gray-200 flex justify-between items-center">
+              <h2 class="font-bold text-slate-700 flex items-center gap-2">
+                <span>📜</span> Historial
+              </h2>
+              <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded-full">
+                {{ history.length }} pasos
+              </span>
+            </div>
 
+            <div class="max-h-[500px] overflow-y-auto p-3 space-y-2 custom-scrollbar">
+              <div
+                v-for="(item, index) in categorizedHistory.slice().reverse()"
+                :key="index"
+                class="p-2.5 rounded-lg text-sm border-l-4 shadow-sm animate-fade-in"
+                :class="[
+                  item.type === 'error'
+                    ? 'bg-red-50 border-red-400 text-red-900'
+                    : item.type === 'success'
+                      ? 'bg-emerald-50 border-emerald-400 text-emerald-900'
+                      : item.type === 'celebration'
+                        ? 'bg-amber-50 border-amber-400 text-amber-900'
+                        : item.type === 'comparison'
+                          ? 'bg-blue-50 border-blue-400 text-blue-900'
+                          : 'bg-gray-50 border-gray-300 text-gray-700',
+                ]"
+              >
+                <div class="flex gap-2">
+                  <span class="text-base select-none">{{ item.icon }}</span>
+                  <span class="leading-snug">{{ item.message.replace(item.icon, '').trim() }}</span>
+                </div>
+                <div class="text-[10px] text-right opacity-50 mt-1 font-mono">
+                  Paso {{ history.length - index }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -533,20 +580,26 @@ function checkSwapCompletion() {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
 /* Hide number input arrows */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 </style>
