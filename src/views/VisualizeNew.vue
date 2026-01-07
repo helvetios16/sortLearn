@@ -1,13 +1,11 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
-  >
+  <div class="min-h-screen bg-gray-50 overflow-hidden">
     <!-- Title -->
-    <div class="text-center py-3 bg-white/80 shadow-sm border-b border-gray-200">
+    <div class="text-center py-4 bg-white border-b border-gray-200">
       <h1
-        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
+        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
       >
-        SELECTION SORT - Algoritmo de Ordenamiento por Selección
+        Visualizador de Selection Sort
       </h1>
     </div>
 
@@ -16,23 +14,22 @@
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
         <div
-          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border-2 border-blue-300 transition-all duration-300"
+          class="col-span-8 bg-white rounded-2xl shadow-md p-4 border border-gray-200 transition-all duration-300"
           :class="{
-            'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
-              isInitialState,
+            'ring-4 ring-purple-400 ring-opacity-50 shadow-lg': isInitialState,
           }"
         >
-          <div class="flex items-center justify-between mb-2">
-            <h3 class="text-base font-bold text-blue-700 flex items-center gap-2">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-bold text-purple-800 flex items-center gap-2">
               LISTA DE FRASCOS
               <span
                 v-if="isInitialState"
                 class="flex h-3 w-3 relative"
               >
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"
                 ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
               </span>
             </h3>
             <div class="flex gap-4 text-sm">
@@ -40,15 +37,17 @@
               <div class="flex gap-3">
                 <div class="flex items-center gap-1">
                   <span class="text-green-600 font-bold text-base">✓</span>
-                  <span class="font-semibold">Ordenados: {{ currentIteration }}</span>
+                  <span class="font-semibold text-gray-700">Ordenados: {{ currentIteration }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-orange-600 font-bold text-base">📋</span>
-                  <span class="font-semibold">Desordenados: {{ 5 - currentIteration }}</span>
+                  <span class="font-semibold text-gray-700"
+                    >Desordenados: {{ 5 - currentIteration }}</span
+                  >
                 </div>
               </div>
               <!-- Color meanings -->
-              <div class="border-l-2 border-gray-300 pl-3 flex gap-3">
+              <div class="border-l-2 border-gray-200 pl-3 flex gap-3">
                 <div class="flex items-center gap-1">
                   <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                   <span class="font-semibold text-yellow-700">Menor</span>
@@ -62,7 +61,7 @@
           </div>
 
           <div
-            class="bg-gradient-to-r from-green-50 via-gray-50 to-amber-50 rounded-lg p-2 h-[calc(100%-40px)]"
+            class="bg-gradient-to-r from-green-50/50 via-gray-50 to-amber-50/50 rounded-lg p-2 h-[calc(100%-48px)]"
           >
             <div class="relative flex gap-12 justify-center items-center h-full">
               <!-- Dynamic Labels -->
@@ -76,7 +75,7 @@
                   class="flex justify-center items-end pb-1 transition-all duration-500 border-r-2 border-gray-300/50"
                   :style="{ width: currentIteration * 20 + '%' }"
                 >
-                  <span class="text-xl md:text-2xl text-gray-400 font-bold tracking-tight">
+                  <span class="text-2xl md:text-3xl text-gray-300 font-bold tracking-tight">
                     Ordenados
                   </span>
                 </div>
@@ -86,7 +85,7 @@
                   v-if="currentIteration < 5"
                   class="flex justify-center items-end pb-1 transition-all duration-500 flex-1"
                 >
-                  <span class="text-xl md:text-2xl text-gray-500 font-bold tracking-tight">
+                  <span class="text-2xl md:text-3xl text-gray-400 font-bold tracking-tight">
                     Desordenados
                   </span>
                 </div>
@@ -185,16 +184,16 @@
         <div class="col-span-4 flex flex-col gap-2 relative">
           <!-- BALANZA -->
           <div
-            class="bg-white rounded-lg shadow-md p-2 border border-blue-300 flex-1 relative transition-all duration-300"
+            class="bg-white rounded-2xl shadow-md p-3 border border-gray-200 flex-1 relative transition-all duration-300"
             :class="{
               'opacity-30 pointer-events-none':
                 waitingForNewMinDrag || waitingForSwapDrag || iterationSummary.show,
-              'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
+              'ring-4 ring-purple-400 ring-opacity-50 shadow-lg':
                 isInitialState && !waitingForNewMinDrag,
             }"
           >
             <h3
-              class="text-sm font-bold text-gray-700 mb-1 text-center flex justify-center items-center gap-2"
+              class="text-lg font-bold text-purple-800 mb-1 text-center flex justify-center items-center gap-2"
             >
               <span>⚖️</span>
               <span>BALANZA</span>
@@ -203,9 +202,9 @@
                 class="flex h-3 w-3 relative"
               >
                 <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"
                 ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
               </span>
             </h3>
 
@@ -376,30 +375,28 @@
       <!-- Messages & Instruction (Barra completa en medio) -->
       <div
         v-if="message || instructionHint"
-        class="p-2 rounded-r-lg rounded-bl-lg shadow-lg border-l-8 flex items-center gap-3 transition-all duration-500 transform hover:scale-[1.005] min-h-[60px]"
+        class="p-4 rounded-xl shadow-lg border-l-8 flex items-center gap-4 transition-all duration-500 transform hover:scale-[1.005]"
         :class="{
-          'bg-white border-red-500 text-red-800 shadow-red-100': message && messageType === 'error',
-          'bg-white border-green-500 text-green-900 shadow-green-100':
+          'bg-red-50 border-red-500 text-red-800 shadow-red-100':
+            message && messageType === 'error',
+          'bg-green-50 border-green-500 text-green-900 shadow-green-100':
             message && messageType === 'success',
-          'bg-white border-blue-500 text-slate-800 shadow-blue-100':
+          'bg-white border-purple-500 text-slate-800 shadow-purple-100':
             !message || messageType === 'info',
         }"
       >
-        <!-- Icono Grande (Compactado) -->
-        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
+        <div class="text-4xl shrink-0 animate-bounce cursor-default select-none ml-2">
           <span v-if="message && messageType === 'error'">🛑</span>
           <span v-else-if="message && messageType === 'success'">🎉</span>
           <span v-else>💡</span>
         </div>
-
-        <!-- Texto con Jerarquía (Compactado) -->
         <div class="flex-1 flex flex-col justify-center">
           <span
-            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
+            class="text-sm font-black uppercase tracking-widest leading-none mb-1 opacity-70"
             :class="{
-              'text-red-600': message && messageType === 'error',
-              'text-green-600': message && messageType === 'success',
-              'text-blue-600': !message || messageType === 'info',
+              'text-red-700': message && messageType === 'error',
+              'text-green-700': message && messageType === 'success',
+              'text-purple-700': !message || messageType === 'info',
             }"
           >
             {{
@@ -411,18 +408,17 @@
             }}
           </span>
           <span
-            class="text-base md:text-lg font-medium leading-tight"
+            class="text-lg font-semibold leading-tight"
             v-html="message || instructionHint"
-          >
-          </span>
+          ></span>
         </div>
       </div>
 
       <!-- Bottom Row: Information Panels (Memoria, Complejidad, Menor y Botones) -->
-      <div class="grid grid-cols-12 gap-2 h-[35%]">
+      <div class="grid grid-cols-12 gap-8 h-[35%]">
         <!-- MEMORIA -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-purple-200 overflow-auto transition-all duration-500 relative"
+          class="col-span-4 bg-white rounded-2xl shadow-md p-3 border border-gray-200 overflow-auto transition-all duration-500 relative"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'space'),
@@ -430,31 +426,31 @@
               showMidQuiz && quizTopic === 'space',
           }"
         >
-          <h3 class="text-sm font-bold text-purple-700 mb-1 flex items-center gap-1">
+          <h3 class="text-base font-bold text-purple-800 mb-2 flex items-center gap-2">
             <span>🧠</span> <span>MEMORIA</span>
           </h3>
-          <p class="text-[10px] text-gray-600 font-semibold mb-1">Array[]:</p>
-          <div class="grid grid-cols-5 gap-0.5 mb-2">
+          <p class="text-xs text-gray-600 font-semibold mb-1">Array[]:</p>
+          <div class="grid grid-cols-5 gap-1 mb-2">
             <div
               v-for="(value, idx) in memoryArray"
               :key="'mem-' + idx"
-              class="border rounded p-1 text-center text-[10px] font-mono"
+              class="border rounded-md p-1 text-center text-xs font-mono"
               :class="{
-                'border-green-500 bg-green-50': idx < currentIteration,
+                'border-green-400 bg-green-50': idx < currentIteration,
                 'border-yellow-400 bg-yellow-50': idx === minIndex && idx >= currentIteration,
                 'border-cyan-400 bg-cyan-50':
                   idx === currentIteration + currentCompareIndex &&
                   idx >= currentIteration &&
                   idx !== minIndex,
-                'border-gray-300 bg-gray-50':
+                'border-gray-300 bg-gray-100':
                   idx >= currentIteration &&
                   idx !== minIndex &&
                   idx !== currentIteration + currentCompareIndex,
               }"
             >
-              <div class="text-[8px] text-gray-500">[{{ idx }}]</div>
+              <div class="text-xs text-gray-500">[{{ idx }}]</div>
               <div
-                class="font-bold text-sm"
+                class="font-bold text-base"
                 :class="idx < currentIteration ? 'text-green-700' : 'text-gray-800'"
               >
                 {{ value !== null ? value : '-' }}
@@ -463,34 +459,35 @@
           </div>
           <div class="grid grid-cols-3 gap-2 mb-3 text-xs">
             <div
-              class="flex items-center gap-1 bg-green-50 px-2 py-1 rounded border border-green-300"
+              class="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-md border border-green-300"
             >
-              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-green-800">Ordenado</span>
+              <div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div>
+              <span class="text-xs font-semibold text-green-800">Ordenado</span>
             </div>
             <div
-              class="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded border border-yellow-300"
+              class="flex items-center gap-1.5 bg-yellow-50 px-2 py-1 rounded-md border border-yellow-300"
             >
-              <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-yellow-800">Menor</span>
+              <div class="w-2.5 h-2.5 bg-yellow-500 rounded-full"></div>
+              <span class="text-xs font-semibold text-yellow-800">Menor</span>
             </div>
             <div
-              class="flex items-center gap-1 bg-cyan-50 px-2 py-1 rounded border border-cyan-300"
+              class="flex items-center gap-1.5 bg-cyan-50 px-2 py-1 rounded-md border border-cyan-300"
             >
-              <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-cyan-800">A comparar</span>
+              <div class="w-2.5 h-2.5 bg-cyan-500 rounded-full"></div>
+              <span class="text-xs font-semibold text-cyan-800">A comparar</span>
             </div>
           </div>
-          <div class="bg-amber-50 border border-amber-400 rounded p-1.5 mb-1">
-            <p class="text-[10px] font-bold text-amber-800">
-              min_index = <span class="text-lg">{{ minIndex !== null ? minIndex : '?' }}</span>
+          <div class="bg-amber-100 border border-amber-400 rounded-lg p-2">
+            <p class="text-sm font-bold text-amber-800">
+              min_index =
+              <span class="text-2xl font-mono">{{ minIndex !== null ? minIndex : '?' }}</span>
             </p>
           </div>
         </div>
 
         <!-- COMPLEJIDAD -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative overflow-hidden flex flex-col"
+          class="col-span-4 bg-white rounded-2xl shadow-md p-3 border border-gray-200 transition-all duration-500 relative overflow-hidden flex flex-col"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'complexity'),
@@ -498,71 +495,72 @@
               showMidQuiz && quizTopic === 'complexity',
           }"
         >
-          <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-1 shrink-0">
+          <h3 class="text-base font-bold text-purple-800 mb-2 flex items-center gap-2 shrink-0">
             <span>📊</span> <span>COMPLEJIDAD</span>
           </h3>
-          <div class="flex flex-col gap-2 h-full overflow-hidden">
+          <div class="flex flex-col gap-3 h-full overflow-hidden">
             <!-- Totales -->
-            <div class="grid grid-cols-2 gap-2 shrink-0">
-              <div class="bg-blue-50 rounded p-1.5 text-center border border-blue-200">
-                <p class="text-[9px] text-blue-700 uppercase tracking-wider font-bold mb-0.5">
+            <div class="grid grid-cols-2 gap-3 shrink-0">
+              <div class="bg-purple-50/50 rounded-lg p-2 text-center border border-purple-200">
+                <p class="text-xs text-purple-800 uppercase tracking-wider font-bold mb-0.5">
                   Total Comparaciones
                 </p>
-                <p class="text-xl font-extrabold text-blue-600 leading-none">{{ comparisons }}</p>
+                <p class="text-2xl font-extrabold text-purple-700 leading-none">
+                  {{ comparisons }}
+                </p>
               </div>
-              <div class="bg-purple-50 rounded p-1.5 text-center border border-purple-200">
-                <p class="text-[9px] text-purple-700 uppercase tracking-wider font-bold mb-0.5">
+              <div class="bg-pink-50/50 rounded-lg p-2 text-center border border-pink-200">
+                <p class="text-xs text-pink-800 uppercase tracking-wider font-bold mb-0.5">
                   Intercambios
                 </p>
-                <p class="text-xl font-extrabold text-purple-600 leading-none">{{ swaps }}</p>
+                <p class="text-2xl font-extrabold text-pink-700 leading-none">{{ swaps }}</p>
               </div>
             </div>
 
             <!-- Desglose por Iteración -->
             <div
-              class="bg-white rounded border border-gray-200 p-1 flex-1 flex flex-col justify-start overflow-hidden"
+              class="bg-gray-50 rounded-lg border border-gray-200 p-1.5 flex-1 flex flex-col justify-start overflow-hidden"
             >
               <div
-                class="flex justify-between items-end mb-0.5 border-b border-gray-100 pb-0.5 shrink-0"
+                class="flex justify-between items-end mb-1 border-b border-gray-200 pb-1 shrink-0"
               >
-                <span class="text-[9px] font-black text-gray-500 uppercase tracking-wider"
+                <span class="text-xs font-black text-gray-500 uppercase tracking-wider"
                   >Comparaciones por Vuelta</span
                 >
-                <span class="text-[8px] text-gray-400 italic"></span>
               </div>
-              <div class="space-y-[3px] overflow-y-auto pr-0.5">
+              <div class="space-y-1 overflow-y-auto pr-0.5">
                 <div
                   v-for="(maxComp, idx) in [4, 3, 2, 1]"
                   :key="idx"
-                  class="flex justify-between items-center px-1.5 py-[3px] rounded transition-all duration-300 gap-1.5"
+                  class="flex justify-between items-center px-2 py-1 rounded-md transition-all duration-300 gap-2"
                   :class="
                     currentIteration === idx
-                      ? 'bg-blue-50 border-l-2 border-blue-500 shadow-sm'
+                      ? 'bg-purple-100 border-l-4 border-purple-500 shadow-sm'
                       : currentIteration > idx
-                        ? 'bg-gray-50'
+                        ? 'bg-gray-100'
                         : ''
                   "
                 >
                   <!-- Título -->
                   <span
-                    class="text-[10px] uppercase tracking-wide font-bold whitespace-nowrap"
+                    class="text-xs uppercase tracking-wide font-bold whitespace-nowrap"
                     :class="
                       currentIteration === idx
-                        ? 'text-blue-700'
+                        ? 'text-purple-800'
                         : currentIteration > idx
                           ? 'text-gray-500'
-                          : 'text-gray-300'
+                          : 'text-gray-400'
                     "
                   >
                     VUELTA {{ idx + 1 }}
                   </span>
 
                   <!-- Barra de Progreso Segmentada -->
-                  <div class="flex-1 flex justify-end gap-[1px] h-[7px] mx-1">
+                  <div class="flex-1 flex justify-end gap-0.5 h-2.5 mx-1">
                     <div
                       v-for="n in maxComp"
                       :key="n"
-                      class="w-4 rounded-[1px] transition-colors duration-300"
+                      class="w-5 rounded-sm transition-colors duration-300"
                       :class="
                         n <=
                         (currentIteration > idx
@@ -571,33 +569,33 @@
                             ? Math.max(0, currentCompareIndex)
                             : 0)
                           ? currentIteration > idx
-                            ? 'bg-emerald-400'
-                            : 'bg-blue-500'
-                          : 'bg-gray-200'
+                            ? 'bg-emerald-500'
+                            : 'bg-purple-500'
+                          : 'bg-gray-300'
                       "
                     ></div>
                   </div>
 
                   <!-- Contador -->
                   <span
-                    class="font-mono text-[10px] whitespace-nowrap min-w-[28px] text-right leading-none"
+                    class="font-mono text-xs whitespace-nowrap min-w-[32px] text-right leading-none"
                   >
                     <span
                       v-if="currentIteration === idx"
-                      class="font-extrabold text-blue-700 text-[11px]"
+                      class="font-extrabold text-purple-800 text-sm"
                       >{{ Math.max(0, currentCompareIndex) }}</span
                     >
                     <span
                       v-else-if="currentIteration > idx"
-                      class="text-green-600 font-bold"
+                      class="text-green-700 font-bold"
                       >{{ maxComp }}</span
                     >
                     <span
                       v-else
-                      class="text-gray-300"
+                      class="text-gray-400"
                       >0</span
                     >
-                    <span class="text-[9px] text-gray-400 opacity-70"> / {{ maxComp }}</span>
+                    <span class="text-xs text-gray-500 opacity-70"> / {{ maxComp }}</span>
                   </span>
                 </div>
               </div>
@@ -606,10 +604,10 @@
         </div>
 
         <!-- MENOR ACTUAL + BOTONES -->
-        <div class="col-span-4 flex flex-col gap-2">
+        <div class="col-span-4 flex flex-col gap-3">
           <!-- Cuadro Menor Actual -->
           <div
-            class="rounded-lg shadow-md p-2 border-2 transition-all duration-300 flex-1 flex flex-col"
+            class="rounded-2xl shadow-md p-3 border-2 transition-all duration-300 flex-1 flex flex-col"
             :class="[
               waitingForNewMinDrag
                 ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
@@ -623,7 +621,7 @@
             @dragover="onDragOver"
           >
             <h3
-              class="text-sm font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-1"
+              class="text-base font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-2"
             >
               <span>🏆</span> <span>MENOR ACTUAL (min_actual)</span>
             </h3>
@@ -641,29 +639,29 @@
               />
               <div
                 v-else
-                class="text-yellow-400 text-3xl"
+                class="text-yellow-400 text-4xl font-bold"
               >
                 ?
               </div>
-              <p class="text-[10px] text-center text-yellow-700 mt-1 font-mono">
-                {{ minBottle ? `Idx:${minIndex} | Peso:${minBottle.weight}` : '...' }}
+              <p class="text-sm text-center text-yellow-800 mt-1 font-mono font-semibold">
+                {{ minBottle ? `Idx: ${minIndex} | Peso: ${minBottle.weight}` : '...' }}
               </p>
             </div>
           </div>
 
           <!-- Botones de Acción -->
-          <div class="h-12 flex gap-2">
+          <div class="h-14 flex gap-3">
             <button
               @click="resetAlgorithm"
-              class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wide"
+              class="flex-1 bg-white border-2 border-gray-300 text-gray-800 font-bold rounded-xl shadow-sm transition-all hover:bg-gray-100 hover:border-gray-400 flex items-center justify-center gap-2 text-base uppercase tracking-wide"
             >
-              <span>🔄</span> <span>Reiniciar</span>
+              <span>↻</span> <span>Reiniciar</span>
             </button>
 
             <button
               v-if="isComplete"
               @click="showQuiz = true"
-              class="flex-1 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold rounded-lg shadow-md transition-all flex items-center justify-center gap-2 text-sm uppercase tracking-wide animate-bounce"
+              class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-base uppercase tracking-wide animate-bounce"
             >
               <span>✅</span> <span>Test</span>
             </button>
@@ -676,16 +674,16 @@
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
-    class="fixed inset-0 bg-black/80 z-[90] flex justify-end items-start backdrop-blur-sm p-4 pr-6 pt-24"
+    class="fixed inset-0 bg-gray-900/60 z-[90] flex items-center justify-center backdrop-blur-sm p-4"
   >
     <div
-      class="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500"
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-purple-500"
     >
       <div class="text-center mb-6">
-        <div class="text-4xl mb-2">
+        <div class="text-5xl mb-3">
           {{ quizTopic === 'space' ? '💾' : currentQuizPhase === 1 ? '🧠' : '🤔' }}
         </div>
-        <h2 class="text-2xl font-black text-indigo-700 uppercase">
+        <h2 class="text-3xl font-black text-purple-800 uppercase">
           {{ quizTopic === 'space' ? 'Test de Memoria (Espacio)' : 'Test de Razonamiento' }}
         </h2>
 
@@ -693,19 +691,19 @@
         <template v-if="quizTopic === 'complexity'">
           <!-- PREGUNTA 1 -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
+            <p class="text-gray-600 text-lg mt-3">
               Acabas de completar la primera vuelta con <b>5 elementos</b> e hiciste
               <b>4 comparaciones</b>.
             </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
+            <p class="text-gray-800 font-bold mt-3 text-xl">
               Si tuvieras "n" elementos, ¿cuántas comparaciones harías en la primera vuelta?
             </p>
           </div>
 
           <!-- PREGUNTA 2 -->
           <div v-else-if="currentQuizPhase === 2">
-            <p class="text-gray-600 text-sm mt-2">Imagina ahora un caso hipotético...</p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
+            <p class="text-gray-600 text-lg mt-3">Imagina ahora un caso hipotético...</p>
+            <p class="text-gray-800 font-bold mt-3 text-xl">
               Si la lista hubiera estado <u>YA ORDENADA</u> al inicio, ¿cuántas comparaciones haría
               el algoritmo?
             </p>
@@ -713,8 +711,8 @@
 
           <!-- PREGUNTA 3 -->
           <div v-else>
-            <p class="text-gray-600 text-sm mt-2">Última pregunta para expertos...</p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
+            <p class="text-gray-600 text-lg mt-3">Última pregunta para expertos...</p>
+            <p class="text-gray-800 font-bold mt-3 text-xl">
               ¿Y si la lista estuviera <u>TOTALMENTE INVERTIDA</u> (peor caso)? ¿Qué pasaría con las
               comparaciones?
             </p>
@@ -725,10 +723,10 @@
         <template v-else>
           <!-- PHASE 1: Concrete Case -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
+            <p class="text-gray-600 text-lg mt-3">
               Observa la sección de memoria resaltada. Ya hemos hecho 2 vueltas.
             </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
+            <p class="text-gray-800 font-bold mt-3 text-xl">
               ¿Cuántas variables EXTRA (además del array original) estamos usando para encontrar el
               menor?
             </p>
@@ -736,10 +734,10 @@
 
           <!-- PHASE 2: Generalization -->
           <div v-else>
-            <p class="text-gray-600 text-sm mt-2">
+            <p class="text-gray-600 text-lg mt-3">
               Ahora imagina que ordenamos 1,000,000 de elementos...
             </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
+            <p class="text-gray-800 font-bold mt-3 text-xl">
               ¿Cuánto espacio extra necesitaríamos?
             </p>
           </div>
@@ -756,7 +754,7 @@
           <button
             @click="handleMidQuizAnswer('n')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) n comparaciones</span>
           </button>
@@ -764,7 +762,7 @@
           <button
             @click="handleMidQuizAnswer('n-1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) n - 1 comparaciones</span>
           </button>
@@ -772,7 +770,7 @@
           <button
             @click="handleMidQuizAnswer('n/2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) n / 2 comparaciones</span>
           </button>
@@ -786,7 +784,7 @@
           <button
             @click="handleMidQuizAnswer('zero')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) Cero (Detecta que está ordenada)</span>
           </button>
@@ -794,7 +792,7 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) Menos comparaciones</span>
           </button>
@@ -802,7 +800,7 @@
           <button
             @click="handleMidQuizAnswer('same')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) Las mismas comparaciones</span>
           </button>
@@ -816,7 +814,7 @@
           <button
             @click="handleMidQuizAnswer('more')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>A) Aumentan drásticamente</span>
           </button>
@@ -824,7 +822,7 @@
           <button
             @click="handleMidQuizAnswer('constant')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>B) Se mantienen igual</span>
           </button>
@@ -832,7 +830,7 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
           >
             <span>C) Se reducen (por ser el peor caso)</span>
           </button>
@@ -905,11 +903,11 @@
       <!-- Feedback -->
       <div
         v-if="midQuizFeedback"
-        class="mt-4 p-3 rounded-lg text-center font-bold animate-pulse"
+        class="mt-6 p-4 rounded-lg text-center font-bold animate-pulse"
         :class="
           midQuizFeedback.type === 'success'
-            ? 'bg-green-100 text-green-700 border border-green-300'
-            : 'bg-red-100 text-red-700 border border-red-300'
+            ? 'bg-green-100 text-green-800 border border-green-300'
+            : 'bg-red-100 text-red-800 border border-red-300'
         "
       >
         <span v-html="midQuizFeedback.text"></span>
