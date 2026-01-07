@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
-  >
+  <div class="min-h-screen bg-gray-50 overflow-hidden rounded-xl">
     <!-- Title -->
-    <div class="text-center py-3 bg-white/80 shadow-sm border-b border-gray-200">
+    <div class="text-center py-3 bg-white rounded-t-xl border-b border-gray-200">
       <h1
-        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
+        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
       >
         SELECTION SORT - Algoritmo de Ordenamiento por Selección
       </h1>
