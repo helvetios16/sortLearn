@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
-import Visualize from '../views/Visualize.vue';
+import Visualize from '../views/VisualizeNew.vue';
 import Compare from '../views/Compare.vue';
 import Learn from '../views/Learn.vue';
 import UnderConstruction from '../views/UnderConstruction.vue';

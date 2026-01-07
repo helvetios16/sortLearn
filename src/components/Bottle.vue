@@ -8,7 +8,11 @@
       'consolidated': state === 'consolidated',
       'comparing': state === 'comparing',
       'in-temp-var': state === 'temp-variable',
+      'shake-hint': shouldShake,
+      'opacity-40': dimmed
     }"
+    draggable="true"
+    @click="emit('bottle-clicked', id)"
     @dblclick="emit('return-bottle', id)"
   >
     <div
@@ -86,9 +90,11 @@ const props = defineProps<{
   comparison?: 'heavier' | 'lighter' | 'equal' | null;
   state?: 'normal' | 'consolidated' | 'comparing' | 'temp-variable';
   showIndex?: number;
+  shouldShake?: boolean;
+  dimmed?: boolean;
 }>();
 
-const emit = defineEmits(['return-bottle']);
+const emit = defineEmits(['return-bottle', 'bottle-clicked']);
 
 // A darker shade for the "liquid"
 const liquidColor = computed(() => {
@@ -217,6 +223,22 @@ const shapes = computed(() => {
   50% {
     border-color: #f59e0b;
     transform: scale(1.05);
+  }
+}
+
+.shake-hint {
+  animation: shake-bottles 0.8s ease-in-out infinite;
+}
+
+@keyframes shake-bottles {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-2deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(2deg);
   }
 }
 
