@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden"
-  >
+  <div class="min-h-screen bg-gray-50 overflow-hidden rounded-xl">
     <!-- Title -->
-    <div class="text-center py-3 bg-white/80 shadow-sm border-b border-gray-200">
+    <div class="text-center py-3 bg-white rounded-t-xl border-b border-gray-200">
       <h1
-        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600"
+        class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
       >
         SELECTION SORT - Algoritmo de Ordenamiento por Selección
       </h1>
@@ -27,15 +25,17 @@
               <div class="flex gap-3">
                 <div class="flex items-center gap-1">
                   <span class="text-green-600 font-bold text-base">✓</span>
-                  <span class="font-semibold">Ordenados: {{ currentIteration }}</span>
+                  <span class="font-semibold text-gray-700">Ordenados: {{ currentIteration }}</span>
                 </div>
                 <div class="flex items-center gap-1">
                   <span class="text-orange-600 font-bold text-base">📋</span>
-                  <span class="font-semibold">Desordenados: {{ 5 - currentIteration }}</span>
+                  <span class="font-semibold text-gray-700"
+                    >Desordenados: {{ 5 - currentIteration }}</span
+                  >
                 </div>
               </div>
               <!-- Color meanings -->
-              <div class="border-l-2 border-gray-300 pl-3 flex gap-3">
+              <div class="border-l-2 border-gray-200 pl-3 flex gap-3">
                 <div class="flex items-center gap-1">
                   <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                   <span class="font-semibold text-yellow-700">Menor</span>
@@ -415,7 +415,7 @@
       </div>
 
       <!-- Bottom Row: Information Panels (Memoria, Complejidad, Menor y Botones) -->
-      <div class="grid grid-cols-12 gap-2 h-[35%]">
+      <div class="grid grid-cols-12 gap-8 h-[35%]">
         <!-- MEMORIA -->
         <div
           class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-purple-200 overflow-auto transition-all duration-500 relative"
@@ -603,7 +603,7 @@
         </div>
 
         <!-- MENOR ACTUAL + BOTONES -->
-        <div class="col-span-4 flex flex-col gap-2">
+        <div class="col-span-4 flex flex-col gap-3">
           <!-- Cuadro Menor Actual -->
           <div
             class="rounded-lg shadow-md p-2 border-2 transition-all duration-300 flex-1 flex flex-col"
