@@ -615,7 +615,8 @@
                 ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
                 : 'bg-yellow-50 border-gray-800',
               {
-                'opacity-20 grayscale pointer-events-none': shouldDimBottomPanels,
+                'opacity-20 grayscale pointer-events-none':
+                  shouldDimBottomPanels && !waitingForNewMinDrag,
               },
             ]"
             @drop="onDropOnMinBox"
