@@ -307,8 +307,9 @@ function checkSwapCompletion() {
       >
         Práctica de Selection Sort
       </h1>
-      <p class="text-center text-slate-500 mb-8 font-medium">
-        Haz clic en los números y las casillas para ejecutar el algoritmo paso a paso.
+      <p class="text-center text-slate-600 mb-8 font-medium max-w-2xl mx-auto text-sm">
+        Configura tu lista → Presiona <span class="font-bold text-purple-600">EMPEZAR</span> → Sigue
+        las casillas pulsantes
       </p>
 
       <!-- Panel de Control -->
@@ -317,19 +318,21 @@ function checkSwapCompletion() {
           <template v-if="!isPracticeStarted">
             <button
               @click="addNumber"
-              class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 font-bold text-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Añadir Número"
+              class="px-4 py-2 flex items-center justify-center rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+              title="Añadir un número aleatorio a la lista"
               :disabled="numbers.length >= 15"
             >
-              +
+              <span class="text-lg">+</span>
+              <span>Añadir Número</span>
             </button>
             <button
               @click="removeNumber"
-              class="w-12 h-12 flex items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200 font-bold text-2xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Quitar Número"
+              class="px-4 py-2 flex items-center justify-center rounded-lg bg-red-100 text-red-700 hover:bg-red-200 font-bold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed gap-2"
+              title="Quitar el último número de la lista"
               :disabled="numbers.length === 0"
             >
-              -
+              <span class="text-lg">−</span>
+              <span>Quitar Número</span>
             </button>
 
             <div class="w-px h-8 bg-gray-300 mx-2"></div>
@@ -435,6 +438,15 @@ function checkSwapCompletion() {
                       ? 'bg-yellow-50 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.3)]'
                       : '',
 
+                    // GUÍA VISUAL: Próximo número a comparar (PULSA)
+                    isPracticeStarted &&
+                    !selectedNumber &&
+                    !allCompared &&
+                    index === sortedBoundaryIndex + comparedIndices.length &&
+                    index >= sortedBoundaryIndex
+                      ? 'animate-pulse-strong ring-4 ring-blue-400'
+                      : '',
+
                     // Vacío
                     num.value === -1
                       ? 'bg-slate-100 border-dashed border-slate-300 text-transparent pointer-events-none'
@@ -490,7 +502,10 @@ function checkSwapCompletion() {
                     ? 'border-yellow-500 text-yellow-900 shadow-md scale-105'
                     : 'border-dashed border-yellow-300 text-yellow-200',
                   selectedBox === 'min' ? 'ring-4 ring-purple-400 border-purple-500' : '',
-                  selectedNumber !== null && !minBox ? 'animate-pulse ring-4 ring-yellow-200' : '',
+                  // GUÍA VISUAL: Pulsa cuando hay número seleccionado y no hay mínimo
+                  selectedNumber !== null && !minBox && allCompared
+                    ? 'animate-pulse-strong ring-4 ring-yellow-400'
+                    : '',
                 ]"
                 @click="minBox ? selectMinBox() : placeInMinBox()"
               >
@@ -502,12 +517,8 @@ function checkSwapCompletion() {
                 >
               </div>
 
-              <p class="text-xs text-yellow-600 font-medium text-center max-w-[180px]">
-                {{
-                  minBox
-                    ? 'Haz clic para colocarlo en su posición final'
-                    : 'Selecciona el menor del array para traerlo aquí'
-                }}
+              <p class="text-xs text-yellow-700 font-bold text-center">
+                {{ minBox ? '📦 Mínimo' : '?' }}
               </p>
             </div>
           </div>
@@ -593,6 +604,36 @@ function checkSwapCompletion() {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Animación de pulso fuerte para guía visual */
+@keyframes pulseStrong {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+}
+.animate-pulse-strong {
+  animation: pulseStrong 1.5s ease-in-out infinite;
+}
+
+/* Animación de pulso para ring */
+@keyframes pulseRing {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(236, 72, 153, 0);
+  }
+}
+.animate-pulse-ring {
+  animation: pulseRing 1.5s ease-in-out infinite;
+}
+
 /* Hide number input arrows */
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
@@ -601,5 +642,6 @@ input[type='number']::-webkit-outer-spin-button {
 }
 input[type='number'] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>
