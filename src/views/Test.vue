@@ -276,14 +276,14 @@ function performAnimatedSwap(idA: string, idB: string) {
   display: flex; justify-content: center; align-items: flex-start; min-height: 100vh;
   background-color: var(--bg-dark); font-family: 'Poppins', sans-serif; color: var(--text-color); padding: 2rem;
 }
-.container { width: 100%; max-width: 900px; text-align: center; }
+.container { width: 100%; max-width: 1050px; text-align: center; }
 .title { font-size: 2.5rem; font-weight: 600; color: var(--fuchsia); margin-bottom: 0.5rem; text-shadow: 0 0 10px var(--fuchsia); }
 .subtitle { font-size: 1.1rem; color: var(--pink); margin-bottom: 1rem; }
 .controls-container { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem; min-height: 60px; background-color: rgba(42, 42, 42, 0.5); padding: 1rem; border-radius: 12px; }
 .separator { width: 2px; height: 24px; background-color: var(--purple); margin: 0 0.5rem; }
 .coach-hint { min-height: 2.5em; font-size: 1.1rem; color: var(--pink); margin-bottom: 1rem; font-style: italic; }
 .main-area { display: flex; flex-direction: column; align-items: center; gap: 2rem; margin-bottom: 1rem; }
-.numbers-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; min-height: 96px; max-width: 600px; }
+.numbers-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; min-height: 272px; max-width: 980px; }
 
 .temp-area { 
   display: flex; 
