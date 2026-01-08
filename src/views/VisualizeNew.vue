@@ -14,24 +14,11 @@
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
         <div
-          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border-2 border-blue-300 transition-all duration-300"
-          :class="{
-            'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
-              isInitialState,
-          }"
+          class="col-span-8 bg-white rounded-lg shadow-lg p-3 border border-gray-800 transition-all duration-300"
         >
           <div class="flex items-center justify-between mb-2">
             <h3 class="text-base font-bold text-blue-700 flex items-center gap-2">
               LISTA DE FRASCOS
-              <span
-                v-if="isInitialState"
-                class="flex h-3 w-3 relative"
-              >
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
-                ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
             </h3>
             <div class="flex gap-4 text-sm">
               <!-- Counters -->
@@ -157,16 +144,18 @@
                 />
 
                 <!-- MIN DEFAULT TIP -->
+                <!-- MIN DEFAULT TIP - LEFT SIDE -->
                 <div
                   v-if="showMinDefaultTip && currentIteration === 0 && idx === 0"
-                  class="absolute -top-[70px] z-50 animate-bounce pointer-events-none w-32 flex flex-col items-center"
+                  class="absolute -left-[100px] top-1/2 -translate-y-1/2 z-50 animate-pulse pointer-events-none w-24 flex flex-row items-center justify-end px-1"
                 >
                   <div
                     class="relative bg-white text-gray-800 text-[10px] p-2 rounded-lg border-2 border-indigo-500 shadow-xl text-center font-bold leading-tight"
                   >
                     El "menor" es el primero por defecto
+                    <!-- Flecha apuntando a la derecha (hacia el frasco) -->
                     <div
-                      class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-b-2 border-r-2 border-indigo-500 transform rotate-45"
+                      class="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-t-2 border-r-2 border-indigo-500 transform rotate-45"
                     ></div>
                   </div>
                 </div>
@@ -205,12 +194,10 @@
         <div class="col-span-4 flex flex-col gap-2 relative">
           <!-- BALANZA -->
           <div
-            class="bg-white rounded-lg shadow-md p-2 border border-blue-300 flex-1 relative transition-all duration-300"
+            class="bg-white rounded-lg shadow-md p-2 border border-gray-800 flex-1 relative transition-all duration-300"
             :class="{
               'opacity-30 pointer-events-none':
                 waitingForNewMinDrag || waitingForSwapDrag || iterationSummary.show,
-              'ring-4 ring-blue-400 ring-opacity-50 shadow-[0_0_15px_rgba(59,130,246,0.5)]':
-                isInitialState && !waitingForNewMinDrag,
             }"
           >
             <h3
@@ -218,15 +205,6 @@
             >
               <span>⚖️</span>
               <span>BALANZA</span>
-              <span
-                v-if="isInitialState"
-                class="flex h-3 w-3 relative"
-              >
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"
-                ></span>
-                <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-              </span>
             </h3>
 
             <div class="relative h-[calc(100%-40px)] flex flex-col items-center justify-center">
@@ -396,12 +374,13 @@
       <!-- Messages & Instruction (Barra completa en medio) -->
       <div
         v-if="message || instructionHint"
-        class="p-2 rounded-r-lg rounded-bl-lg shadow-lg border-l-8 flex items-center gap-3 transition-all duration-500 transform hover:scale-[1.005] min-h-[60px]"
+        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
         :class="{
-          'bg-white border-red-500 text-red-800 shadow-red-100': message && messageType === 'error',
-          'bg-white border-green-500 text-green-900 shadow-green-100':
+          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
+            message && messageType === 'error',
+          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
             message && messageType === 'success',
-          'bg-white border-blue-500 text-slate-800 shadow-blue-100':
+          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
             !message || messageType === 'info',
         }"
       >
@@ -417,9 +396,9 @@
           <span
             class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
             :class="{
-              'text-red-600': message && messageType === 'error',
-              'text-green-600': message && messageType === 'success',
-              'text-blue-600': !message || messageType === 'info',
+              'text-red-700': message && messageType === 'error',
+              'text-emerald-700': message && messageType === 'success',
+              'text-amber-800': !message || messageType === 'info',
             }"
           >
             {{
@@ -442,7 +421,7 @@
       <div class="grid grid-cols-12 gap-8 h-[35%]">
         <!-- MEMORIA -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-purple-200 overflow-auto transition-all duration-500 relative"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-gray-800 overflow-auto transition-all duration-500 relative"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels && !(showMidQuiz && quizTopic === 'space'),
@@ -450,7 +429,7 @@
               showMidQuiz && quizTopic === 'space',
           }"
         >
-          <h3 class="text-sm font-bold text-purple-700 mb-1 flex items-center gap-1">
+          <h3 class="text-sm font-bold text-gray-900 mb-1 flex items-center gap-1">
             <span>🧠</span> <span>MEMORIA</span>
           </h3>
           <p class="text-[10px] text-gray-600 font-semibold mb-1">Array[]:</p>
@@ -486,31 +465,31 @@
               class="flex items-center gap-1 bg-green-50 px-2 py-1 rounded border border-green-300"
             >
               <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-green-800">Ordenado</span>
+              <span class="text-[10px] font-semibold text-black">Ordenado</span>
             </div>
             <div
               class="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded border border-yellow-300"
             >
               <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-yellow-800">Menor</span>
+              <span class="text-[10px] font-semibold text-black">Menor</span>
             </div>
             <div
               class="flex items-center gap-1 bg-cyan-50 px-2 py-1 rounded border border-cyan-300"
             >
               <div class="w-2 h-2 bg-cyan-500 rounded-full"></div>
-              <span class="text-[10px] font-semibold text-cyan-800">A comparar</span>
+              <span class="text-[10px] font-semibold text-black">A comparar</span>
             </div>
           </div>
           <div class="bg-amber-50 border border-amber-400 rounded p-1.5 mb-1">
-            <p class="text-[10px] font-bold text-amber-800">
-              min_index = <span class="text-lg">{{ minIndex !== null ? minIndex : '?' }}</span>
+            <p class="text-[10px] font-bold text-black">
+              min_actual = <span class="text-lg">{{ minIndex !== null ? minIndex : '?' }}</span>
             </p>
           </div>
         </div>
 
         <!-- COMPLEJIDAD -->
         <div
-          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-blue-200 transition-all duration-500 relative overflow-hidden flex flex-col"
+          class="col-span-4 bg-white rounded-lg shadow-md p-2 border border-gray-800 transition-all duration-500 relative overflow-hidden flex flex-col"
           :class="{
             'opacity-20 grayscale pointer-events-none':
               shouldDimBottomPanels &&
@@ -519,23 +498,23 @@
               showMidQuiz && (quizTopic === 'complexity' || quizTopic === 'math'),
           }"
         >
-          <h3 class="text-sm font-bold text-blue-700 mb-2 flex items-center gap-1 shrink-0">
+          <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1 shrink-0">
             <span>📊</span> <span>COMPLEJIDAD</span>
           </h3>
           <div class="flex flex-col gap-2 h-full overflow-hidden">
             <!-- Totales -->
             <div class="grid grid-cols-2 gap-2 shrink-0">
               <div class="bg-blue-50 rounded p-1.5 text-center border border-blue-200">
-                <p class="text-[9px] text-blue-700 uppercase tracking-wider font-bold mb-0.5">
+                <p class="text-[9px] text-black uppercase tracking-wider font-bold mb-0.5">
                   Total Comparaciones
                 </p>
-                <p class="text-xl font-extrabold text-blue-600 leading-none">{{ comparisons }}</p>
+                <p class="text-xl font-extrabold text-black leading-none">{{ comparisons }}</p>
               </div>
               <div class="bg-purple-50 rounded p-1.5 text-center border border-purple-200">
-                <p class="text-[9px] text-purple-700 uppercase tracking-wider font-bold mb-0.5">
+                <p class="text-[9px] text-black uppercase tracking-wider font-bold mb-0.5">
                   Intercambios
                 </p>
-                <p class="text-xl font-extrabold text-purple-600 leading-none">{{ swaps }}</p>
+                <p class="text-xl font-extrabold text-black leading-none">{{ swaps }}</p>
               </div>
             </div>
 
@@ -546,7 +525,7 @@
               <div
                 class="flex justify-between items-end mb-0.5 border-b border-gray-100 pb-0.5 shrink-0"
               >
-                <span class="text-[9px] font-black text-gray-500 uppercase tracking-wider"
+                <span class="text-[9px] font-black text-black uppercase tracking-wider"
                   >Comparaciones por Vuelta</span
                 >
                 <span class="text-[8px] text-gray-400 italic"></span>
@@ -569,7 +548,7 @@
                     class="text-[10px] uppercase tracking-wide font-bold whitespace-nowrap"
                     :class="
                       currentIteration === idx
-                        ? 'text-blue-700'
+                        ? 'text-black'
                         : currentIteration > idx
                           ? 'text-gray-500'
                           : 'text-gray-300'
@@ -605,7 +584,7 @@
                   >
                     <span
                       v-if="currentIteration === idx"
-                      class="font-extrabold text-blue-700 text-[11px]"
+                      class="font-extrabold text-black text-[11px]"
                       >{{ Math.max(0, currentCompareIndex) }}</span
                     >
                     <span
@@ -634,10 +613,10 @@
             :class="[
               waitingForNewMinDrag
                 ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
-                : 'bg-yellow-50 border-yellow-400',
+                : 'bg-yellow-50 border-gray-800',
               {
                 'opacity-20 grayscale pointer-events-none':
-                  waitingForSwapDrag || (draggedBottleIndex !== null && !waitingForNewMinDrag),
+                  shouldDimBottomPanels && !waitingForNewMinDrag,
               },
             ]"
             @drop="onDropOnMinBox"
@@ -1883,6 +1862,9 @@ const highlightRightPan = computed(() => {
 });
 
 const shouldDimBottomPanels = computed(() => {
+  // Estado inicial: Opaco hasta que se pese por primera vez para enfocar en la balanza
+  if (comparisons.value === 0 && !scaleWeighed.value) return true;
+
   // Dim if waiting for special actions OR if dragging something that isn't for those actions
   if (waitingForNewMinDrag.value || waitingForSwapDrag.value) return true;
 
@@ -1914,7 +1896,28 @@ const setInstruction = (hint: string) => {
 };
 
 const onBottleClick = (index: number) => {
-  // Solo feedback visual para indicar que deben arrastrar
+  if (waitingForNewMinDrag.value) {
+    if (index === pendingNewMinIndex.value) {
+      showMessage(
+        '👇 Arrastra este frasco al cuadro MENOR ACTUAL para actualizar el mínimo.',
+        'success',
+      );
+    } else {
+      showMessage('⚠️ Este no es el nuevo menor encontrado. Busca el resaltado.', 'error');
+    }
+    return;
+  }
+
+  if (waitingForSwapDrag.value) {
+    if (index === minIndex.value) {
+      showMessage('👇 Arrastra este frasco a la primera posición desordenada.', 'success');
+    } else {
+      showMessage('⚠️ Debes mover el MENOR ACTUAL (marcado en amarillo).', 'error');
+    }
+    return;
+  }
+
+  // Default behavior
   showMessage('👆 Arrastra los frascos a la balanza para compararlos.', 'info');
 };
 
