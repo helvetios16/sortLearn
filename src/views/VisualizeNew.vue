@@ -803,14 +803,22 @@
           </div>
 
           <!-- PHASE 2: Big O Inference -->
+          <!-- PHASE 2: Big O Inference -->
           <div v-else-if="currentQuizPhase === 2">
-            <p class="text-gray-600 text-sm mt-2">
-              La fórmula anterior es <span class="font-mono bg-gray-100 px-1">n(n-1)/2</span>. Si
-              expandimos eso, obtenemos algo proporcional a
-              <span class="font-mono bg-gray-100 px-1">n²</span>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Cómo llamamos a esta clase de complejidad en notación Big O?
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-blue-900 text-sm font-semibold leading-relaxed">
+                En la pregunta anterior vimos que el total es <b>n(n-1)/2</b>. <br />
+                Si simplificamos esto, el término que domina es:
+                <span
+                  class="inline-block text-xl font-black bg-white text-blue-800 px-2 py-1 rounded mx-1 shadow-sm border border-blue-200"
+                  >n²</span
+                >
+                .
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Sabiendo esto... ¿Cómo crees que se clasifica la "velocidad" (complejidad) de este
+              algoritmo?
             </p>
           </div>
 
@@ -1198,7 +1206,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Lineal O(n)</span>
+            <span>Lineal (El esfuerzo es igual a la cantidad de datos)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('log')"
@@ -1210,7 +1218,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>B) Logarítmica O(log n)</span>
+            <span>Logarítmica (El esfuerzo crece muy lento)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('quadratic')"
@@ -1222,7 +1230,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Cuadrática O(n²)</span>
+            <span>Cuadrática (El esfuerzo es proporcional a n²)</span>
           </button>
         </div>
 
@@ -1680,20 +1688,20 @@ const handleMidQuizAnswer = (option: string) => {
         selectedOption.value = 'quadratic';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 📈 <b>O(n²)</b>.<br> En Big O, el término al cuadrado (n²) domina al lineal (n), así que decimos que el algoritmo es "Cuadrático".',
+          text: '¡CORRECTO! 🎯 <br> Al tener <b>n²</b> llamamos a esto <b>Complejidad Cuadrática O(n²)</b>.<br> Esto significa que el trabajo crece "al cuadrado" de los datos (es muy costoso).',
         };
         midQuizSolved.value = true;
       } else if (option === 'linear') {
         selectedOption.value = 'linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Si fuera lineal, al doblar los datos, el tiempo se doblaría. Aquí crece mucho más.',
+          text: 'Incorrecto. ❌ <br> Lineal sería si la fórmula fuera solo "n". Aquí tenemos n² (n multiplicado por n), que es mucho mayor.',
         };
       } else if (option === 'log') {
         selectedOption.value = 'log';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Logarítmico sería muy rápido (como Binary Search).',
+          text: 'Incorrecto. ❌ <br> Logarítmico es extremadamente rápido. Nuestra "escalera" es la mitad de un cuadrado, así que es lento.',
         };
       }
     }
@@ -1735,7 +1743,7 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === 'n-1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
+          text: '¡CORECTO! 🎉 <br> Se hacen <b>n-1</b> comparaciones.',
         };
         midQuizSolved.value = true;
       } else if (option === 'n') {
