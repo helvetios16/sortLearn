@@ -17,13 +17,6 @@ import { RouterLink, RouterView } from 'vue-router';
           to="/visualize"
           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
           active-class="bg-purple-100 text-purple-700"
-          >Visualizar</RouterLink
-        >
-
-        <RouterLink
-          to="/learn"
-          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          active-class="bg-purple-100 text-purple-700"
           >Aprender</RouterLink
         >
 
@@ -31,7 +24,14 @@ import { RouterLink, RouterView } from 'vue-router';
           to="/test"
           class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
           active-class="bg-purple-100 text-purple-700"
-          >Probar</RouterLink
+          >Practicar</RouterLink
+        >
+
+        <RouterLink
+          to="/learn"
+          class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          active-class="bg-purple-100 text-purple-700"
+          >Implementación</RouterLink
         >
       </nav>
     </div>
