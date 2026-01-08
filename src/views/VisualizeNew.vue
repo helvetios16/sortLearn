@@ -690,6 +690,31 @@
     </div>
   </div>
 
+  <!-- INTRO QUIZ MODAL -->
+  <div
+    v-if="showQuizIntro"
+    class="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center backdrop-blur-sm p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-indigo-500 transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🤔</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">PREGUNTAS DE RAZONAMIENTO</h2>
+      <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+        ¡Has completado una vuelta! <br />
+        Antes de continuar, responde unas breves preguntas para asegurar que entiendes lo que está
+        pasando.
+      </p>
+
+      <button
+        @click="startMidQuiz"
+        class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xl shadow-lg shadow-indigo-200 transition-all transform hover:scale-105 active:scale-95"
+      >
+        ¡Estoy listo! 🚀
+      </button>
+    </div>
+  </div>
+
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
@@ -724,12 +749,17 @@
         <template v-if="quizTopic === 'complexity'">
           <!-- PREGUNTA 1 -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Acabas de completar la primera vuelta con <b>5 elementos</b> e hiciste
-              <b>4 comparaciones</b>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              Si tuvieras "n" elementos, ¿cuántas comparaciones harías en la primera vuelta?
+            <div
+              class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm text-left"
+            >
+              <p class="text-indigo-900 text-sm font-semibold leading-relaxed">
+                CONTEXTO: <br />
+                Acabas de completar la 1ra vuelta con <b class="text-lg">5 elementos</b>. <br />
+                Hiciste exactamente <b class="text-lg text-indigo-700">4 comparaciones</b>.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuvieras "n" elementos... ¿Cuántas comparaciones harías en esa primera vuelta?
             </p>
           </div>
 
@@ -1340,7 +1370,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>A) Aumenta mucho (Lineal O(n))</span>
+            <span>A) Necesitamos 1 millón de variables extra</span>
           </button>
 
           <button
@@ -1353,7 +1383,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>B) Aumenta muchísimo (Cuadrático O(n²))</span>
+            <span>B) Necesitamos trillones de variables (una matriz gigante)</span>
           </button>
 
           <button
@@ -1366,7 +1396,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>C) Se mantiene en 1 variable (Constante O(1))</span>
+            <span>C) Seguimos necesitando solo 1 variable extra</span>
           </button>
         </div>
 
@@ -1492,7 +1522,13 @@ import { ref, computed, watch } from 'vue';
 import Bottle from '../components/Bottle.vue';
 
 // --- QUIZ LOGIC ---
+const showQuizIntro = ref(false);
 const showMidQuiz = ref(false);
+
+const startMidQuiz = () => {
+  showQuizIntro.value = false;
+  showMidQuiz.value = true;
+};
 const midQuizSolved = ref(false);
 const currentQuizPhase = ref(1); // 1, 2, 3 phases
 const quizTopic = ref<'complexity' | 'space' | 'strategy' | 'math'>('complexity'); // New state with math
@@ -1550,18 +1586,18 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === 'o1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXACTO! 🎓 <br> Si la cantidad de elementos (N) aumenta a 1 millón, ¡sigues necesitando solo <b>1 variable extra</b>!<br> Por eso la complejidad espacial es <b>Constante O(1)</b>.',
+          text: '¡EXACTO! 🎓 <br> No importa si son 5 o 1 millón de datos, solo usamos una variable para rastrear el mínimo.<br> A esto le llamamos <b>Espacio Constante O(1)</b>.',
         };
         midQuizSolved.value = true;
       } else if (option === 'on') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El espacio extra NO crece con los datos.',
+          text: 'Incorrecto. ❌ <br> No necesitamos crear una copia de la lista. Solo apuntamos al índice del menor. El espacio no crece (es O(1), no O(n)).',
         };
       } else if (option === 'on2') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos duplicando datos.',
+          text: 'Incorrecto. ❌ <br> Eso sería excesivo. Selection Sort es eficiente en memoria porque trabaja "in-place" (en el mismo lugar).',
         };
       }
     }
@@ -2480,7 +2516,7 @@ const finalizeIterationLogic = () => {
     if (currentIteration.value === 1) {
       quizTopic.value = 'complexity';
       currentQuizPhase.value = 1;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2490,7 +2526,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false; // Reset solution state
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2500,7 +2536,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2510,7 +2546,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
