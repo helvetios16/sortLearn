@@ -787,11 +787,18 @@
         <template v-else-if="quizTopic === 'math'">
           <!-- PHASE 1: Summation -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Mira el total de operaciones (4 + 3 + 2 + 1 = 10)...
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Por qué sale exactamente ese número? ¿Qué fórmula matemática representa esta suma?
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-indigo-900 text-sm font-semibold leading-snug">
+                En este ejemplo (5 elementos) hicimos: <br />
+                <span class="block text-center text-2xl font-black text-indigo-700 my-2"
+                  >4 + 3 + 2 + 1 = <span class="text-3xl underline decoration-wavy">10</span></span
+                >
+                comparaciones totales.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuviéramos "n" elementos... ¿Cómo calcularíamos el total exacto siguiendo este
+              patrón de "escalera"?
             </p>
           </div>
 
@@ -1148,7 +1155,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Suma de Gauss: (n-1) * n / 2</span>
+            <span>A) Sumando desde 1 hasta (n-1)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_random')"
@@ -1160,7 +1167,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>B) Es el factorial de n (n!)</span>
+            <span>B) Multiplicando n por 2</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_linear')"
@@ -1172,7 +1179,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Es simplemente n * 2</span>
+            <span>C) Multiplicando n por n</span>
           </button>
         </div>
 
@@ -1650,20 +1657,20 @@ const handleMidQuizAnswer = (option: string) => {
         selectedOption.value = 'sum_gauss';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXCELENTE! 🔢 <br> Es la suma de Gauss de 1 a (n-1).<br> Matemáticamente: <b>n(n-1) / 2</b>.',
+          text: '¡EXACTO! 🪜 <br> Es una "escalera" que baja: (n-1) + (n-2) + ... + 1.<br> Esta famosa suma vale matemáticamente: <b>n(n-1) / 2</b>.',
         };
         midQuizSolved.value = true;
       } else if (option === 'sum_random') {
         selectedOption.value = 'sum_random';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El factorial crece muchísimo más rápido.',
+          text: 'Incorrecto. ❌ <br> n*2 es muy pequeño (Lineal). Necesitamos sumar desde 1 hasta (n-1).',
         };
       } else if (option === 'sum_linear') {
         selectedOption.value = 'sum_linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> 5 * 2 = 10 coincide por casualidad aquí, pero no es la fórmula general.',
+          text: 'Cerca... 🤏 <br> n*n es el orden de magnitud (Cuadrático), pero la operación exacta es la SUMA de 1 a n-1.',
         };
       }
     }
