@@ -715,6 +715,63 @@
     </div>
   </div>
 
+  <!-- FINAL ALGORITHM SUMMARY -->
+  <div
+    v-if="showFinalSummary"
+    class="fixed inset-0 bg-black/90 z-[150] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center border-4 border-indigo-600 relative overflow-hidden"
+    >
+      <!-- Decoración de fondo suave -->
+      <div
+        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"
+      ></div>
+
+      <h2 class="text-3xl font-black text-gray-800 mb-6 uppercase tracking-tight">
+        Resumen de Selection Sort
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
+        <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+          <h3 class="font-bold text-blue-900 mb-2 flex items-center gap-2">⏱️ Tiempo (Time)</h3>
+          <p class="text-sm text-blue-800 leading-relaxed">
+            <b>Cuadrático O(n²)</b>. <br />
+            Lento para listas grandes porque compara todos con todos.
+          </p>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-xl border-l-4 border-emerald-500">
+          <h3 class="font-bold text-emerald-900 mb-2 flex items-center gap-2">
+            💾 Espacio (Space)
+          </h3>
+          <p class="text-sm text-emerald-800 leading-relaxed">
+            <b>Constante O(1)</b>. <br />
+            Muy eficiente en memoria. Solo usa una variable extra.
+          </p>
+        </div>
+        <div class="bg-amber-50 p-4 rounded-xl border-l-4 border-amber-500 md:col-span-2">
+          <h3 class="font-bold text-amber-900 mb-2 flex items-center gap-2">🦁 Estrategia</h3>
+          <p class="text-sm text-amber-800 leading-relaxed">
+            <b>Voraz (Greedy)</b>. <br />
+            Busca repetidamente el elemento <u>menor</u> de la parte desordenada y lo coloca al
+            inicio de la parte desordenada o al final de la parte ordenada.
+          </p>
+        </div>
+      </div>
+
+      <p class="text-gray-500 italic mb-6">
+        "Simple de entender, ligero en memoria, pero lento para grandes volúmenes de datos."
+      </p>
+
+      <button
+        @click="finishAlgorithmSummary"
+        class="px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black rounded-xl text-xl shadow-lg shadow-indigo-200 hover:from-indigo-700 hover:to-purple-700 hover:scale-105 active:scale-95 transition-all w-full md:w-auto flex items-center justify-center gap-3 mx-auto"
+      >
+        <span>ENTENDIDO, CONTINUAR</span> <span>➜</span>
+      </button>
+    </div>
+  </div>
+
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
@@ -1538,14 +1595,26 @@ const selectedOption = ref<string | null>(null);
 const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
 const showResetConfirmation = ref(false); // Modal state for reset warnings
 
+const showFinalSummary = ref(false);
+
+const finishAlgorithmSummary = () => {
+  showFinalSummary.value = false;
+  continueNextIteration();
+};
+
 const advanceMidQuiz = () => {
   midQuizFeedback.value = null;
   midQuizSolved.value = false;
   selectedOption.value = null;
 
+  // Si estamos en el último quiz (Math) y terminamos la última fase (3), mostramos resumen
+  if (quizTopic.value === 'math' && currentQuizPhase.value >= 3) {
+    showMidQuiz.value = false;
+    showFinalSummary.value = true;
+    return;
+  }
+
   // Logic to advance phase or close based on topic/phase
-  // Currently all quizzes have 3 phases.
-  // Exception: Complexity Quiz can have different phase logic if needed, but looks like 3.
   if (currentQuizPhase.value < 3) {
     currentQuizPhase.value++;
   } else {
