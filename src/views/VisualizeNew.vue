@@ -10,6 +10,52 @@
     </div>
 
     <div class="container mx-auto px-4 py-2 h-[calc(100vh-85px)] flex flex-col gap-4">
+      <!-- Messages & Instruction (MOVED UP) -->
+      <div
+        v-if="message || instructionHint"
+        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
+        :class="{
+          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
+            message && messageType === 'error',
+          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
+            message && messageType === 'success',
+          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
+            !message || messageType === 'info',
+        }"
+      >
+        <!-- Icono Grande (Compactado) -->
+        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
+          <span v-if="message && messageType === 'error'">🛑</span>
+          <span v-else-if="message && messageType === 'success'">🎉</span>
+          <span v-else>💡</span>
+        </div>
+
+        <!-- Texto con Jerarquía (Compactado) -->
+        <div class="flex-1 flex flex-col justify-center">
+          <span
+            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
+            :class="{
+              'text-red-700': message && messageType === 'error',
+              'text-emerald-700': message && messageType === 'success',
+              'text-amber-800': !message || messageType === 'info',
+            }"
+          >
+            {{
+              message && messageType === 'error'
+                ? 'ATENCIÓN REQUERIDA'
+                : message && messageType === 'success'
+                  ? '¡MUY BIEN!'
+                  : 'GUÍA DE PASOS'
+            }}
+          </span>
+          <span
+            class="text-base md:text-lg font-medium leading-tight"
+            v-html="message || instructionHint"
+          >
+          </span>
+        </div>
+      </div>
+
       <!-- Top Row: Lista de Frascos + Balanza (Principal focus) -->
       <div class="grid grid-cols-12 gap-8 flex-1 min-h-[50%]">
         <!-- Left Column: Bottle List -->
@@ -258,15 +304,22 @@
                 :style="{ transform: leftPanTransform }"
               >
                 <div
-                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl"
-                  :class="{
-                    'shadow-[0_0_20px_rgba(234,179,8,0.6)] ring-4 ring-yellow-400 ring-opacity-70 scale-110':
-                      highlightLeftPan,
-                  }"
+                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl relative"
                   @drop="onDropOnScale($event, 'left')"
                   @dragover="onDragOver"
                 >
-                  <div class="min-h-[70px] flex items-center justify-center">
+                  <!-- Placeholder Visual (Yellow for Min) -->
+                  <div
+                    v-if="!leftBottle"
+                    class="absolute top-2 w-20 h-28 border-4 border-yellow-400 rounded-xl bg-yellow-50/30 transition-all duration-300 pointer-events-none"
+                    :class="
+                      draggedBottleIndex === minIndex
+                        ? 'animate-pulse shadow-[0_0_20px_rgba(250,204,21,0.8)] border-solid scale-105 bg-yellow-100/50 opacity-100'
+                        : 'border-dashed opacity-40'
+                    "
+                  ></div>
+
+                  <div class="min-h-[70px] flex items-center justify-center z-10 relative">
                     <Bottle
                       v-if="leftBottle"
                       :id="leftBottle.id"
@@ -277,7 +330,7 @@
                     />
                   </div>
                   <div
-                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1"
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1 z-10"
                     style="transform: perspective(100px) rotateX(60deg)"
                   ></div>
                 </div>
@@ -289,15 +342,22 @@
                 :style="{ transform: rightPanTransform }"
               >
                 <div
-                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl"
-                  :class="{
-                    'shadow-[0_0_20px_rgba(34,211,238,0.6)] ring-4 ring-cyan-400 ring-opacity-70 scale-110':
-                      highlightRightPan,
-                  }"
+                  class="w-24 h-32 flex flex-col items-center justify-center transition-all duration-300 rounded-xl relative"
                   @drop="onDropOnScale($event, 'right')"
                   @dragover="onDragOver"
                 >
-                  <div class="min-h-[70px] flex items-center justify-center">
+                  <!-- Placeholder Visual (Cyan for Compare) -->
+                  <div
+                    v-if="!rightBottle"
+                    class="absolute top-2 w-20 h-28 border-4 border-cyan-400 rounded-xl bg-cyan-50/30 transition-all duration-300 pointer-events-none"
+                    :class="
+                      draggedBottleIndex !== null && draggedBottleIndex !== minIndex
+                        ? 'animate-pulse shadow-[0_0_20px_rgba(34,211,238,0.8)] border-solid scale-105 bg-cyan-100/50 opacity-100'
+                        : 'border-dashed opacity-40'
+                    "
+                  ></div>
+
+                  <div class="min-h-[70px] flex items-center justify-center z-10 relative">
                     <Bottle
                       v-if="rightBottle"
                       :id="rightBottle.id"
@@ -308,7 +368,7 @@
                     />
                   </div>
                   <div
-                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1"
+                    class="w-20 h-5 rounded-full bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 border-2 border-yellow-600 shadow-lg mt-1 z-10"
                     style="transform: perspective(100px) rotateX(60deg)"
                   ></div>
                 </div>
@@ -368,52 +428,6 @@
               </p>
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- Messages & Instruction (Barra completa en medio) -->
-      <div
-        v-if="message || instructionHint"
-        class="p-3 rounded-xl shadow-xl border-l-[6px] flex items-center gap-4 transition-all duration-300 transform min-h-[70px] ring-1 ring-black/5"
-        :class="{
-          'bg-red-50 border-red-500 text-red-900 shadow-red-200':
-            message && messageType === 'error',
-          'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-emerald-200':
-            message && messageType === 'success',
-          'bg-amber-100 border-amber-500 text-gray-900 shadow-amber-200':
-            !message || messageType === 'info',
-        }"
-      >
-        <!-- Icono Grande (Compactado) -->
-        <div class="text-3xl shrink-0 animate-bounce cursor-default select-none ml-1">
-          <span v-if="message && messageType === 'error'">🛑</span>
-          <span v-else-if="message && messageType === 'success'">🎉</span>
-          <span v-else>💡</span>
-        </div>
-
-        <!-- Texto con Jerarquía (Compactado) -->
-        <div class="flex-1 flex flex-col justify-center">
-          <span
-            class="text-[10px] font-black uppercase tracking-widest leading-none mb-0.5 opacity-60"
-            :class="{
-              'text-red-700': message && messageType === 'error',
-              'text-emerald-700': message && messageType === 'success',
-              'text-amber-800': !message || messageType === 'info',
-            }"
-          >
-            {{
-              message && messageType === 'error'
-                ? 'ATENCIÓN REQUERIDA'
-                : message && messageType === 'success'
-                  ? '¡MUY BIEN!'
-                  : 'GUÍA DE PASOS'
-            }}
-          </span>
-          <span
-            class="text-base md:text-lg font-medium leading-tight"
-            v-html="message || instructionHint"
-          >
-          </span>
         </div>
       </div>
 
@@ -609,11 +623,11 @@
         <div class="col-span-4 flex flex-col gap-3">
           <!-- Cuadro Menor Actual -->
           <div
-            class="rounded-lg shadow-md p-2 border-2 transition-all duration-300 flex-1 flex flex-col"
+            class="rounded-lg shadow-md p-2 transition-all duration-300 flex-1 flex flex-col relative"
             :class="[
               waitingForNewMinDrag
-                ? 'bg-yellow-100 border-yellow-500 animate-pulse shadow-yellow-500/50 shadow-2xl'
-                : 'bg-yellow-50 border-gray-800',
+                ? 'bg-emerald-50 border-4 border-dashed border-emerald-500 shadow-emerald-100 shadow-xl'
+                : 'bg-yellow-50 border border-gray-800',
               {
                 'opacity-20 grayscale pointer-events-none':
                   shouldDimBottomPanels && !waitingForNewMinDrag,
@@ -622,6 +636,17 @@
             @drop="onDropOnMinBox"
             @dragover="onDragOver"
           >
+            <!-- Overlay PONER AQUÍ -->
+            <div
+              v-if="waitingForNewMinDrag"
+              class="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
+            >
+              <div
+                class="bg-white/95 px-4 py-2 rounded-full border-2 border-emerald-600 text-emerald-700 font-black text-xs uppercase tracking-widest shadow-lg animate-bounce"
+              >
+                👇 Poner Aquí 👇
+              </div>
+            </div>
             <h3
               class="text-sm font-bold text-yellow-800 mb-1 text-center flex items-center justify-center gap-1"
             >
@@ -665,13 +690,156 @@
     </div>
   </div>
 
+  <!-- INTRO QUIZ MODAL -->
+  <div
+    v-if="showQuizIntro"
+    class="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center backdrop-blur-sm p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-indigo-500 transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🤔</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">PREGUNTAS DE RAZONAMIENTO</h2>
+      <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+        ¡Has completado una vuelta! <br />
+        Antes de continuar, responde unas breves preguntas para asegurar que entiendes lo que está
+        pasando.
+      </p>
+
+      <button
+        @click="startMidQuiz"
+        class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xl shadow-lg shadow-indigo-200 transition-all transform hover:scale-105 active:scale-95"
+      >
+        ¡Estoy listo! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- FINAL ALGORITHM SUMMARY -->
+  <div
+    v-if="showFinalSummary"
+    class="fixed inset-0 bg-black/90 z-[150] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center border-4 border-indigo-600 relative overflow-hidden"
+    >
+      <!-- Decoración de fondo suave -->
+      <div
+        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"
+      ></div>
+
+      <h2 class="text-3xl font-black text-gray-800 mb-6 uppercase tracking-tight">
+        Resumen de Selection Sort
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
+        <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+          <h3 class="font-bold text-blue-900 mb-2 flex items-center gap-2">⏱️ Tiempo (Time)</h3>
+          <p class="text-sm text-blue-800 leading-relaxed">
+            <b>Cuadrático O(n²)</b>. <br />
+            Lento para listas grandes porque compara todos con todos.
+          </p>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-xl border-l-4 border-emerald-500">
+          <h3 class="font-bold text-emerald-900 mb-2 flex items-center gap-2">
+            💾 Espacio (Space)
+          </h3>
+          <p class="text-sm text-emerald-800 leading-relaxed">
+            <b>Constante O(1)</b>. <br />
+            Muy eficiente en memoria. Solo usa una variable extra.
+          </p>
+        </div>
+        <div class="bg-amber-50 p-4 rounded-xl border-l-4 border-amber-500 md:col-span-2">
+          <h3 class="font-bold text-amber-900 mb-2 flex items-center gap-2">🦁 Estrategia</h3>
+          <p class="text-sm text-amber-800 leading-relaxed">
+            <b>Voraz (Greedy)</b>. <br />
+            Busca repetidamente el elemento <u>menor</u> de la parte desordenada y lo coloca al
+            inicio de la parte desordenada o al final de la parte ordenada.
+          </p>
+        </div>
+      </div>
+
+      <p class="text-gray-500 italic mb-6">
+        "Simple de entender, ligero en memoria, pero lento para grandes volúmenes de datos."
+      </p>
+
+      <button
+        @click="finishAlgorithmSummary"
+        class="px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black rounded-xl text-xl shadow-lg shadow-indigo-200 hover:from-indigo-700 hover:to-purple-700 hover:scale-105 active:scale-95 transition-all w-full md:w-auto flex items-center justify-center gap-3 mx-auto"
+      >
+        <span>ENTENDIDO, CONTINUAR</span> <span>➜</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- NEXT STEP INVITATION MODAL -->
+  <div
+    v-if="showNextStepInvitation"
+    class="fixed inset-0 bg-black/90 z-[200] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center border-4 border-indigo-600 relative overflow-hidden transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">¡VISUALIZACIÓN COMPLETADA!</h2>
+      <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+        Ya entiendes cómo funciona Selection Sort. <br />
+        ¿Qué quieres hacer ahora?
+      </p>
+
+      <div class="space-y-4">
+        <button
+          @click="navigateTo('learn')"
+          class="w-full py-4 px-6 bg-purple-100 border-2 border-purple-500 rounded-xl flex items-center justify-between hover:bg-purple-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">📚</span>
+            <div class="text-left">
+              <h3 class="font-bold text-purple-900 text-lg">Ir a Aprender</h3>
+              <p class="text-purple-700 text-sm">Profundiza en la teoría y código.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-purple-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="navigateTo('test')"
+          class="w-full py-4 px-6 bg-emerald-100 border-2 border-emerald-500 rounded-xl flex items-center justify-between hover:bg-emerald-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">🧪</span>
+            <div class="text-left">
+              <h3 class="font-bold text-emerald-900 text-lg">Ir a Probar</h3>
+              <p class="text-emerald-700 text-sm">Practica ordenando tú mismo.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-emerald-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="
+            showNextStepInvitation = false;
+            confirmReset();
+          "
+          class="text-gray-500 font-medium hover:text-gray-800 underline mt-4 hover:scale-105 transition-transform"
+        >
+          Repetir Visualización
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
     class="fixed inset-0 bg-black/80 z-[90] flex justify-end items-start backdrop-blur-sm p-4 pr-6 pt-24"
   >
     <div
-      class="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500"
+      class="bg-white rounded-xl shadow-2xl p-4 max-w-lg w-full transform transition-all animate-bounce-in border-4 border-indigo-500 max-h-[90vh] overflow-y-auto"
     >
       <div class="text-center mb-6">
         <div class="text-4xl mb-2">
@@ -699,12 +867,17 @@
         <template v-if="quizTopic === 'complexity'">
           <!-- PREGUNTA 1 -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Acabas de completar la primera vuelta con <b>5 elementos</b> e hiciste
-              <b>4 comparaciones</b>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              Si tuvieras "n" elementos, ¿cuántas comparaciones harías en la primera vuelta?
+            <div
+              class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm text-left"
+            >
+              <p class="text-indigo-900 text-sm font-semibold leading-relaxed">
+                CONTEXTO: <br />
+                Acabas de completar la 1ra vuelta con <b class="text-lg">5 elementos</b>. <br />
+                Hiciste exactamente <b class="text-lg text-indigo-700">4 comparaciones</b>.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuvieras "n" elementos... ¿Cuántas comparaciones harías en esa primera vuelta?
             </p>
           </div>
 
@@ -762,23 +935,38 @@
         <template v-else-if="quizTopic === 'math'">
           <!-- PHASE 1: Summation -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Mira el total de operaciones (4 + 3 + 2 + 1 = 10)...
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Por qué sale exactamente ese número? ¿Qué fórmula matemática representa esta suma?
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-indigo-900 text-sm font-semibold leading-snug">
+                En este ejemplo (5 elementos) hicimos: <br />
+                <span class="block text-center text-2xl font-black text-indigo-700 my-2"
+                  >4 + 3 + 2 + 1 = <span class="text-3xl underline decoration-wavy">10</span></span
+                >
+                comparaciones totales.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuviéramos "n" elementos... ¿Cómo calcularíamos el total exacto siguiendo este
+              patrón de "escalera"?
             </p>
           </div>
 
           <!-- PHASE 2: Big O Inference -->
+          <!-- PHASE 2: Big O Inference -->
           <div v-else-if="currentQuizPhase === 2">
-            <p class="text-gray-600 text-sm mt-2">
-              La fórmula anterior es <span class="font-mono bg-gray-100 px-1">n(n-1)/2</span>. Si
-              expandimos eso, obtenemos algo proporcional a
-              <span class="font-mono bg-gray-100 px-1">n²</span>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Cómo llamamos a esta clase de complejidad en notación Big O?
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-blue-900 text-sm font-semibold leading-relaxed">
+                En la pregunta anterior vimos que el total es <b>n(n-1)/2</b>. <br />
+                Si simplificamos esto, el término que domina es:
+                <span
+                  class="inline-block text-xl font-black bg-white text-blue-800 px-2 py-1 rounded mx-1 shadow-sm border border-blue-200"
+                  >n²</span
+                >
+                .
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Sabiendo esto... ¿Cómo crees que se clasifica la "velocidad" (complejidad) de este
+              algoritmo?
             </p>
           </div>
 
@@ -842,12 +1030,17 @@
         <!-- OPCIONES FASE 1 -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('n')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) n comparaciones</span>
           </button>
@@ -855,7 +1048,12 @@
           <button
             @click="handleMidQuizAnswer('n-1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n-1'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) n - 1 comparaciones</span>
           </button>
@@ -863,7 +1061,12 @@
           <button
             @click="handleMidQuizAnswer('n/2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'n/2'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) n / 2 comparaciones</span>
           </button>
@@ -872,12 +1075,17 @@
         <!-- OPCIONES FASE 2 -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('zero')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'zero'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Cero (Detecta que está ordenada)</span>
           </button>
@@ -885,7 +1093,12 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'fewer'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Menos comparaciones</span>
           </button>
@@ -893,7 +1106,12 @@
           <button
             @click="handleMidQuizAnswer('same')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'same'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Las mismas comparaciones</span>
           </button>
@@ -902,12 +1120,17 @@
         <!-- OPCIONES FASE 3 -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('more')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'more'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Aumentan drásticamente</span>
           </button>
@@ -915,7 +1138,12 @@
           <button
             @click="handleMidQuizAnswer('constant')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'constant'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Se mantienen igual</span>
           </button>
@@ -923,38 +1151,57 @@
           <button
             @click="handleMidQuizAnswer('fewer')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'fewer'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Se reducen (por ser el peor caso)</span>
           </button>
         </div>
       </template>
 
-      <!-- --- STRATEGY OPTIONS --- -->
       <template v-else-if="quizTopic === 'strategy'">
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('min_to_start')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'min_to_start'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Encuentro el MÍNIMO y lo pongo al INICIO.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('max_to_end')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'max_to_end'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Encuentro el MÁXIMO y lo pongo al FINAL.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('neighbors')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'neighbors'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Intercambio solo vecinos adyacentes.</span>
           </button>
@@ -963,54 +1210,84 @@
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('divide')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'divide'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>A) Divide y Vencerás (Divide & Conquer)</span>
+            <span>A) Divide y Vencerás - Dividir el problema en subproblemas</span>
           </button>
           <button
             @click="handleMidQuizAnswer('greedy')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'greedy'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Voraz (Greedy) - Tomar lo mejor localmente</span>
           </button>
           <button
             @click="handleMidQuizAnswer('dynamic')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'dynamic'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>C) Programación Dinámica</span>
+            <span>C) Programación Dinámica - Aprovechar soluciones de subproblemas</span>
           </button>
         </div>
 
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('only_left')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'only_left'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) La parte izquierda siempre está ordenada.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('random')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'random'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) La parte derecha es aleatoria y menor.</span>
           </button>
           <button
             @click="handleMidQuizAnswer('invariant_ok')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'invariant_ok'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Izquierda ordenada + Derecha (Mayores) Desordenada.</span>
           </button>
@@ -1022,82 +1299,127 @@
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('sum_gauss')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_gauss'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>A) Suma de Gauss: (n-1) * n / 2</span>
+            <span>A) Sumando desde 1 hasta (n-1)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_random')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_random'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>B) Es el factorial de n (n!)</span>
+            <span>B) Multiplicando n por 2</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_linear')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'sum_linear'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>C) Es simplemente n * 2</span>
+            <span>C) Multiplicando n por n</span>
           </button>
         </div>
 
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('linear')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'linear'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>A) Lineal O(n)</span>
+            <span>A) Lineal (El esfuerzo es igual a la cantidad de datos)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('log')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'log'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>B) Logarítmica O(log n)</span>
+            <span>B) Logarítmica (El esfuerzo crece muy lento)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('quadratic')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'quadratic'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
-            <span>C) Cuadrática O(n²)</span>
+            <span>C) Cuadrática (El esfuerzo es proporcional a n²)</span>
           </button>
         </div>
 
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('scale_3')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_3'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>A) Aumentan 3 veces (Lineal)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('scale_6')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_6'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>B) Aumentan 6 veces (Doble)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('scale_9')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'scale_9'
+                ? 'border-indigo-600 bg-indigo-50 ring-2 ring-indigo-200 text-indigo-800'
+                : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
+            "
           >
             <span>C) Aumentan 9 veces (Cuadrado de 3)</span>
           </button>
@@ -1109,12 +1431,17 @@
         <!-- PHASE 1 OPTIONS -->
         <div
           v-if="currentQuizPhase === 1"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('1var')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === '1var'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>A) 1 variable (mínimo)</span>
           </button>
@@ -1122,7 +1449,12 @@
           <button
             @click="handleMidQuizAnswer('nvars')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'nvars'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>B) 1 variable por cada elemento (N)</span>
           </button>
@@ -1130,7 +1462,12 @@
           <button
             @click="handleMidQuizAnswer('2vars')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === '2vars'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>C) 2 variables por vuelta</span>
           </button>
@@ -1139,42 +1476,62 @@
         <!-- PHASE 2 OPTIONS -->
         <div
           v-else-if="currentQuizPhase === 2"
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('on')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'on'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
-            <span>A) Aumenta mucho (Lineal O(n))</span>
+            <span>A) Necesitamos 1 millón de variables extra</span>
           </button>
 
           <button
             @click="handleMidQuizAnswer('on2')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'on2'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
-            <span>B) Aumenta muchísimo (Cuadrático O(n²))</span>
+            <span>B) Necesitamos trillones de variables (una matriz gigante)</span>
           </button>
 
           <button
             @click="handleMidQuizAnswer('o1')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'o1'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
-            <span>C) Se mantiene en 1 variable (Constante O(1))</span>
+            <span>C) Seguimos necesitando solo 1 variable extra</span>
           </button>
         </div>
 
         <!-- PHASE 3 OPTIONS -->
         <div
           v-else
-          class="space-y-3"
+          class="space-y-2"
         >
           <button
             @click="handleMidQuizAnswer('yes_mem')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'yes_mem'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>A) SÍ, porque ahorra mucha memoria RAM.</span>
           </button>
@@ -1182,7 +1539,12 @@
           <button
             @click="handleMidQuizAnswer('no')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'no'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>B) NO, tardaría demasiado por las comparaciones.</span>
           </button>
@@ -1190,7 +1552,12 @@
           <button
             @click="handleMidQuizAnswer('yes_easy')"
             :disabled="midQuizSolved"
-            class="w-full p-4 rounded-lg border-2 border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-left font-bold text-gray-700 transition-all flex justify-between items-center group"
+            class="w-full p-3 rounded-lg border-2 text-left font-bold transition-all flex justify-between items-center group"
+            :class="
+              selectedOption === 'yes_easy'
+                ? 'border-pink-600 bg-pink-50 ring-2 ring-pink-200 text-pink-800'
+                : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
+            "
           >
             <span>C) SÍ, es simple y rápido de implementar.</span>
           </button>
@@ -1200,14 +1567,26 @@
       <!-- Feedback -->
       <div
         v-if="midQuizFeedback"
-        class="mt-4 p-3 rounded-lg text-center font-bold animate-pulse"
+        class="mt-4 p-4 rounded-lg text-center font-bold border-2 text-sm flex flex-col items-center gap-3 bg-white"
         :class="
           midQuizFeedback.type === 'success'
-            ? 'bg-green-100 text-green-700 border border-green-300'
-            : 'bg-red-100 text-red-700 border border-red-300'
+            ? 'border-green-500 text-green-800 shadow-green-100 shadow-lg'
+            : 'border-red-500 text-red-800 shadow-red-100 shadow-lg'
         "
       >
-        <span v-html="midQuizFeedback.text"></span>
+        <p
+          v-html="midQuizFeedback.text"
+          class="text-base leading-snug"
+        ></p>
+
+        <!-- MANUAL CONTINUE BUTTON -->
+        <button
+          v-if="midQuizFeedback.type === 'success'"
+          @click="advanceMidQuiz"
+          class="px-8 py-3 bg-indigo-600 text-white font-black rounded-full shadow-xl hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all text-sm uppercase tracking-widest flex items-center gap-2 animate-bounce mt-2"
+        >
+          <span>Continuar</span> <span>➜</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1258,22 +1637,64 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Bottle from '../components/Bottle.vue';
 
+const router = useRouter();
+
 // --- QUIZ LOGIC ---
+const showQuizIntro = ref(false);
 const showMidQuiz = ref(false);
+
+const startMidQuiz = () => {
+  showQuizIntro.value = false;
+  showMidQuiz.value = true;
+};
 const midQuizSolved = ref(false);
 const currentQuizPhase = ref(1); // 1, 2, 3 phases
 const quizTopic = ref<'complexity' | 'space' | 'strategy' | 'math'>('complexity'); // New state with math
 const midQuizFeedback = ref<{ type: 'success' | 'error'; text: string } | null>(null);
+const selectedOption = ref<string | null>(null);
 
 const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
 const showResetConfirmation = ref(false); // Modal state for reset warnings
 
+const showFinalSummary = ref(false);
+const showNextStepInvitation = ref(false);
+
+const navigateTo = (routeName: string) => {
+  router.push({ name: routeName });
+};
+
+const finishAlgorithmSummary = () => {
+  showFinalSummary.value = false;
+  showNextStepInvitation.value = true;
+};
+
+const advanceMidQuiz = () => {
+  midQuizFeedback.value = null;
+  midQuizSolved.value = false;
+  selectedOption.value = null;
+
+  // Si estamos en el último quiz (Math) y terminamos la última fase (3), mostramos resumen
+  if (quizTopic.value === 'math' && currentQuizPhase.value >= 3) {
+    showMidQuiz.value = false;
+    showFinalSummary.value = true;
+    return;
+  }
+
+  // Logic to advance phase or close based on topic/phase
+  if (currentQuizPhase.value < 3) {
+    currentQuizPhase.value++;
+  } else {
+    showMidQuiz.value = false;
+    midQuizSolved.value = false; // Reset for next time
+    continueNextIteration();
+  }
+};
+
 const handleMidQuizAnswer = (option: string) => {
-  // ==========================================
-  // TOPIC: SPACE COMPLEXITY (Iteration 2)
-  // ==========================================
+  selectedOption.value = option;
   // ==========================================
   // TOPIC: SPACE COMPLEXITY (Iteration 2)
   // ==========================================
@@ -1283,14 +1704,9 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === '1var') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra (min_index) para rastrear al menor. No creamos nuevos arrays.',
+          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra para rastrear al menor. No creamos nuevos arrays.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2; // Go to Space Phase 2
-        }, 3000);
       } else if (option === 'nvars') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1308,23 +1724,18 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === 'o1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXACTO! 🎓 <br> Si la cantidad de elementos (N) aumenta a 1 millón, ¡sigues necesitando solo <b>1 variable extra</b>!<br> Por eso la complejidad espacial es <b>Constante O(1)</b>.',
+          text: '¡EXACTO! 🎓 <br> No importa si son 5 o 1 millón de datos, solo usamos una variable para rastrear el mínimo.<br> A esto le llamamos <b>Espacio Constante O(1)</b>.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3; // Go to Space Phase 3 (Verdict)
-        }, 5000);
       } else if (option === 'on') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El espacio extra NO crece con los datos.',
+          text: 'Incorrecto. ❌ <br> No necesitamos crear una copia de la lista. Solo apuntamos al índice del menor. El espacio no crece (es O(1), no O(n)).',
         };
       } else if (option === 'on2') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos duplicando datos.',
+          text: 'Incorrecto. ❌ <br> Eso sería excesivo. Selection Sort es eficiente en memoria porque trabaja "in-place" (en el mismo lugar).',
         };
       }
     }
@@ -1336,11 +1747,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡BRILLANTE! 🌟 <br> Aunque usa <u>poca memoria</u> (bueno), hace <b>DEMASIADAS comparaciones</b> (malo).<br> Para 1 millón de datos, haría ~500 mil millones de comparaciones. ¡Tardaría años! 🐢',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 7000); // 7s to read final verdict
       } else if (option === 'yes_mem') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1368,11 +1774,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡ASI ES! 👋 <br> Básicamente buscamos al "más pequeño" del grupo desordenado y lo "rescatamos" llevándolo a la zona segura (ordenada) al inicio.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2;
-        }, 4000);
       } else if (option === 'max_to_end') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1393,11 +1794,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡CORRECTO! 🦁 <b>VORAZ (Greedy)</b>.<br> En cada paso, toma la mejor decisión local (el mínimo actual) sin pensar en el futuro, y eso construye la solución global.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3;
-        }, 5000);
       } else if (option === 'divide') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1406,7 +1802,7 @@ const handleMidQuizAnswer = (option: string) => {
       } else if (option === 'dynamic') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos reutilizando sub-soluciones complejas.',
+          text: 'Incorrecto. ❌ <br> Este algoritmo no guarda ni reutiliza subproblemas, por eso no es programación dinámica.',
         };
       }
     }
@@ -1418,11 +1814,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡EXACTO! 🛡️ <b>La Invariante</b>.<br> La parte izquierda siempre crece ordenada. La derecha disminuye desordenada, y todos en la derecha son MAYORES que los de la izquierda.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 6000);
       } else if (option === 'only_left') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1445,72 +1836,66 @@ const handleMidQuizAnswer = (option: string) => {
     // --- PHASE 1: Summation ---
     if (currentQuizPhase.value === 1) {
       if (option === 'sum_gauss') {
+        selectedOption.value = 'sum_gauss';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXCELENTE! 🔢 <br> Es la suma de Gauss de 1 a (n-1).<br> Matemáticamente: <b>n(n-1) / 2</b>.',
+          text: '¡EXACTO! 🪜 <br> Es una "escalera" que baja: (n-1) + (n-2) + ... + 1.<br> Esta famosa suma vale matemáticamente: <b>n(n-1) / 2</b>.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2;
-        }, 4000);
       } else if (option === 'sum_random') {
+        selectedOption.value = 'sum_random';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El factorial crece muchísimo más rápido.',
+          text: 'Incorrecto. ❌ <br> n*2 es muy pequeño (Lineal). Necesitamos sumar desde 1 hasta (n-1).',
         };
       } else if (option === 'sum_linear') {
+        selectedOption.value = 'sum_linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> 5 * 2 = 10 coincide por casualidad aquí, pero no es la fórmula general.',
+          text: 'Cerca... 🤏 <br> n*n es el orden de magnitud (Cuadrático), pero la operación exacta es la SUMA de 1 a n-1.',
         };
       }
     }
     // --- PHASE 2: Big O ---
     else if (currentQuizPhase.value === 2) {
       if (option === 'quadratic') {
+        selectedOption.value = 'quadratic';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 📈 <b>O(n²)</b>.<br> En Big O, el término al cuadrado (n²) domina al lineal (n), así que decimos que el algoritmo es "Cuadrático".',
+          text: '¡CORRECTO! 🎯 <br> Al tener <b>n²</b> llamamos a esto <b>Complejidad Cuadrática O(n²)</b>.<br> Esto significa que el trabajo crece "al cuadrado" de los datos (es muy costoso).',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3;
-        }, 5000);
       } else if (option === 'linear') {
+        selectedOption.value = 'linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Si fuera lineal, al doblar los datos, el tiempo se doblaría. Aquí crece mucho más.',
+          text: 'Incorrecto. ❌ <br> Lineal sería si la fórmula fuera solo "n". Aquí tenemos n² (n multiplicado por n), que es mucho mayor.',
         };
       } else if (option === 'log') {
+        selectedOption.value = 'log';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Logarítmico sería muy rápido (como Binary Search).',
+          text: 'Incorrecto. ❌ <br> Logarítmico es extremadamente rápido. Nuestra "escalera" es la mitad de un cuadrado, así que es lento.',
         };
       }
     }
     // --- PHASE 3: Scaling ---
     else if (currentQuizPhase.value === 3) {
       if (option === 'scale_9') {
+        selectedOption.value = 'scale_9';
         midQuizFeedback.value = {
           type: 'success',
           text: '¡IMPRESIONANTE! 🚀 <br> Si triplicas la entrada (3x), el esfuerzo se multiplica por 3² = <b>9 veces</b>.<br> ¡Por eso Selection Sort es peligroso para listas grandes!',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 7000);
       } else if (option === 'scale_3') {
+        selectedOption.value = 'scale_3';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Eso sería lineal O(n). Aquí pagamos el precio al cuadrado.',
         };
       } else if (option === 'scale_6') {
+        selectedOption.value = 'scale_6';
         midQuizFeedback.value = {
           type: 'error',
           text: 'Incorrecto. ❌ <br> Recuerda elevar al cuadrado el factor de crecimiento (3²).',
@@ -1523,20 +1908,18 @@ const handleMidQuizAnswer = (option: string) => {
   // ==========================================
   // TOPIC: TIME COMPLEXITY (Iteration 1)
   // ==========================================
+  // ==========================================
+  // TOPIC: TIME COMPLEXITY (Iteration 1)
+  // ==========================================
   if (quizTopic.value === 'complexity') {
     // --- PHASE 1: Generaliza Fórmula ---
     if (currentQuizPhase.value === 1) {
       if (option === 'n-1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
+          text: '¡CORECTO! 🎉 <br> Se hacen <b>n-1</b> comparaciones.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 2; // Go to Phase 2
-        }, 2500);
       } else if (option === 'n') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1557,11 +1940,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡EXACTO! 🧠 <br> <b>Selection Sort es "ciego" al orden.</b> <br> Siempre realiza todas las comparaciones para asegurarse de encontrar el mínimo, incluso si ya está ordenado.',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          midQuizFeedback.value = null;
-          midQuizSolved.value = false;
-          currentQuizPhase.value = 3; // Go to Phase 3
-        }, 3500); // 3.5s to read explanation
       } else if (option === 'zero') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1582,11 +1960,6 @@ const handleMidQuizAnswer = (option: string) => {
           text: '¡MAESTRO DEL ORDENAMIENTO! 🎓 <br> Has entendido la clave: <b>Selection Sort siempre hace n-1 comparaciones por vuelta</b>.<br> No importa si está ordenada, invertida o aleatoria. ¡Su complejidad de comparaciones es constante!',
         };
         midQuizSolved.value = true;
-        setTimeout(() => {
-          showMidQuiz.value = false;
-          midQuizFeedback.value = null;
-          continueNextIteration();
-        }, 6000); // 6s to read final completion message
       } else if (option === 'more') {
         midQuizFeedback.value = {
           type: 'error',
@@ -1673,11 +2046,23 @@ watch([leftBottle, rightBottle], ([left, right]) => {
 // Initialize
 const initializeBottles = () => {
   const bottles: Bottle[] = [];
+  const palette = [
+    'bg-red-400',
+    'bg-blue-400',
+    'bg-green-400',
+    'bg-purple-400',
+    'bg-yellow-400',
+    'bg-pink-400',
+    'bg-cyan-400',
+    'bg-orange-400',
+  ];
+  palette.sort(() => Math.random() - 0.5);
+
   for (let i = 0; i < 5; i++) {
     bottles.push({
       id: i + 1,
       weight: Math.floor(Math.random() * 80) + 20,
-      color: 'bg-blue-300',
+      color: palette[i % palette.length],
     });
   }
   unsortedBottles.value = bottles;
@@ -2269,7 +2654,7 @@ const finalizeIterationLogic = () => {
     if (currentIteration.value === 1) {
       quizTopic.value = 'complexity';
       currentQuizPhase.value = 1;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2279,7 +2664,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false; // Reset solution state
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2289,7 +2674,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2299,7 +2684,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
