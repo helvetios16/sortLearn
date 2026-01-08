@@ -772,6 +772,67 @@
     </div>
   </div>
 
+  <!-- NEXT STEP INVITATION MODAL -->
+  <div
+    v-if="showNextStepInvitation"
+    class="fixed inset-0 bg-black/90 z-[200] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center border-4 border-indigo-600 relative overflow-hidden transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">¡VISUALIZACIÓN COMPLETADA!</h2>
+      <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+        Ya entiendes cómo funciona Selection Sort. <br />
+        ¿Qué quieres hacer ahora?
+      </p>
+
+      <div class="space-y-4">
+        <button
+          @click="navigateTo('learn')"
+          class="w-full py-4 px-6 bg-purple-100 border-2 border-purple-500 rounded-xl flex items-center justify-between hover:bg-purple-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">📚</span>
+            <div class="text-left">
+              <h3 class="font-bold text-purple-900 text-lg">Ir a Aprender</h3>
+              <p class="text-purple-700 text-sm">Profundiza en la teoría y código.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-purple-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="navigateTo('test')"
+          class="w-full py-4 px-6 bg-emerald-100 border-2 border-emerald-500 rounded-xl flex items-center justify-between hover:bg-emerald-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">🧪</span>
+            <div class="text-left">
+              <h3 class="font-bold text-emerald-900 text-lg">Ir a Probar</h3>
+              <p class="text-emerald-700 text-sm">Practica ordenando tú mismo.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-emerald-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="
+            showNextStepInvitation = false;
+            confirmReset();
+          "
+          class="text-gray-500 font-medium hover:text-gray-800 underline mt-4 hover:scale-105 transition-transform"
+        >
+          Repetir Visualización
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
@@ -1576,7 +1637,10 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Bottle from '../components/Bottle.vue';
+
+const router = useRouter();
 
 // --- QUIZ LOGIC ---
 const showQuizIntro = ref(false);
@@ -1596,10 +1660,15 @@ const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
 const showResetConfirmation = ref(false); // Modal state for reset warnings
 
 const showFinalSummary = ref(false);
+const showNextStepInvitation = ref(false);
+
+const navigateTo = (routeName: string) => {
+  router.push({ name: routeName });
+};
 
 const finishAlgorithmSummary = () => {
   showFinalSummary.value = false;
-  continueNextIteration();
+  showNextStepInvitation.value = true;
 };
 
 const advanceMidQuiz = () => {
