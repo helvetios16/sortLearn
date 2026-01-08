@@ -5,7 +5,7 @@
       <h1
         class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-pink-500"
       >
-        SELECTION SORT - Algoritmo de Ordenamiento por Selección
+        Algoritmo de Ordenamiento de Selection Sort
       </h1>
     </div>
 
