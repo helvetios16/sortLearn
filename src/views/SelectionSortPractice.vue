@@ -555,7 +555,7 @@ function handleDragEnd() {
                       ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10'
                       : '',
                     index === swapTargetIndex && minBox
-                      ? 'ring-4 ring-pink-300 border-pink-400'
+                      ? 'animate-pulse-strong ring-4 ring-pink-400 border-pink-500'
                       : '',
 
                     // Pistas y Comparaciones
@@ -652,6 +652,8 @@ function handleDragEnd() {
                   selectedNumber !== null && !minBox && allCompared
                     ? 'animate-pulse-strong ring-4 ring-yellow-400'
                     : '',
+                  // GUÍA VISUAL: Pulsa cuando minBox está lleno y listo para intercambiar
+                  minBox && !selectedBox ? 'animate-pulse-strong ring-4 ring-yellow-400' : '',
                   // Drag and Drop states
                   minBox ? 'cursor-grab' : '',
                   draggedItem?.source === 'minBox' ? 'opacity-50 cursor-grabbing' : '',
