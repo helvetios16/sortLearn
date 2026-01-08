@@ -690,6 +690,149 @@
     </div>
   </div>
 
+  <!-- INTRO QUIZ MODAL -->
+  <div
+    v-if="showQuizIntro"
+    class="fixed inset-0 bg-black/80 z-[100] flex justify-center items-center backdrop-blur-sm p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border-4 border-indigo-500 transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🤔</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">PREGUNTAS DE RAZONAMIENTO</h2>
+      <p class="text-gray-600 text-lg mb-6 leading-relaxed">
+        ¡Has completado una vuelta! <br />
+        Antes de continuar, responde unas breves preguntas para asegurar que entiendes lo que está
+        pasando.
+      </p>
+
+      <button
+        @click="startMidQuiz"
+        class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xl shadow-lg shadow-indigo-200 transition-all transform hover:scale-105 active:scale-95"
+      >
+        ¡Estoy listo! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- FINAL ALGORITHM SUMMARY -->
+  <div
+    v-if="showFinalSummary"
+    class="fixed inset-0 bg-black/90 z-[150] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full text-center border-4 border-indigo-600 relative overflow-hidden"
+    >
+      <!-- Decoración de fondo suave -->
+      <div
+        class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-purple-500 via-indigo-500 to-blue-500"
+      ></div>
+
+      <h2 class="text-3xl font-black text-gray-800 mb-6 uppercase tracking-tight">
+        Resumen de Selection Sort
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 text-left">
+        <div class="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
+          <h3 class="font-bold text-blue-900 mb-2 flex items-center gap-2">⏱️ Tiempo (Time)</h3>
+          <p class="text-sm text-blue-800 leading-relaxed">
+            <b>Cuadrático O(n²)</b>. <br />
+            Lento para listas grandes porque compara todos con todos.
+          </p>
+        </div>
+        <div class="bg-emerald-50 p-4 rounded-xl border-l-4 border-emerald-500">
+          <h3 class="font-bold text-emerald-900 mb-2 flex items-center gap-2">
+            💾 Espacio (Space)
+          </h3>
+          <p class="text-sm text-emerald-800 leading-relaxed">
+            <b>Constante O(1)</b>. <br />
+            Muy eficiente en memoria. Solo usa una variable extra.
+          </p>
+        </div>
+        <div class="bg-amber-50 p-4 rounded-xl border-l-4 border-amber-500 md:col-span-2">
+          <h3 class="font-bold text-amber-900 mb-2 flex items-center gap-2">🦁 Estrategia</h3>
+          <p class="text-sm text-amber-800 leading-relaxed">
+            <b>Voraz (Greedy)</b>. <br />
+            Busca repetidamente el elemento <u>menor</u> de la parte desordenada y lo coloca al
+            inicio de la parte desordenada o al final de la parte ordenada.
+          </p>
+        </div>
+      </div>
+
+      <p class="text-gray-500 italic mb-6">
+        "Simple de entender, ligero en memoria, pero lento para grandes volúmenes de datos."
+      </p>
+
+      <button
+        @click="finishAlgorithmSummary"
+        class="px-10 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black rounded-xl text-xl shadow-lg shadow-indigo-200 hover:from-indigo-700 hover:to-purple-700 hover:scale-105 active:scale-95 transition-all w-full md:w-auto flex items-center justify-center gap-3 mx-auto"
+      >
+        <span>ENTENDIDO, CONTINUAR</span> <span>➜</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- NEXT STEP INVITATION MODAL -->
+  <div
+    v-if="showNextStepInvitation"
+    class="fixed inset-0 bg-black/90 z-[200] flex justify-center items-center backdrop-blur-md p-4 animate-fade-in"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center border-4 border-indigo-600 relative overflow-hidden transform transition-all animate-bounce-in"
+    >
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-3xl font-black text-indigo-900 mb-2">¡VISUALIZACIÓN COMPLETADA!</h2>
+      <p class="text-gray-600 text-lg mb-8 leading-relaxed">
+        Ya entiendes cómo funciona Selection Sort. <br />
+        ¿Qué quieres hacer ahora?
+      </p>
+
+      <div class="space-y-4">
+        <button
+          @click="navigateTo('learn')"
+          class="w-full py-4 px-6 bg-purple-100 border-2 border-purple-500 rounded-xl flex items-center justify-between hover:bg-purple-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">📚</span>
+            <div class="text-left">
+              <h3 class="font-bold text-purple-900 text-lg">Ir a Aprender</h3>
+              <p class="text-purple-700 text-sm">Profundiza en la teoría y código.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-purple-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="navigateTo('test')"
+          class="w-full py-4 px-6 bg-emerald-100 border-2 border-emerald-500 rounded-xl flex items-center justify-between hover:bg-emerald-200 transition-all group"
+        >
+          <div class="flex items-center gap-4">
+            <span class="text-3xl">🧪</span>
+            <div class="text-left">
+              <h3 class="font-bold text-emerald-900 text-lg">Ir a Probar</h3>
+              <p class="text-emerald-700 text-sm">Practica ordenando tú mismo.</p>
+            </div>
+          </div>
+          <span class="text-2xl text-emerald-400 group-hover:translate-x-1 transition-transform"
+            >➜</span
+          >
+        </button>
+
+        <button
+          @click="
+            showNextStepInvitation = false;
+            confirmReset();
+          "
+          class="text-gray-500 font-medium hover:text-gray-800 underline mt-4 hover:scale-105 transition-transform"
+        >
+          Repetir Visualización
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MID-ITERATION QUIZ MODAL -->
   <div
     v-if="showMidQuiz"
@@ -724,12 +867,17 @@
         <template v-if="quizTopic === 'complexity'">
           <!-- PREGUNTA 1 -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Acabas de completar la primera vuelta con <b>5 elementos</b> e hiciste
-              <b>4 comparaciones</b>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              Si tuvieras "n" elementos, ¿cuántas comparaciones harías en la primera vuelta?
+            <div
+              class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm text-left"
+            >
+              <p class="text-indigo-900 text-sm font-semibold leading-relaxed">
+                CONTEXTO: <br />
+                Acabas de completar la 1ra vuelta con <b class="text-lg">5 elementos</b>. <br />
+                Hiciste exactamente <b class="text-lg text-indigo-700">4 comparaciones</b>.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuvieras "n" elementos... ¿Cuántas comparaciones harías en esa primera vuelta?
             </p>
           </div>
 
@@ -787,23 +935,38 @@
         <template v-else-if="quizTopic === 'math'">
           <!-- PHASE 1: Summation -->
           <div v-if="currentQuizPhase === 1">
-            <p class="text-gray-600 text-sm mt-2">
-              Mira el total de operaciones (4 + 3 + 2 + 1 = 10)...
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Por qué sale exactamente ese número? ¿Qué fórmula matemática representa esta suma?
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-indigo-900 text-sm font-semibold leading-snug">
+                En este ejemplo (5 elementos) hicimos: <br />
+                <span class="block text-center text-2xl font-black text-indigo-700 my-2"
+                  >4 + 3 + 2 + 1 = <span class="text-3xl underline decoration-wavy">10</span></span
+                >
+                comparaciones totales.
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Si tuviéramos "n" elementos... ¿Cómo calcularíamos el total exacto siguiendo este
+              patrón de "escalera"?
             </p>
           </div>
 
           <!-- PHASE 2: Big O Inference -->
+          <!-- PHASE 2: Big O Inference -->
           <div v-else-if="currentQuizPhase === 2">
-            <p class="text-gray-600 text-sm mt-2">
-              La fórmula anterior es <span class="font-mono bg-gray-100 px-1">n(n-1)/2</span>. Si
-              expandimos eso, obtenemos algo proporcional a
-              <span class="font-mono bg-gray-100 px-1">n²</span>.
-            </p>
-            <p class="text-gray-800 font-bold mt-2 text-lg">
-              ¿Cómo llamamos a esta clase de complejidad en notación Big O?
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-3 mb-3 rounded-r shadow-sm">
+              <p class="text-blue-900 text-sm font-semibold leading-relaxed">
+                En la pregunta anterior vimos que el total es <b>n(n-1)/2</b>. <br />
+                Si simplificamos esto, el término que domina es:
+                <span
+                  class="inline-block text-xl font-black bg-white text-blue-800 px-2 py-1 rounded mx-1 shadow-sm border border-blue-200"
+                  >n²</span
+                >
+                .
+              </p>
+            </div>
+            <p class="text-gray-800 font-bold mt-2 text-lg leading-tight">
+              Sabiendo esto... ¿Cómo crees que se clasifica la "velocidad" (complejidad) de este
+              algoritmo?
             </p>
           </div>
 
@@ -1059,7 +1222,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Divide y Vencerás (Divide & Conquer)</span>
+            <span>A) Divide y Vencerás - Dividir el problema en subproblemas</span>
           </button>
           <button
             @click="handleMidQuizAnswer('greedy')"
@@ -1083,7 +1246,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Programación Dinámica</span>
+            <span>C) Programación Dinámica - Aprovechar soluciones de subproblemas</span>
           </button>
         </div>
 
@@ -1148,7 +1311,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Suma de Gauss: (n-1) * n / 2</span>
+            <span>A) Sumando desde 1 hasta (n-1)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_random')"
@@ -1160,7 +1323,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>B) Es el factorial de n (n!)</span>
+            <span>B) Multiplicando n por 2</span>
           </button>
           <button
             @click="handleMidQuizAnswer('sum_linear')"
@@ -1172,7 +1335,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Es simplemente n * 2</span>
+            <span>C) Multiplicando n por n</span>
           </button>
         </div>
 
@@ -1191,7 +1354,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Lineal O(n)</span>
+            <span>A) Lineal (El esfuerzo es igual a la cantidad de datos)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('log')"
@@ -1203,7 +1366,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>B) Logarítmica O(log n)</span>
+            <span>B) Logarítmica (El esfuerzo crece muy lento)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('quadratic')"
@@ -1215,7 +1378,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Cuadrática O(n²)</span>
+            <span>C) Cuadrática (El esfuerzo es proporcional a n²)</span>
           </button>
         </div>
 
@@ -1325,7 +1488,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>A) Aumenta mucho (Lineal O(n))</span>
+            <span>A) Necesitamos 1 millón de variables extra</span>
           </button>
 
           <button
@@ -1338,7 +1501,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>B) Aumenta muchísimo (Cuadrático O(n²))</span>
+            <span>B) Necesitamos trillones de variables (una matriz gigante)</span>
           </button>
 
           <button
@@ -1351,7 +1514,7 @@
                 : 'border-gray-200 hover:border-pink-500 hover:bg-pink-50 text-gray-700'
             "
           >
-            <span>C) Se mantiene en 1 variable (Constante O(1))</span>
+            <span>C) Seguimos necesitando solo 1 variable extra</span>
           </button>
         </div>
 
@@ -1474,10 +1637,19 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import Bottle from '../components/Bottle.vue';
 
+const router = useRouter();
+
 // --- QUIZ LOGIC ---
+const showQuizIntro = ref(false);
 const showMidQuiz = ref(false);
+
+const startMidQuiz = () => {
+  showQuizIntro.value = false;
+  showMidQuiz.value = true;
+};
 const midQuizSolved = ref(false);
 const currentQuizPhase = ref(1); // 1, 2, 3 phases
 const quizTopic = ref<'complexity' | 'space' | 'strategy' | 'math'>('complexity'); // New state with math
@@ -1487,14 +1659,31 @@ const selectedOption = ref<string | null>(null);
 const showMinDefaultTip = ref(false); // Tooltip for first iteration default min
 const showResetConfirmation = ref(false); // Modal state for reset warnings
 
+const showFinalSummary = ref(false);
+const showNextStepInvitation = ref(false);
+
+const navigateTo = (routeName: string) => {
+  router.push({ name: routeName });
+};
+
+const finishAlgorithmSummary = () => {
+  showFinalSummary.value = false;
+  showNextStepInvitation.value = true;
+};
+
 const advanceMidQuiz = () => {
   midQuizFeedback.value = null;
   midQuizSolved.value = false;
   selectedOption.value = null;
 
+  // Si estamos en el último quiz (Math) y terminamos la última fase (3), mostramos resumen
+  if (quizTopic.value === 'math' && currentQuizPhase.value >= 3) {
+    showMidQuiz.value = false;
+    showFinalSummary.value = true;
+    return;
+  }
+
   // Logic to advance phase or close based on topic/phase
-  // Currently all quizzes have 3 phases.
-  // Exception: Complexity Quiz can have different phase logic if needed, but looks like 3.
   if (currentQuizPhase.value < 3) {
     currentQuizPhase.value++;
   } else {
@@ -1515,7 +1704,7 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === '1var') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra (min_index) para rastrear al menor. No creamos nuevos arrays.',
+          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra para rastrear al menor. No creamos nuevos arrays.',
         };
         midQuizSolved.value = true;
       } else if (option === 'nvars') {
@@ -1535,18 +1724,18 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === 'o1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXACTO! 🎓 <br> Si la cantidad de elementos (N) aumenta a 1 millón, ¡sigues necesitando solo <b>1 variable extra</b>!<br> Por eso la complejidad espacial es <b>Constante O(1)</b>.',
+          text: '¡EXACTO! 🎓 <br> No importa si son 5 o 1 millón de datos, solo usamos una variable para rastrear el mínimo.<br> A esto le llamamos <b>Espacio Constante O(1)</b>.',
         };
         midQuizSolved.value = true;
       } else if (option === 'on') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El espacio extra NO crece con los datos.',
+          text: 'Incorrecto. ❌ <br> No necesitamos crear una copia de la lista. Solo apuntamos al índice del menor. El espacio no crece (es O(1), no O(n)).',
         };
       } else if (option === 'on2') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos duplicando datos.',
+          text: 'Incorrecto. ❌ <br> Eso sería excesivo. Selection Sort es eficiente en memoria porque trabaja "in-place" (en el mismo lugar).',
         };
       }
     }
@@ -1613,7 +1802,7 @@ const handleMidQuizAnswer = (option: string) => {
       } else if (option === 'dynamic') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos reutilizando sub-soluciones complejas.',
+          text: 'Incorrecto. ❌ <br> Este algoritmo no guarda ni reutiliza subproblemas, por eso no es programación dinámica.',
         };
       }
     }
@@ -1650,20 +1839,20 @@ const handleMidQuizAnswer = (option: string) => {
         selectedOption.value = 'sum_gauss';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡EXCELENTE! 🔢 <br> Es la suma de Gauss de 1 a (n-1).<br> Matemáticamente: <b>n(n-1) / 2</b>.',
+          text: '¡EXACTO! 🪜 <br> Es una "escalera" que baja: (n-1) + (n-2) + ... + 1.<br> Esta famosa suma vale matemáticamente: <b>n(n-1) / 2</b>.',
         };
         midQuizSolved.value = true;
       } else if (option === 'sum_random') {
         selectedOption.value = 'sum_random';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> El factorial crece muchísimo más rápido.',
+          text: 'Incorrecto. ❌ <br> n*2 es muy pequeño (Lineal). Necesitamos sumar desde 1 hasta (n-1).',
         };
       } else if (option === 'sum_linear') {
         selectedOption.value = 'sum_linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> 5 * 2 = 10 coincide por casualidad aquí, pero no es la fórmula general.',
+          text: 'Cerca... 🤏 <br> n*n es el orden de magnitud (Cuadrático), pero la operación exacta es la SUMA de 1 a n-1.',
         };
       }
     }
@@ -1673,20 +1862,20 @@ const handleMidQuizAnswer = (option: string) => {
         selectedOption.value = 'quadratic';
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 📈 <b>O(n²)</b>.<br> En Big O, el término al cuadrado (n²) domina al lineal (n), así que decimos que el algoritmo es "Cuadrático".',
+          text: '¡CORRECTO! 🎯 <br> Al tener <b>n²</b> llamamos a esto <b>Complejidad Cuadrática O(n²)</b>.<br> Esto significa que el trabajo crece "al cuadrado" de los datos (es muy costoso).',
         };
         midQuizSolved.value = true;
       } else if (option === 'linear') {
         selectedOption.value = 'linear';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Si fuera lineal, al doblar los datos, el tiempo se doblaría. Aquí crece mucho más.',
+          text: 'Incorrecto. ❌ <br> Lineal sería si la fórmula fuera solo "n". Aquí tenemos n² (n multiplicado por n), que es mucho mayor.',
         };
       } else if (option === 'log') {
         selectedOption.value = 'log';
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> Logarítmico sería muy rápido (como Binary Search).',
+          text: 'Incorrecto. ❌ <br> Logarítmico es extremadamente rápido. Nuestra "escalera" es la mitad de un cuadrado, así que es lento.',
         };
       }
     }
@@ -1728,7 +1917,7 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === 'n-1') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORECTO! 🎉 <br> Pasemos a una pregunta más interesante...',
+          text: '¡CORECTO! 🎉 <br> Se hacen <b>n-1</b> comparaciones.',
         };
         midQuizSolved.value = true;
       } else if (option === 'n') {
@@ -2465,7 +2654,7 @@ const finalizeIterationLogic = () => {
     if (currentIteration.value === 1) {
       quizTopic.value = 'complexity';
       currentQuizPhase.value = 1;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2475,7 +2664,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false; // Reset solution state
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2485,7 +2674,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
@@ -2495,7 +2684,7 @@ const finalizeIterationLogic = () => {
       currentQuizPhase.value = 1;
       midQuizSolved.value = false;
       midQuizFeedback.value = null;
-      showMidQuiz.value = true;
+      showQuizIntro.value = true;
       return;
     }
 
