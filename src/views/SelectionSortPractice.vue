@@ -551,7 +551,7 @@ function handleDragEnd() {
                       : 'border-slate-300 text-slate-700 hover:-translate-y-1',
 
                     // Estados de Interacción
-                    selectedNumber?.id === num.id
+                    selectedNumber?.id === num.id && num.value !== -1
                       ? 'ring-4 ring-purple-400 border-purple-600 scale-110 z-10'
                       : '',
                     index === swapTargetIndex && minBox
