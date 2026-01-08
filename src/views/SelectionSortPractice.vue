@@ -63,7 +63,7 @@ const coachHint = computed(() => {
     return '👆 Selecciona el mínimo → 📦 Mínimo Encontrado';
   }
 
-  return '📦 Mínimo Encontrado → 🎯 Posición objetivo (fucsia)';
+  return '📦 Mínimo Encontrado → 🎯 Posición objetivo';
 });
 
 // Categorize history messages for enhanced UI
