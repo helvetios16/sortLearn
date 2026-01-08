@@ -1019,7 +1019,7 @@
               O(1))...
             </p>
             <p class="text-gray-800 font-bold mt-2 text-xl">
-              ¿Recomendarías Selection Sort para ordenar esa lista de 1000000 de datos?
+              ¿Recomendarías Selection Sort para ordenar esa lista de 1,000,000 de datos?
             </p>
           </div>
         </template>
@@ -2519,10 +2519,11 @@ const weighBottles = () => {
     showMessage(
       `⚓ No se encontró un nuevo menor. El menor actual (${leftWeight}) se mantiene.`,
       'info',
+      6000,
     );
     setTimeout(() => {
       proceedToNextComparison();
-    }, 3500);
+    }, 4500);
   } else {
     scaleResult.value = { left: 'equal', right: 'equal' };
 
@@ -2530,10 +2531,10 @@ const weighBottles = () => {
     scaleNotification.value = 'PESO IGUAL - SE MANTIENE';
     scaleNotificationType.value = 'keep';
 
-    showMessage('⚖️️ Mismo peso. El menor actual se mantiene.', 'info');
+    showMessage('⚖️️ Mismo peso. El menor actual se mantiene.', 'info', 6000);
     setTimeout(() => {
       proceedToNextComparison();
-    }, 3500);
+    }, 5500);
   }
 };
 
@@ -2634,7 +2635,9 @@ const finalizeIterationLogic = () => {
   unsortedBottles.value[firstUnsortedIndex] = minBottleValue;
   unsortedBottles.value[minIndex.value!] = firstBottle;
 
-  swaps.value++;
+  if (minIndex.value !== firstUnsortedIndex) {
+    swaps.value++;
+  }
 
   setTimeout(() => {
     // Mover a sorted
