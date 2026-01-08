@@ -508,6 +508,14 @@ function handleDragEnd() {
       <div class="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto items-start">
         <!-- Área Principal: Array y Mínimo -->
         <div class="flex-1 w-full flex flex-col gap-8">
+          <!-- Hint para editar valores -->
+          <p
+            v-if="!isPracticeStarted && numbers.length > 0"
+            class="text-center text-sm text-slate-600 -mb-6"
+          >
+            ✏️ Clic en los números para editarlos
+          </p>
+
           <!-- Array Visual -->
           <div
             class="bg-slate-100 border-2 border-slate-200 rounded-2xl p-6 shadow-inner min-h-[200px] flex items-center justify-center"
