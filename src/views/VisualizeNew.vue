@@ -2062,7 +2062,7 @@ const initializeBottles = () => {
     bottles.push({
       id: i + 1,
       weight: Math.floor(Math.random() * 80) + 20,
-      color: palette[i % palette.length],
+      color: palette[i % palette.length]!,
     });
   }
   unsortedBottles.value = bottles;
@@ -2075,7 +2075,10 @@ const initializeBottles = () => {
 
   // Initialize minIndex with first element of unsorted part
   minIndex.value = 0;
-  minBottle.value = bottles[0];
+  const firstBottle = bottles[0];
+  if (firstBottle) {
+    minBottle.value = firstBottle;
+  }
 
   // Reset waiting and temp states completely
   tempValue.value = null;
@@ -2140,9 +2143,11 @@ const allBottles = computed(() => {
 
   for (let i = 0; i < 5; i++) {
     if (i < currentIteration.value) {
-      bottles.push(sortedBottles.value[i]);
+      const sortedBottle = sortedBottles.value[i];
+      bottles.push(sortedBottle || null);
     } else {
-      bottles.push(unsortedBottles.value[i]);
+      const unsortedBottle = unsortedBottles.value[i];
+      bottles.push(unsortedBottle || null);
     }
   }
 
@@ -2711,7 +2716,10 @@ const continueNextIteration = () => {
   } else {
     const newFirstIndex = currentIteration.value;
     minIndex.value = newFirstIndex;
-    minBottle.value = unsortedBottles.value[newFirstIndex];
+    const newMinBottle = unsortedBottles.value[newFirstIndex];
+    if (newMinBottle) {
+      minBottle.value = newMinBottle;
+    }
 
     showMessage(
       `✅ Iteración ${currentIteration.value} completada. Preparando siguiente vuelta...`,
@@ -2736,9 +2744,12 @@ const continueNextIteration = () => {
 
 const finishSort = () => {
   const remaining = unsortedBottles.value.filter((b) => b !== null);
-  if (remaining.length === 1) {
+  if (remaining.length === 1 && remaining[0]) {
     sortedBottles.value[4] = remaining[0];
-    unsortedBottles.value[unsortedBottles.value.indexOf(remaining[0])] = null;
+    const remainingIndex = unsortedBottles.value.indexOf(remaining[0]);
+    if (remainingIndex !== -1) {
+      unsortedBottles.value[remainingIndex] = null;
+    }
     // IMPORTANTE: Incrementar iteración para que allBottles muestre el último elemento desde sortedBottles
     currentIteration.value = 5;
   }

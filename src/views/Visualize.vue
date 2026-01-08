@@ -163,7 +163,9 @@
                     :model-value="
                       getBottleAtPosition(index - 1) ? [getBottleAtPosition(index - 1)] : []
                     "
-                    @update:model-value="(bottles) => updateBottleAtPosition(index - 1, bottles)"
+                    @update:model-value="
+                      (bottles: Bottle[]) => updateBottleAtPosition(index - 1, bottles)
+                    "
                     :group="getGroupForPosition(index - 1)"
                     item-key="id"
                     class="flex items-end justify-center min-h-[80px]"
@@ -364,7 +366,9 @@
                         :id="bottle.id"
                         :weight="bottle.weight"
                         :color="bottle.color"
-                        :comparison="scalePhysicalState.leftState"
+                        :comparison="
+                          scalePhysicalState.leftState as 'heavier' | 'lighter' | 'equal' | null
+                        "
                         :message="bottle.message"
                         @return-bottle="returnBottleFromPan"
                       />
@@ -398,7 +402,9 @@
                         :id="bottle.id"
                         :weight="bottle.weight"
                         :color="bottle.color"
-                        :comparison="scalePhysicalState.rightState"
+                        :comparison="
+                          scalePhysicalState.rightState as 'heavier' | 'lighter' | 'equal' | null
+                        "
                         :message="bottle.message"
                         @return-bottle="returnBottleFromPan"
                       />
@@ -721,7 +727,7 @@ const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
     setTimeout(() => {
       // Devolver el frasco a una posición vacía
       const emptyIndex = workbenchBottles.value.findIndex((b) => b === null);
-      if (emptyIndex !== -1) {
+      if (emptyIndex !== -1 && bottle) {
         workbenchBottles.value[emptyIndex] = bottle;
       }
       showError('Posición ocupada. Usa una posición vacía.');
@@ -775,7 +781,7 @@ const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
         const emptyIndex = workbenchBottles.value.findIndex(
           (b, i) => b === null && i >= currentIteration.value,
         );
-        if (emptyIndex !== -1) {
+        if (emptyIndex !== -1 && bottle) {
           workbenchBottles.value[emptyIndex] = bottle;
         }
         showError(
@@ -799,13 +805,13 @@ const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
         if (comparisonsInCurrentIteration.value < expectedComparisons) {
           setTimeout(() => {
             // Devolver al platillo izquierdo si viene de ahí, sino a workbench
-            if (leftPanBottle.value.length === 0) {
+            if (leftPanBottle.value.length === 0 && bottle) {
               leftPanBottle.value = [bottle];
             } else {
               const emptyIndex = workbenchBottles.value.findIndex(
                 (b, i) => b === null && i > currentIteration.value,
               );
-              if (emptyIndex !== -1) {
+              if (emptyIndex !== -1 && bottle) {
                 workbenchBottles.value[emptyIndex] = bottle;
               }
             }
@@ -825,7 +831,7 @@ const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
             const emptyIndex = workbenchBottles.value.findIndex(
               (b, i) => b === null && i > currentIteration.value,
             );
-            if (emptyIndex !== -1) {
+            if (emptyIndex !== -1 && bottle) {
               workbenchBottles.value[emptyIndex] = bottle;
             }
             showError('Solo el mínimo puede ir a posición i=' + currentIteration.value);
@@ -835,14 +841,17 @@ const updateBottleAtPosition = (index: number, bottles: Bottle[]) => {
       }
 
       // Limpiar platillo izquierdo si el frasco viene de ahí
+      const isFromLeftPan = leftPanBottle.value.length > 0 && leftPanBottle.value[0] === bottle;
       if (isFromLeftPan) {
         leftPanBottle.value = [];
       }
 
       // Todo correcto: colocar en posición i y marcar como consolidado
-      bottle.message = undefined;
-      bottle.state = 'consolidated';
-      workbenchBottles.value[index] = bottle;
+      if (bottle) {
+        bottle.message = undefined;
+        bottle.state = 'consolidated';
+        workbenchBottles.value[index] = bottle;
+      }
       currentMinBottle.value = null;
       stats.movimientos++;
       stats.swaps++; // Increment swap counter
@@ -1273,11 +1282,11 @@ watch([leftPanBottle, rightPanBottle], ([newLeft, newRight], [oldLeft, oldRight]
     scaleResult.value = { left: null, right: null };
 
     // Limpiar mensajes de los frascos
-    if (newLeft.length > 0) {
+    if (newLeft.length > 0 && newLeft[0]) {
       newLeft[0].message = undefined;
       newLeft[0].state = 'normal';
     }
-    if (newRight.length > 0) {
+    if (newRight.length > 0 && newRight[0]) {
       newRight[0].message = undefined;
       newRight[0].state = 'normal';
     }
@@ -1468,6 +1477,9 @@ const weighBottlesAutomatic = () => {
   rightBottle.state = 'comparing';
 
   // PASO 1: Calcular resultado y actualizar scaleResult para activar animación física
+  let lighterBottle: Bottle;
+  let heavierBottle: Bottle;
+
   if (leftBottle.weight > rightBottle.weight) {
     scaleResult.value = { left: 'heavier', right: 'lighter' };
     lighterBottle = rightBottle;
@@ -1529,40 +1541,6 @@ const weighBottlesAutomatic = () => {
 
     scaleWeighed.value = false;
   }, 700); // Esperar exactamente el tiempo de la animación física (700ms)
-};
-
-// Function to validate and add bottle to sorted shelf
-// Show error message temporarily
-const showError = (message: string) => {
-  errorMessage.value = message;
-  setTimeout(() => {
-    errorMessage.value = '';
-  }, 3000);
-};
-
-// Show success message temporarily
-const showSuccess = (message: string) => {
-  successMessage.value = message;
-  setTimeout(() => {
-    successMessage.value = '';
-  }, 2000);
-};
-
-// Function to validate and add bottle to sorted shelf
-const validateSortedShelfPlacement = (bottle: Bottle): boolean => {
-  if (sortedShelfBottles.value.length === 0) return true;
-
-  const lastBottle = sortedShelfBottles.value[sortedShelfBottles.value.length - 1];
-  if (!lastBottle) return true;
-
-  if (bottle.weight < lastBottle.weight) {
-    showError(
-      `❌ Esta botella (peso: ${bottle.weight}) no puede ir después de una más pesada (peso: ${lastBottle.weight})`,
-    );
-    return false;
-  }
-
-  return true;
 };
 
 // Show error message temporarily
