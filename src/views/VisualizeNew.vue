@@ -1074,7 +1074,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>A) Divide y Vencerás (Divide & Conquer)</span>
+            <span>A) Divide y Vencerás - Dividir el problema en subproblemas</span>
           </button>
           <button
             @click="handleMidQuizAnswer('greedy')"
@@ -1098,7 +1098,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>C) Programación Dinámica</span>
+            <span>C) Programación Dinámica - Aprovechar soluciones de subproblemas</span>
           </button>
         </div>
 
@@ -1206,7 +1206,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>Lineal (El esfuerzo es igual a la cantidad de datos)</span>
+            <span>A) Lineal (El esfuerzo es igual a la cantidad de datos)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('log')"
@@ -1218,7 +1218,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>Logarítmica (El esfuerzo crece muy lento)</span>
+            <span>B) Logarítmica (El esfuerzo crece muy lento)</span>
           </button>
           <button
             @click="handleMidQuizAnswer('quadratic')"
@@ -1230,7 +1230,7 @@
                 : 'border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 text-gray-700'
             "
           >
-            <span>Cuadrática (El esfuerzo es proporcional a n²)</span>
+            <span>C) Cuadrática (El esfuerzo es proporcional a n²)</span>
           </button>
         </div>
 
@@ -1530,7 +1530,7 @@ const handleMidQuizAnswer = (option: string) => {
       if (option === '1var') {
         midQuizFeedback.value = {
           type: 'success',
-          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra (min_index) para rastrear al menor. No creamos nuevos arrays.',
+          text: '¡CORRECTO! 🎯 <br> Solo usamos <b>UNA</b> variable extra para rastrear al menor. No creamos nuevos arrays.',
         };
         midQuizSolved.value = true;
       } else if (option === 'nvars') {
@@ -1628,7 +1628,7 @@ const handleMidQuizAnswer = (option: string) => {
       } else if (option === 'dynamic') {
         midQuizFeedback.value = {
           type: 'error',
-          text: 'Incorrecto. ❌ <br> No estamos reutilizando sub-soluciones complejas.',
+          text: 'Incorrecto. ❌ <br> Este algoritmo no guarda ni reutiliza subproblemas, por eso no es programación dinámica.',
         };
       }
     }
