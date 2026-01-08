@@ -41,7 +41,7 @@ const algorithms = [
         Aprende Algoritmos de Ordenamiento
       </h1>
       <p class="text-lg lg:text-xl text-slate-600 mb-12 max-w-2xl mx-auto">
-        Visualiza, practica e implementa algoritmos de ordenamiento de forma interactiva
+        Aprende, practica e implementa algoritmos de ordenamiento de forma interactiva
       </p>
 
       <!-- Algorithms Grid -->
